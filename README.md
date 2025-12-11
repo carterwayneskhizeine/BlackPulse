@@ -37,10 +37,9 @@ You need to have Docker and Docker Compose installed on your system.
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/anonymous-message-board.git
+    git clone https://github.com/carterwayneskhizeine/AnonymousMessageBoard.git
     cd anonymous-message-board
     ```
-    *(Note: Replace `https://github.com/your-username/anonymous-message-board.git` with the actual path if you're working locally without a remote repo.)*
 
 2.  **Build and run the application using Docker Compose:**
     ```bash
