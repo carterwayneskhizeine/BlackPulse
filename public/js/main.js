@@ -123,7 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleMessageClick = (e) => {
-        const { action, id } = e.target.dataset;
+        const button = e.target.closest('button');
+        if (!button) return;
+
+        const { action, id } = button.dataset;
         if (!action || !id) return;
 
         if (action === 'delete') {
@@ -141,7 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (messageToCopy && navigator.clipboard) {
                 navigator.clipboard.writeText(messageToCopy.content)
                     .then(() => {
-                        alert('Message copied to clipboard!');
+                        const originalText = button.textContent;
+                        button.textContent = 'Copied!';
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                        }, 1500);
                     })
                     .catch(err => {
                         console.error('Failed to copy message: ', err);
