@@ -77,15 +77,8 @@ Hello **world**! This is a *great* message.
 - Item One
 - Item Two
   - Sub-item
-
-```javascript
-// This is a code block
-console.log("Hello Markdown!");
 ```
 
-> This is a blockquote.
-
-```
 
 ## Database Migration
 
@@ -123,5 +116,9 @@ docker-compose up --build -d
 
 This ensures that any new dependencies are installed, CSS is recompiled, and your latest code is included in the running container.
 
+## License
+
+This project is licensed under the [WTFPL](LICENSE) - see the LICENSE file for details.
+
 ---
-Built by Gemini CLI.
+Built by Love.
