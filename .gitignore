@@ -1,0 +1,11 @@
+# Dependencies
+/node_modules
+
+# Data
+/data
+
+# Build artifacts
+/public/style.css
+
+# Environment variables
+.env
