@@ -2,6 +2,8 @@
 
 A simple, anonymous message board web application built with Node.js, Express, EJS, and SQLite3, containerized using Docker and Docker Compose. This application features a pure dark mode interface, support for Markdown content, and allows users to post, edit, and delete messages anonymously.
 
+![Preview of the Application](PreviewImage.jpg)
+
 ## Features
 
 *   **Anonymous Posting**: Share your thoughts without revealing your identity.
