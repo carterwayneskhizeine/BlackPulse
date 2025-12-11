@@ -109,9 +109,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ content }),
             });
 
-            if (response.status === 201) {
+            if (response.ok) {
+                const newMessage = await response.json();
+                // 将新消息添加到本地数组的开头
+                messages.unshift(newMessage);
+                // 重新渲染消息列表
+                messageList.innerHTML = '';
+                messages.forEach(message => {
+                    messageList.appendChild(renderMessage(message));
+                });
                 messageInput.value = '';
-                fetchAndRenderMessages();
             } else {
                 const errorData = await response.json();
                 alert(`Error: ${errorData.error || 'Something went wrong'}`);

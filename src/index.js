@@ -59,7 +59,13 @@ app.post('/api/messages', (req, res) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.status(201).json({ id: this.lastID });
+    // 获取插入的完整消息对象
+    db.get(`SELECT * FROM messages WHERE id = ?`, [this.lastID], (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(201).json(row);
+    });
   });
 });
 
@@ -93,7 +99,16 @@ app.put('/api/messages/:id', (req, res) => {
     if (this.changes === 0) {
       return res.status(404).json({ error: 'Message not found' });
     }
-    res.status(200).json({ message: 'Message updated successfully' });
+    // 获取更新后的完整消息对象
+    db.get(`SELECT * FROM messages WHERE id = ?`, [id], (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (!row) {
+        return res.status(404).json({ error: 'Message not found' });
+      }
+      res.status(200).json(row);
+    });
   });
 });
 
