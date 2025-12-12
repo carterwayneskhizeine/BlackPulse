@@ -50,7 +50,7 @@ You need to have Docker and Docker Compose installed on your system.
 
 2.  **Build and run the application using Docker Compose:**
     ```bash
-    docker-compose up --build -d
+    docker compose up --build -d
     ```
     This command will:
     *   Build the Docker image for the `message-board` service based on the `Dockerfile`.
@@ -503,7 +503,7 @@ This project uses SQLite for its database, which stores all data in a single fil
 1.  **On the Source Device**: Locate the `data/messages.db` file within your project directory.
 2.  **Transfer the File**: Copy this `messages.db` file to your new device using your preferred method (e.g., `scp`, USB drive, cloud storage).
 3.  **On the New Device**: Place the copied `messages.db` file into the `data/` directory of your project on the new device. Ensure it replaces any existing `messages.db` file if you want to use the old data.
-4.  **Start the Application**: Run `docker-compose up -d` on the new device. Your application will automatically use the migrated database, and all your messages will be available.
+4.  **Start the Application**: Run `docker compose up -d` on the new device. Your application will automatically use the migrated database, and all your messages will be available.
 
 ## Project Structure
 
@@ -588,7 +588,7 @@ The following modifications were made to implement user authentication:
 If you make changes to the code, especially to `package.json`, `src/index.js`, `public/js/main.js`, `src/input.css`, `tailwind.config.js`, or the `Dockerfile`, you will need to rebuild the Docker image to apply these changes:
 
 ```bash
-docker-compose up --build -d
+docker compose up --build -d
 ```
 
 This ensures that any new dependencies are installed, CSS is recompiled, and your latest code is included in the running container.
@@ -616,13 +616,13 @@ If you need to clear all messages and start fresh, you can delete the database f
 #### Method 1: Stop containers and delete files (Recommended)
 ```bash
 # Stop the running containers
-docker-compose down
+docker compose down
 
 # Delete the database files
 rm -f data/messages.db data/sessions.db
 
 # Restart the containers (new databases will be created automatically)
-docker-compose up -d
+docker compose up -d
 ```
 
 #### Method 2: Delete files while containers are running
@@ -631,12 +631,12 @@ docker-compose up -d
 rm -f data/messages.db data/sessions.db
 
 # Restart the application container to recreate databases
-docker-compose restart message-board
+docker compose restart message-board
 ```
 
 #### Method 3: Using a one-liner command
 ```bash
-docker-compose down && rm -f data/messages.db data/sessions.db && docker-compose up -d
+docker compose down && rm -f data/messages.db data/sessions.db && docker compose up -d
 ```
 
 **Note**:
