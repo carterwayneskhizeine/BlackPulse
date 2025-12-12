@@ -294,11 +294,23 @@ app.post('/api/messages', (req, res) => {
   }
 
   const isPrivateInt = isPrivate ? 1 : 0;
-  const privateKeyValue = isPrivate && !req.userId ? privateKey.trim() : null;
   const userId = req.userId || null;
 
-  // 如果用户已登录且创建私有消息，不需要private_key
-  const finalPrivateKey = (isPrivate && !req.userId) ? privateKeyValue : null;
+  // 为私有消息生成或使用提供的KEY
+  let finalPrivateKey = null;
+  if (isPrivate) {
+    if (privateKey && privateKey.trim() !== '') {
+      // 使用用户提供的KEY
+      finalPrivateKey = privateKey.trim();
+    } else if (req.userId) {
+      // 登录用户创建私有消息但没有提供KEY，生成一个基于用户ID和时间的KEY
+      const timestamp = Date.now();
+      finalPrivateKey = `user_${req.userId}_${timestamp}`;
+    } else {
+      // 匿名用户创建私有消息但没有提供KEY，返回错误
+      return res.status(400).json({ error: 'Private message must have a KEY when not logged in' });
+    }
+  }
 
   db.run(`INSERT INTO messages (content, is_private, private_key, user_id) VALUES (?, ?, ?, ?)`,
     [content, isPrivateInt, finalPrivateKey, userId], function(err) {

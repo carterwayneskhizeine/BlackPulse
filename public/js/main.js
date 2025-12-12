@@ -132,11 +132,51 @@ document.addEventListener('DOMContentLoaded', () => {
         contentDiv.className = 'prose prose-invert max-w-none text-gray-300 mb-2'; // prose-invert for dark mode
         contentDiv.innerHTML = converter.makeHtml(message.content);
 
-        // 为 private 消息添加锁图标
+        // 为 private 消息添加 KEY 显示
         if (message.is_private === 1) {
             const privateLabel = document.createElement('div');
             privateLabel.className = 'text-xs text-blue-400 font-bold mb-1 flex items-center gap-1';
-            privateLabel.innerHTML = 'Private';
+
+            // 创建 "Private" 文本
+            const privateText = document.createElement('span');
+            privateText.textContent = 'Private';
+
+            // 创建 KEY 显示
+            const keyDisplay = document.createElement('span');
+            keyDisplay.className = 'text-gray-300 font-mono text-xs bg-gray-900 px-2 py-1 rounded border border-gray-700 ml-2';
+
+            if (message.private_key && message.private_key.trim() !== '') {
+                keyDisplay.textContent = `KEY: ${message.private_key}`;
+                // 添加复制功能提示
+                keyDisplay.title = 'Click to copy KEY';
+                keyDisplay.style.cursor = 'pointer';
+
+                // 添加点击复制功能
+                keyDisplay.addEventListener('click', (e) => {
+                    e.stopPropagation(); // 防止事件冒泡
+                    navigator.clipboard.writeText(message.private_key).then(() => {
+                        const originalText = keyDisplay.textContent;
+                        keyDisplay.textContent = 'KEY copied!';
+                        keyDisplay.className = 'text-green-400 font-mono text-xs bg-gray-900 px-2 py-1 rounded border border-green-700 ml-2';
+
+                        // 2秒后恢复原状
+                        setTimeout(() => {
+                            keyDisplay.textContent = originalText;
+                            keyDisplay.className = 'text-gray-300 font-mono text-xs bg-gray-900 px-2 py-1 rounded border border-gray-700 ml-2';
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy KEY:', err);
+                    });
+                });
+            } else {
+                keyDisplay.textContent = 'KEY: (not set)';
+                keyDisplay.className = 'text-gray-500 font-mono text-xs bg-gray-900 px-2 py-1 rounded border border-gray-700 ml-2';
+            }
+
+            // 组装所有元素
+            privateLabel.appendChild(privateText);
+            privateLabel.appendChild(keyDisplay);
+
             messageElement.appendChild(privateLabel);
         }
 
@@ -478,8 +518,8 @@ document.addEventListener('DOMContentLoaded', () => {
     confirmPrivate.addEventListener('click', async () => {
         const privateKey = modalPrivateKey.value.trim();
 
-        // 如果用户已登录，不需要private_key
-        if (!currentUser && !privateKey) {
+        // 所有私有消息都需要KEY
+        if (!privateKey) {
             alert('KEY cannot be empty!');
             return;
         }
