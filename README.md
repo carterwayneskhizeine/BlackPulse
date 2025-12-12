@@ -255,6 +255,45 @@ When upgrading to the version with user authentication, the database will be aut
 
 All existing messages will have `user_id` set to `NULL` (anonymous messages).
 
+### Clearing the Database
+
+If you need to clear all messages and start fresh, you can delete the database files. The application uses two SQLite database files stored in the `./data/` directory:
+
+1. **`messages.db`** - Stores all messages (public and private)
+2. **`sessions.db`** - Stores user session data
+
+#### Method 1: Stop containers and delete files (Recommended)
+```bash
+# Stop the running containers
+docker-compose down
+
+# Delete the database files
+rm -f data/messages.db data/sessions.db
+
+# Restart the containers (new databases will be created automatically)
+docker-compose up -d
+```
+
+#### Method 2: Delete files while containers are running
+```bash
+# Delete the database files
+rm -f data/messages.db data/sessions.db
+
+# Restart the application container to recreate databases
+docker-compose restart message-board
+```
+
+#### Method 3: Using a one-liner command
+```bash
+docker-compose down && rm -f data/messages.db data/sessions.db && docker-compose up -d
+```
+
+**Note**:
+- Deleting `sessions.db` will log out all users
+- Deleting `messages.db` will remove ALL messages permanently
+- The application will automatically create new empty databases when restarted
+- User accounts are stored in `messages.db`, so deleting it will also remove all user accounts
+
 ## License
 
 This project is licensed under the [WTFPL](LICENSE) - see the LICENSE file for details.
