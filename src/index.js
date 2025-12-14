@@ -342,9 +342,9 @@ app.delete('/api/messages/:id', (req, res) => {
       return res.status(404).json({ error: 'Message not found' });
     }
 
-    // 检查权限：用户只能删除自己的消息
-    if (message.user_id && message.user_id !== req.userId) {
-      return res.status(403).json({ error: 'You can only delete your own messages' });
+    // 检查权限：私有消息用户只能删除自己的消息，公开消息任何人可删
+    if (message.is_private === 1 && message.user_id && message.user_id !== req.userId) {
+      return res.status(403).json({ error: 'You can only delete your own private messages' });
     }
 
     db.run(`DELETE FROM messages WHERE id = ?`, id, function(err) {
