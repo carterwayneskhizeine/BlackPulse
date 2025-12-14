@@ -495,13 +495,13 @@ axios.post('http://localhost:1989/api/messages', {
 You can use standard Markdown syntax in your messages, for example:
 
 ```markdown
-# My Awesome Message
+## Anonymous Thought 💭
 
-Hello **world**! This is a *great* message.
+This platform allows for completely **anonymous sharing** of ideas. You can use **Markdown** for rich formatting,
+including `inline code` and [links](https://links).
 
-- Item One
-- Item Two
-  - Sub-item
+Feel free to **post** and **edit** your messages freely!
+
 ```
 
 
