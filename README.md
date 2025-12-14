@@ -15,7 +15,6 @@ A simple, anonymous message board web application built with Node.js, Express, E
 *   **Private Messages with KEY Protection**: Post private messages protected by a KEY. Only users who know the correct KEY can view these messages.
 *   **User Authentication**: Register and login system with session-based authentication.
 *   **User-Specific Private Messages**: Logged-in users can view all their private messages without entering KEYs individually.
-*   **Message Ownership**: Users can only edit and delete their own messages.
 *   **Responsive Design**: The application is designed to be accessible and usable across various devices, with mobile-friendly buttons.
 *   **Dockerized Deployment**: Easy setup and deployment using Docker and Docker Compose.
 
@@ -79,8 +78,8 @@ Once the Docker containers are up and running, open your web browser and navigat
 
 ### Public Messages
 *   **Post a Message**: Type your message (you can use Markdown!) in the text area and click "Post Message".
-*   **Edit a Message**: Click the blue "Edit" button next to a message. An edit box will appear pre-filled with the message's original Markdown content. Make your changes and click "Save".
-*   **Delete a Message**: Click the red "Delete" button next to a message. Confirm your action to remove the message.
+*   **Edit a Message**: Click the "Edit" button next to a message. An edit box will appear pre-filled with the message's original Markdown content. Make your changes and click "Save".
+*   **Delete a Message**: Click the "Delete" button next to a message. Confirm your action to remove the message.
 
 ### Private Messages
 *   **Post a Private Message**:
@@ -92,10 +91,10 @@ Once the Docker containers are up and running, open your web browser and navigat
     *Note: Private messages are not immediately visible after posting*
 
 *   **View Private Messages**:
-    1. Click the dark blue "KEY" button below the message input area
+    1. Click the "KEY" button below the message input area
     2. A KEY input field will appear between the KEY button and Post Message button
     3. Enter the correct KEY for the private messages you want to view
-    4. Click the blue "Send" button or press Enter
+    4. Click the "Send" button or press Enter
     5. Matching private messages will appear above all public messages, marked with private
 
 *   **Hide Private Messages**:
@@ -127,7 +126,6 @@ Once the Docker containers are up and running, open your web browser and navigat
 
 #### User-Specific Features
 *   **Automatic Private Message Access**: Once logged in, all your private messages are automatically displayed without needing to enter KEYs.
-*   **Message Ownership**: You can only edit and delete messages that you created while logged in.
 *   **Dual-Mode Private Messages**:
     - **Traditional Mode**: Create private messages with KEYs (works for both logged-in and anonymous users)
     - **User Mode**: When logged in, private messages are automatically associated with your account and accessible without KEYs
@@ -543,8 +541,8 @@ The following files were modified to implement the private messages feature:
    - Updated root route to only show public messages
 
 2. **`views/index.ejs`**:
-   - Added dark blue "KEY" button below message input
-   - Added KEY input field and blue "Send" button (hidden by default)
+   - Added dark "KEY" button below message input
+   - Added KEY input field and "Send" button (hidden by default)
    - Added modal dialog for message type selection (Public/Private)
    - Added error message display area
 
