@@ -431,10 +431,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pre = codeBlock.parentElement;
                 if (pre.querySelector('.copy-code-btn')) return; // Avoid duplicates
 
-                pre.classList.add('relative', 'group/code');
+                // Create a wrapper div to contain both the pre element and the copy button
+                const wrapper = document.createElement('div');
+                wrapper.className = 'relative group';
+
+                // Replace the pre element with the wrapper
+                pre.parentNode.insertBefore(wrapper, pre);
+                wrapper.appendChild(pre);
+
+                // Add overflow-x-auto to the pre element for scrolling
+                pre.classList.add('overflow-x-auto');
 
                 const copyButton = document.createElement('button');
-                copyButton.className = 'copy-code-btn absolute top-2 right-2 bg-black/80 backdrop-blur-sm text-xs px-2 py-1 rounded border border-gray-700 text-gray-200 hover:border-gray-100 hover:text-gray-100 opacity-0 group-hover/code:opacity-100 transition-all duration-200 z-10';
+                copyButton.className = 'copy-code-btn absolute top-2 right-2 bg-black/80 backdrop-blur-sm text-xs px-2 py-1 rounded border border-gray-700 text-gray-200 hover:border-gray-100 hover:text-gray-100 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10';
                 copyButton.innerHTML = 'Copy';
                 copyButton.title = 'Copy code';
                 copyButton.onclick = (e) => {
@@ -451,7 +460,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         })
                         .catch(err => console.error('Copy failed:', err));
                 };
-                pre.appendChild(copyButton);
+
+                // Add the copy button as a child of the wrapper (not the pre element)
+                wrapper.appendChild(copyButton);
             });
 
             contentContainer.appendChild(contentDiv);
