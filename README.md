@@ -15,7 +15,7 @@ A simple, anonymous message board web application built with Node.js, Express, E
 *   **Private Messages with KEY Protection**: Post private messages protected by a KEY. Only users who know the correct KEY can view these messages.
 *   **User Authentication**: Register and login system with session-based authentication.
 *   **User-Specific Private Messages**: Logged-in users can view all their private messages without entering KEYs individually.
-*   **Image Upload Support**: Upload and display images in messages (one image per message, max 10MB, supports JPEG, PNG, GIF, WebP).
+*   **File Upload Support**: Upload and display files in messages (one file per message, max 50MB, supports all file types). Images show previews, other files show download links.
 *   **Pagination with Google-Style Navigation**: Messages are displayed with Google search results-style pagination (e.g., < 1 2 3 4 5 ... 100 >). Each page shows 5 messages with previous/next buttons and direct page navigation.
 *   **Database Performance Optimization**: Built-in indexes for faster queries, better scalability for research and learning.
 *   **Responsive Design**: The application is designed to be accessible and usable across various devices, with mobile-friendly buttons.
@@ -30,7 +30,7 @@ A simple, anonymous message board web application built with Node.js, Express, E
 *   **Styling**: Tailwind CSS (configured for `darkMode: 'class'`)
 *   **Client-side Logic**: Native JavaScript (Fetch API)
 *   **Markdown Rendering**: Showdown.js
-*   **File Upload**: Multer for handling image uploads
+*   **File Upload**: Multer for handling file uploads (all types, up to 50MB)
 *   **Containerization**: Docker, Docker Compose
 
 ## Getting Started
@@ -128,28 +128,29 @@ Once the Docker containers are up and running, open your web browser and navigat
 *   **Logout**:
     - Click the "登出" button in the top-right corner when logged in
 
-### Image Messages
+### File Messages
 
-*   **Post a Message with Image**:
-    1. Type your message in the text area (optional - you can post just an image)
-    2. Click the "Upload Image" button below the text area
-    3. Select an image file from your device (JPEG, PNG, GIF, or WebP, max 10MB)
-    4. The image preview will appear below the upload button
+*   **Post a Message with File**:
+    1. Type your message in the text area (optional - you can post just a file)
+    2. Click the "📎" (paperclip) button below the text area
+    3. Select any file from your device (max 50MB, any file type)
+    4. The file preview will appear below the upload button (image preview for images, file icon for other types)
     5. Click "Post Message" to send
-    *Note: Each message can contain either text, an image, or both*
+    *Note: Each message can contain either text, a file, or both*
 
-*   **View Image Messages**:
-    - Images are displayed above the text content in messages
+*   **View File Messages**:
+    - For image files: displayed with preview above text content
+    - For other files: displayed with file icon, name, type and download link above text content
     - Click on an image to view it in full size
-    - Image messages follow the same privacy rules as text messages
+    - File messages follow the same privacy rules as text messages
 
-*   **Remove Selected Image**:
-    - Click the "Remove" button on the image preview to cancel image selection
-    - This only removes the selection before posting, not already posted images
+*   **Remove Selected File**:
+    - Click the "Remove" button on the file preview to cancel file selection
+    - This only removes the selection before posting, not already posted files
 
-*   **Edit Image Messages**:
-    - Messages containing images cannot be edited (to maintain one-image-per-message constraint)
-    - To modify an image message, delete it and create a new one
+*   **Edit File Messages**:
+    - Messages containing files cannot be edited (to maintain one-file-per-message constraint)
+    - To modify a file message, delete it and create a new one
 
 #### User-Specific Features
 *   **Automatic Private Message Access**: Once logged in, all your private messages are automatically displayed without needing to enter KEYs.
@@ -232,29 +233,29 @@ curl -s -X POST "http://localhost:1989/api/auth/logout" \
   -b cookies.txt
 ```
 
-#### Image Upload API
+#### File Upload API
 
-**10. Upload an image**
+**10. Upload a file (any type)**
 ```bash
-curl -s -X POST "http://localhost:1989/api/upload" \
-  -F "image=@/path/to/your/image.jpg" \
+curl -s -X POST "http://localhost:1989/api/upload-file" \
+  -F "file=@/path/to/your/file.pdf" \
   -H "Content-Type: multipart/form-data"
 ```
 
-**11. Post a message with image (two-step process)**
+**11. Post a message with file (two-step process)**
 ```bash
-# Step 1: Upload the image
-curl -s -X POST "http://localhost:1989/api/upload" \
-  -F "image=@/path/to/your/image.jpg" \
+# Step 1: Upload the file
+curl -s -X POST "http://localhost:1989/api/upload-file" \
+  -F "file=@/path/to/your/file.pdf" \
   -H "Content-Type: multipart/form-data" \
   -o upload-response.json
 
-# Step 2: Post message with image reference
+# Step 2: Post message with file reference
 curl -s -X POST "http://localhost:1989/api/messages" \
   -H "Content-Type: application/json" \
   -d "$(cat <<'EOF'
 {
-  "content": "Message with image",
+  "content": "Message with file",
   "hasImage": true,
   "imageFilename": "$(jq -r '.filename' upload-response.json)",
   "imageMimeType": "$(jq -r '.mimeType' upload-response.json)",
@@ -264,11 +265,18 @@ EOF
 )"
 ```
 
-**11. Post private message with image**
+**12. Post private message with file**
 ```bash
 curl -s -X POST "http://localhost:1989/api/messages" \
   -H "Content-Type: application/json" \
-  -d "{\"content\": \"Private image message\", \"isPrivate\": true, \"privateKey\": \"secret123\", \"hasImage\": true, \"imageFilename\": \"1734267890123_abc123_image.jpg\", \"imageMimeType\": \"image/jpeg\", \"imageSize\": 102400}"
+  -d "{\"content\": \"Private file message\", \"isPrivate\": true, \"privateKey\": \"secret123\", \"hasImage\": true, \"imageFilename\": \"1734267890123_abc123_document.pdf\", \"imageMimeType\": \"application/pdf\", \"imageSize\": 512000}"
+```
+
+**13. Backward compatibility - Upload an image using the original endpoint**
+```bash
+curl -s -X POST "http://localhost:1989/api/upload" \
+  -F "image=@/path/to/your/image.jpg" \
+  -H "Content-Type: multipart/form-data"
 ```
 
 #### Advanced Examples
@@ -449,35 +457,36 @@ The following files were modified to implement the private messages feature:
    - Updated message loading to filter by private KEY
    - Added error handling for invalid KEY input
 
-#### Image Upload Feature
-The following modifications were made to implement image upload functionality:
+#### File Upload Feature
+The following modifications were made to implement file upload functionality:
 
 1. **`package.json`**:
    - Added new dependency: `multer` for handling file uploads
 
 2. **`src/index.js`**:
    - Added `has_image`, `image_filename`, `image_mime_type`, `image_size` columns to the `messages` table
-   - Added Multer configuration for image uploads (10MB limit, image files only)
-   - Added `/api/upload` endpoint for image uploads
-   - Added permission middleware for image access (follows same rules as messages)
-   - Modified `POST /api/messages` to accept image parameters
-   - Enhanced `DELETE /api/messages/:id` to delete associated image files
-   - Added orphaned image cleanup function (runs hourly)
+   - Added Multer configuration for file uploads (50MB limit, all file types)
+   - Added `/api/upload` endpoint for backward compatibility (now supports all file types)
+   - Added `/api/upload-file` endpoint for general file uploads
+   - Added permission middleware for file access (follows same rules as messages)
+   - Modified `POST /api/messages` to accept file parameters
+   - Enhanced `DELETE /api/messages/:id` to delete associated files
+   - Added orphaned file cleanup function (runs hourly)
 
 3. **`views/index.ejs`**:
-   - Added image upload button below message input area
-   - Added hidden file input for image selection
-   - Added image preview container with remove button
-   - Added image status display
+   - Added file upload button (paperclip icon) below message input area
+   - Added hidden file input for file selection (accepts all file types)
+   - Added file preview container with remove button (shows image preview or file icon)
+   - Added file status display
 
 4. **`public/js/main.js`**:
-   - Added image upload state management (`selectedImage` variable)
-   - Added `uploadImage()` function for uploading images to server
-   - Added image selection and preview functionality
-   - Modified `renderMessage()` to display images in messages
+   - Added file upload state management (`selectedFile` variable)
+   - Added `uploadFile()` function for uploading files to server
+   - Added file selection and preview functionality (image preview for images, file icon for other types)
+   - Modified `renderMessage()` to display files in messages (image preview or download link)
    - Added click-to-view functionality for images
-   - Modified message posting to handle images (two-step process: upload then post)
-   - Added restriction: messages with images cannot be edited
+   - Modified message posting to handle files (two-step process: upload then post)
+   - Added restriction: messages with files cannot be edited
 
 #### User Authentication Feature
 The following modifications were made to implement user authentication:
@@ -587,7 +596,7 @@ If you need to clear all messages and start fresh, you can delete the database f
 1. **`messages.db`** - Stores all messages (public and private)
 2. **`sessions.db`** - Stores user session data
 
-Additionally, uploaded image files are stored in the `./data/uploads/` directory.
+Additionally, uploaded files (images and other types) are stored in the `./data/uploads/` directory.
 
 #### Method 1: Stop containers and delete files (Recommended)
 ```bash
@@ -619,7 +628,7 @@ docker compose down && rm -f data/messages.db data/sessions.db && rm -rf data/up
 **Note**:
 - Deleting `sessions.db` will log out all users
 - Deleting `messages.db` will remove ALL messages permanently
-- Deleting files in `data/uploads/` will remove ALL uploaded images
+- Deleting files in `data/uploads/` will remove ALL uploaded files
 - The application will automatically create new empty databases when restarted
 - User accounts are stored in `messages.db`, so deleting it will also remove all user accounts
 
