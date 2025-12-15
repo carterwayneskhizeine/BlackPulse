@@ -138,25 +138,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- File Upload Helper Functions ---
     const uploadFile = async (file) => {
-        try {
+        return new Promise((resolve, reject) => {
+            // Create XMLHttpRequest to handle progress events
+            const xhr = new XMLHttpRequest();
+
+            // Create form data
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await fetch('/api/upload-file', {
-                method: 'POST',
-                body: formData
+            // Set up progress tracking
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percentComplete = (e.loaded / e.total) * 100;
+                    fileStatus.textContent = `Uploading: ${Math.round(percentComplete)}%`;
+                }
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to upload file');
-            }
+            // Handle upload completion
+            xhr.addEventListener('load', () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        resolve(response);
+                    } catch (parseError) {
+                        console.error('Error parsing upload response:', parseError);
+                        reject(new Error('Invalid response from server'));
+                    }
+                } else {
+                    let errorMessage = 'Upload failed';
+                    try {
+                        const errorData = JSON.parse(xhr.responseText);
+                        errorMessage = errorData.error || `Upload failed with status: ${xhr.status}`;
+                    } catch (parseError) {
+                        console.error('Error parsing error response:', parseError);
+                        errorMessage = `Upload failed with status: ${xhr.status}`;
+                    }
+                    reject(new Error(errorMessage));
+                }
+            });
 
-            return await response.json();
-        } catch (error) {
-            console.error('File upload error:', error);
-            throw error;
-        }
+            // Handle upload error
+            xhr.addEventListener('error', () => {
+                reject(new Error('Network error during upload - server may be unavailable'));
+            });
+
+            // Handle timeout
+            xhr.addEventListener('timeout', () => {
+                reject(new Error('Upload timed out - please try again'));
+            });
+
+            // Handle abort (if needed)
+            xhr.addEventListener('abort', () => {
+                reject(new Error('Upload was aborted'));
+            });
+
+            // Configure and send request
+            xhr.open('POST', '/api/upload-file');
+            xhr.timeout = 300000; // 5 minutes timeout
+            xhr.send(formData);
+        });
     };
 
     const clearSelectedFile = () => {
@@ -649,21 +689,34 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- Event Handlers ---
+    let isSubmitting = false; // Prevent duplicate submissions
+
     const handlePostSubmit = async (e) => {
         e.preventDefault();
-        const content = messageInput.value.trim();
 
-        // 验证：消息必须有内容或文件
-        if (!content && !selectedFile) {
-            alert('Message must have either text content or a file');
+        // Prevent duplicate submissions
+        if (isSubmitting) {
             return;
         }
 
+        isSubmitting = true;
+
         try {
+            const content = messageInput.value.trim();
+
+            // 验证：消息必须有内容或文件
+            if (!content && !selectedFile) {
+                alert('Message must have either text content or a file');
+                return;
+            }
+
             // 如果有文件，先上传文件
             let fileData = null;
             if (selectedFile && selectedFile.file) {
                 fileStatus.textContent = 'Uploading file...';
+                postMessageButton.disabled = true; // Disable the button during upload
+                postMessageButton.classList.add('opacity-50', 'cursor-not-allowed');
+
                 fileData = await uploadFile(selectedFile.file);
                 selectedFile.uploadedData = fileData;
                 fileStatus.textContent = 'File uploaded';
@@ -691,6 +744,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedFile) {
                 fileStatus.textContent = 'File selected';
             }
+        } finally {
+            isSubmitting = false;
+            postMessageButton.disabled = false; // Re-enable the button
+            postMessageButton.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     };
 

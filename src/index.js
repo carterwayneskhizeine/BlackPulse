@@ -10,6 +10,13 @@ const multer = require('multer');
 const app = express();
 const port = 1989;
 
+// Increase timeout for large file uploads
+app.use((req, res, next) => {
+  req.setTimeout(300000); // 5 minutes
+  res.setTimeout(300000); // 5 minutes
+  next();
+});
+
 // Password utility functions
 const hashPassword = async (password) => {
   const saltRounds = 10;
@@ -55,7 +62,8 @@ const upload = multer({
   fileFilter: fileFilter,
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB limit
-    files: 1 // Only one file per request
+    files: 1, // Only one file per request
+    fieldSize: 50 * 1024 * 1024 // Increase field size limit for large files
   }
 });
 
@@ -64,7 +72,8 @@ const generalUpload = multer({
   storage: storage,
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB limit
-    files: 1 // Only one file per request
+    files: 1, // Only one file per request
+    fieldSize: 50 * 1024 * 1024 // Increase field size limit for large files
   }
 });
 
@@ -429,7 +438,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
       }
     }
 
-    res.status(500).json({ error: 'Failed to upload file' });
+    res.status(500).json({ error: error.message || 'Failed to upload file' });
   }
 });
 
@@ -438,6 +447,14 @@ app.post('/api/upload-file', generalUpload.single('file'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file provided' });
+    }
+
+    // Additional validation for large files
+    // Check if file size is within limits (redundant with multer but good to double-check)
+    if (req.file.size > 50 * 1024 * 1024) { // 50MB
+      // Clean up the uploaded file
+      fs.unlinkSync(path.join(uploadsDir, req.file.filename));
+      return res.status(400).json({ error: 'File too large. Maximum size is 50MB.' });
     }
 
     // Return success response with file info
@@ -461,7 +478,7 @@ app.post('/api/upload-file', generalUpload.single('file'), (req, res) => {
       }
     }
 
-    res.status(500).json({ error: 'Failed to upload file' });
+    res.status(500).json({ error: error.message || 'Failed to upload file' });
   }
 });
 
@@ -555,6 +572,19 @@ app.post('/api/messages', (req, res) => {
     if (!fs.existsSync(imagePath)) {
       return res.status(400).json({ error: 'File not found' });
     }
+
+    // Additional file validation
+    try {
+      const stats = fs.statSync(imagePath);
+      if (stats.size !== parseInt(imageSize)) {
+        // Clean up the potentially corrupted file
+        fs.unlinkSync(imagePath);
+        return res.status(400).json({ error: 'File size mismatch' });
+      }
+    } catch (statError) {
+      console.error('Error checking file stats:', statError);
+      return res.status(400).json({ error: 'File access error' });
+    }
   }
 
   // 验证 private 消息的 KEY（如果用户未登录）
@@ -587,6 +617,16 @@ app.post('/api/messages', (req, res) => {
   db.run(`INSERT INTO messages (content, is_private, private_key, user_id, has_image, image_filename, image_mime_type, image_size) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [finalContent, isPrivateInt, finalPrivateKey, userId, hasImageInt, imageFilename, imageMimeType, imageSize], function(err) {
     if (err) {
+      // If there was an error inserting to DB, clean up the uploaded file
+      if (hasImage && imageFilename) {
+        const imagePath = path.join(uploadsDir, imageFilename);
+        try {
+          fs.unlinkSync(imagePath);
+          console.log(`Cleaned up file due to DB error: ${imageFilename}`);
+        } catch (unlinkError) {
+          console.error(`Failed to clean up file ${imageFilename}:`, unlinkError);
+        }
+      }
       return res.status(500).json({ error: err.message });
     }
     // 获取插入的完整消息对象
@@ -733,6 +773,9 @@ const cleanupOrphanedImages = () => {
   });
 };
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+// Set server timeout for large uploads
+server.setTimeout(300000); // 5 minutes
