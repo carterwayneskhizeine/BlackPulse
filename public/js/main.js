@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginError = document.getElementById('login-error');
     const registerError = document.getElementById('register-error');
     const registerFromLoginBtn = document.getElementById('register-from-login');
-    
+
     // --- Global State and Instances ---
     let messages = [];
     let currentUser = null;
@@ -291,6 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             contentContainer.appendChild(contentDiv);
+        } // <--- 修复处：之前缺少了这个闭合括号
 
         // 为 private 消息添加 KEY 显示
         if (message.is_private === 1) {
@@ -404,9 +405,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // 错误提示处理
             if (currentPrivateKey) {
                 // 使用后端返回的 hasPrivateMessages 标志，如果不存在则回退到前端检查
-                const hasPrivateMessages = data.hasPrivateMessages !== undefined
-                    ? data.hasPrivateMessages
-                    : messages.some(m => m.is_private === 1);
+                const hasPrivateMessages = data.hasPrivateMessages !== undefined ?
+                    data.hasPrivateMessages :
+                    messages.some(m => m.is_private === 1);
 
                 if (!hasPrivateMessages) {
                     errorMessage.textContent = 'No matching message found';
@@ -500,7 +501,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const response = await fetch('/api/messages', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(requestBody),
             });
 
@@ -540,7 +543,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const button = e.target.closest('button');
         if (!button) return;
 
-        const { action, id } = button.dataset;
+        const {
+            action,
+            id
+        } = button.dataset;
         if (!action || !id) return;
 
         if (action === 'delete') {
@@ -578,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     };
-    
+
     const deleteMessage = async (id) => {
         const messageElement = document.querySelector(`[data-message-id='${id}']`);
         const originalIndex = messages.findIndex(m => m.id == id);
@@ -592,7 +598,9 @@ document.addEventListener('DOMContentLoaded', () => {
         messages = messages.filter(m => m.id != id);
 
         try {
-            const response = await fetch(`/api/messages/${id}`, { method: 'DELETE' });
+            const response = await fetch(`/api/messages/${id}`, {
+                method: 'DELETE'
+            });
             if (response.status !== 204) {
                 throw new Error('Server failed to delete message.');
             }
@@ -600,13 +608,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error:', error);
             alert(error.message);
             // On error, restore the message in the local array and re-render
-            if(originalMessage && originalIndex !== -1) {
+            if (originalMessage && originalIndex !== -1) {
                 messages.splice(originalIndex, 0, originalMessage);
             }
             fetchAndRenderMessages(); // Fallback to full render on error
         }
     };
-    
+
     const saveMessage = async (id) => {
         const messageElement = document.querySelector(`[data-message-id='${id}']`);
         const input = messageElement.querySelector('textarea');
@@ -616,12 +624,16 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`/api/messages/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    content
+                })
             });
             if (response.ok) {
                 const updatedMessage = await response.json();
-            
+
                 // Update local messages array
                 const index = messages.findIndex(m => m.id == id);
                 if (index !== -1) {
@@ -630,7 +642,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Create a new rendered element for the updated message
                 const newMessageElement = renderMessage(updatedMessage);
-                
+
                 // Replace the old element with the new one
                 messageElement.replaceWith(newMessageElement);
             } else {
@@ -844,8 +856,13 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username,
+                    password
+                })
             });
 
             const data = await response.json();
@@ -895,8 +912,13 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username,
+                    password
+                })
             });
 
             const data = await response.json();
