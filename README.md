@@ -206,14 +206,14 @@ curl -s "http://localhost:1989/api/messages?page=3&limit=5" -b cookies.txt
 
 #### User Authentication API
 
-**6. Register a new user**
+**1. Register a new user**
 ```bash
 curl -s -X POST "http://localhost:1989/api/auth/register" \
   -H "Content-Type: application/json" \
   -d "{\"username\": \"testuser\", \"password\": \"password123\"}"
 ```
 
-**7. Login (creates a session cookie)**
+**2. Login (creates a session cookie)**
 ```bash
 curl -s -X POST "http://localhost:1989/api/auth/login" \
   -H "Content-Type: application/json" \
@@ -221,13 +221,13 @@ curl -s -X POST "http://localhost:1989/api/auth/login" \
   -c cookies.txt
 ```
 
-**8. Get current user info (with session cookie)**
+**3. Get current user info (with session cookie)**
 ```bash
 curl -s "http://localhost:1989/api/auth/me" \
   -b cookies.txt
 ```
 
-**9. Logout**
+**4. Logout**
 ```bash
 curl -s -X POST "http://localhost:1989/api/auth/logout" \
   -b cookies.txt
@@ -235,14 +235,14 @@ curl -s -X POST "http://localhost:1989/api/auth/logout" \
 
 #### File Upload API
 
-**10. Upload a file (any type)**
+**1. Upload a file (any type)**
 ```bash
 curl -s -X POST "http://localhost:1989/api/upload-file" \
   -F "file=@/path/to/your/file.pdf" \
   -H "Content-Type: multipart/form-data"
 ```
 
-**11. Post a message with file (two-step process)**
+**2. Post a message with file (two-step process)**
 ```bash
 # Step 1: Upload the file
 curl -s -X POST "http://localhost:1989/api/upload-file" \
@@ -265,14 +265,14 @@ EOF
 )"
 ```
 
-**12. Post private message with file**
+**3. Post private message with file**
 ```bash
 curl -s -X POST "http://localhost:1989/api/messages" \
   -H "Content-Type: application/json" \
   -d "{\"content\": \"Private file message\", \"isPrivate\": true, \"privateKey\": \"secret123\", \"hasImage\": true, \"imageFilename\": \"1734267890123_abc123_document.pdf\", \"imageMimeType\": \"application/pdf\", \"imageSize\": 512000}"
 ```
 
-**13. Backward compatibility - Upload an image using the original endpoint**
+**4. Backward compatibility - Upload an image using the original endpoint**
 ```bash
 curl -s -X POST "http://localhost:1989/api/upload" \
   -F "image=@/path/to/your/image.jpg" \
@@ -281,7 +281,7 @@ curl -s -X POST "http://localhost:1989/api/upload" \
 
 #### Advanced Examples
 
-**13. Post message as logged-in user (with session cookie)**
+**1. Post message as logged-in user (with session cookie)**
 ```bash
 curl -s -X POST "http://localhost:1989/api/messages" \
   -H "Content-Type: application/json" \
@@ -289,7 +289,7 @@ curl -s -X POST "http://localhost:1989/api/messages" \
   -b cookies.txt
 ```
 
-**14. Post private message as logged-in user (auto-generates KEY)**
+**2. Post private message as logged-in user (auto-generates KEY)**
 ```bash
 curl -s -X POST "http://localhost:1989/api/messages" \
   -H "Content-Type: application/json" \
@@ -297,7 +297,7 @@ curl -s -X POST "http://localhost:1989/api/messages" \
   -b cookies.txt
 ```
 
-**15. Get messages for logged-in user (shows user's private messages)**
+**3. Get messages for logged-in user (shows user's private messages)**
 ```bash
 curl -s "http://localhost:1989/api/messages" \
   -b cookies.txt
