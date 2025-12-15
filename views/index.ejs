@@ -54,9 +54,6 @@
                 <div class="flex flex-col gap-2">
                     <div class="flex items-center gap-2">
                         <input type="file" id="image-upload" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" class="hidden">
-                        <button type="button" id="upload-image-button" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                            Upload Image
-                        </button>
                         <span id="image-status" class="text-sm text-gray-500 hidden">No image selected</span>
                     </div>
 
@@ -91,10 +88,18 @@
                             Send
                         </button>
 
-                        <!-- Post Message 按钮（右侧，保持原样式和位置） -->
-                        <button type="submit" id="post-message-button" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors ml-auto">
-                            Post Message
-                        </button>
+                        <!-- 右侧按钮组 -->
+                        <div class="flex items-center ml-auto">
+                            <!-- Image Upload Button (plus icon) -->
+                            <button type="button" id="upload-image-button" class="bg-transparent border-none text-gray-400 hover:text-gray-100 font-bold py-2 px-3 rounded-lg transition-colors mr-[5px]">
+                                +
+                            </button>
+
+                            <!-- Post Message 按钮（右侧，保持原样式和位置） -->
+                            <button type="submit" id="post-message-button" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
+                                Post Message
+                            </button>
+                        </div>
                     </div>
 
                     <!-- 错误提示区域（在KEY输入框下方） -->

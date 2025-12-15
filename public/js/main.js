@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 添加上一页按钮
         if (currentPage > 1) {
-            const prevButton = createPaginationButton('←', 'prev', 'Previous page');
+            const prevButton = createPaginationButton('<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect width="24" height="24" stroke="none" fill="#000000" opacity="0"/><g transform="matrix(0.83 0 0 0.83 12 12)"><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: currentColor; fill-rule: nonzero; opacity: 1;" transform=" translate(-13.5, -15)" d="M 17 3 L 19 3 C 19.386 3 19.738 3.223 19.904 3.572 C 20.07 3.9210000000000003 20.019 4.334 19.774 4.634 L 11.292 15 L 19.774 25.367 C 20.019000000000002 25.666 20.069000000000003 26.079 19.904 26.429000000000002 C 19.738999999999997 26.779000000000003 19.386 27 19 27 L 17 27 C 16.7 27 16.416 26.865 16.226 26.633 L 7.225999999999999 15.633 C 6.924999999999999 15.264 6.924999999999999 14.735 7.225999999999999 14.366 L 16.226 3.3659999999999997 C 16.416 3.135 16.7 3 17 3 z" stroke-linecap="round" /></g></svg>', 'prev', 'Previous page');
             prevButton.addEventListener('click', () => fetchAndRenderMessages(currentPage - 1));
             paginationContainer.appendChild(prevButton);
         }
@@ -484,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 添加下一页按钮
         if (currentPage < totalPages) {
-            const nextButton = createPaginationButton('→', 'next', 'Next page');
+            const nextButton = createPaginationButton('<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect width="24" height="24" stroke="none" fill="#000000" opacity="0"/><g transform="matrix(0.83 0 0 0.83 12 12)"><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: currentColor; fill-rule: nonzero; opacity: 1;" transform=" translate(-15.5, -15)" d="M 12 27 L 10 27 C 9.614 27 9.262 26.777 9.096 26.428 C 8.93 26.079 8.981 25.666 9.226 25.366 L 17.708 15 L 9.226 4.633 C 8.981000000000002 4.334 8.931000000000001 3.9210000000000003 9.096 3.5709999999999997 C 9.261 3.220999999999999 9.614 3 10 3 L 12 3 C 12.3 3 12.584 3.135 12.774000000000001 3.367 L 21.774 14.367 C 22.075 14.736 22.075 15.265 21.774 15.634 L 12.774000000000001 26.634 C 12.584 26.865 12.3 27 12 27 z" stroke-linecap="round" /></g></svg>', 'next', 'Next page');
             nextButton.addEventListener('click', () => fetchAndRenderMessages(currentPage + 1));
             paginationContainer.appendChild(nextButton);
         }
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const button = document.createElement('button');
         button.id = id;
         button.className = 'border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-3 rounded-lg transition-colors';
-        button.textContent = text;
+        button.innerHTML = text;
         button.title = title;
         return button;
     };
@@ -885,19 +885,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const isShowingKeyInput = !privateKeyInput.classList.contains('hidden');
 
         if (isShowingKeyInput) {
-            // 隐藏 KEY 输入框和 Send 按钮，显示 Post Message 按钮
+            // 隐藏 KEY 输入框和 Send 按钮，显示 Post Message 按钮和图片上传按钮
             privateKeyInput.classList.add('hidden');
             sendKeyButton.classList.add('hidden');
             postMessageButton.classList.remove('hidden');
+            uploadImageButton.classList.remove('hidden');
             privateKeyInput.value = '';
             // 隐藏错误提示
             errorMessage.classList.add('hidden');
             fetchAndRenderMessages(); // 重新加载（只显示 public）
         } else {
-            // 显示 KEY 输入框和 Send 按钮，隐藏 Post Message 按钮
+            // 显示 KEY 输入框和 Send 按钮，隐藏 Post Message 按钮和图片上传按钮
             privateKeyInput.classList.remove('hidden');
             sendKeyButton.classList.remove('hidden');
             postMessageButton.classList.add('hidden');
+            uploadImageButton.classList.add('hidden');
             privateKeyInput.focus();
         }
     });
