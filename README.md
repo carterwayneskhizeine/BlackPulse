@@ -17,6 +17,7 @@ A simple, anonymous message board web application built with Node.js, Express, E
 *   **User-Specific Private Messages**: Logged-in users can view all their private messages without entering KEYs individually.
 *   **File Upload Support**: Upload and display files in messages (one file per message, max 50MB, supports all file types). Images show previews, other files show download links.
 *   **Pagination with Google-Style Navigation**: Messages are displayed with Google search results-style pagination (e.g., < 1 2 3 4 5 ... 100 >). Each page shows 5 messages with previous/next buttons and direct page navigation.
+*   **Comment System with Infinite Reply Support**: Add comments to any page with unlimited nesting depth, featuring upvoting/downvoting, editing, and deletion capabilities.
 *   **Database Performance Optimization**: Built-in indexes for faster queries, better scalability for research and learning.
 *   **Responsive Design**: The application is designed to be accessible and usable across various devices, with mobile-friendly buttons.
 *   **Dockerized Deployment**: Easy setup and deployment using Docker and Docker Compose.
@@ -303,6 +304,63 @@ curl -s "http://localhost:1989/api/messages" \
   -b cookies.txt
 ```
 
+#### Comments API
+
+**1. Get comments for the current page**
+```bash
+curl -s "http://localhost:1989/api/comments?url=http://localhost:1989"
+```
+
+**2. Get comments with pagination**
+```bash
+curl -s "http://localhost:1989/api/comments?url=http://localhost:1989&page=1&limit=10"
+```
+
+**3. Post a new comment**
+```bash
+curl -s -X POST "http://localhost:1989/api/comments" \
+  -H "Content-Type: application/json" \
+  -d "{\"text\": \"This is a great post!\", \"url\": \"http://localhost:1989\"}"
+```
+
+**4. Post a reply to an existing comment**
+```bash
+curl -s -X POST "http://localhost:1989/api/comments" \
+  -H "Content-Type: application/json" \
+  -d "{\"pid\": \"123\", \"text\": \"I agree with you.\", \"url\": \"http://localhost:1989\"}"
+```
+
+**5. Edit your own comment**
+```bash
+curl -s -X PUT "http://localhost:1989/api/comments/123" \
+  -H "Content-Type: application/json" \
+  -d "{\"text\": \"Updated comment text\"}"
+```
+
+**6. Delete your own comment**
+```bash
+curl -s -X DELETE "http://localhost:1989/api/comments/123"
+```
+
+**7. Vote on a comment (upvote)**
+```bash
+curl -s -X POST "http://localhost:1989/api/comments/123/vote" \
+  -H "Content-Type: application/json" \
+  -d "{\"vote\": 1}"
+```
+
+**8. Vote on a comment (downvote)**
+```bash
+curl -s -X POST "http://localhost:1989/api/comments/123/vote" \
+  -H "Content-Type: application/json" \
+  -d "{\"vote\": -1}"
+```
+
+**9. Get comments for a specific page**
+```bash
+curl -s "http://localhost:1989/api/comments?url=http://localhost:1989/specific-page"
+```
+
 #### Response Format Examples
 
 **Successful message post response:**
@@ -576,6 +634,41 @@ The following modifications were made to optimize database query performance wit
 - Faster user authentication
 - Faster private message lookup
 - Better scalability for research and learning purposes
+
+#### Comment System Feature
+The following modifications were made to implement the comment system with infinite nesting support:
+
+1. **`src/index.js`**:
+   - Added `comments` table with `id`, `pid` (parent ID), `user_id`, `username`, `text`, `score`, `votes`, `time`, `is_deleted`, `is_editable`, `locator_url` (page URL), `upvotes`, `downvotes` columns
+   - Added database indexes for comments table:
+     - `idx_comments_time` - Optimizes comment listing by time (DESC order)
+     - `idx_comments_pid` - Optimizes finding comment replies by parent ID
+     - `idx_comments_user_id` - Optimizes finding comments by user
+     - `idx_comments_locator_url` - Optimizes finding comments by page URL
+   - Added API endpoints for comment management:
+     - `GET /api/comments` - Retrieves comments for a specific page URL with pagination and nested replies
+     - `POST /api/comments` - Creates new comments or replies to existing comments
+     - `PUT /api/comments/:id` - Edits user's own comments
+     - `DELETE /api/comments/:id` - Deletes user's own comments
+     - `POST /api/comments/:id/vote` - Upvotes/downvotes comments
+   - Implemented recursive function to fetch nested replies with unlimited depth
+
+2. **`views/index.ejs`**:
+   - Added comments section below messages section
+   - Added comment form with textarea and post button
+   - Added comments container to display comments and replies
+   - Added comments pagination container
+   - Conditionally shows user information for comments (logged in vs anonymous)
+
+3. **`public/js/main.js`**:
+   - Added comments-related DOM element references
+   - Added `fetchAndRenderComments()` function to load comments for current page
+   - Added `createCommentElement()` and `createReplyElement()` functions to render comments with recursive reply support
+   - Added `renderCommentsPagination()` function for Google-style pagination
+   - Implemented `handlePostComment()`, `handleVote()`, `handleEditComment()`, `handleDeleteComment()`, and `handleReply()` functions
+   - Added delegated event listeners for comment actions (vote, edit, delete, reply)
+   - Implemented recursive reply rendering to support unlimited nesting depth
+   - Added functionality for posting replies at any level of nesting
 
 ## Development
 
