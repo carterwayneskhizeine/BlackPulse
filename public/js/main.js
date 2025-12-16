@@ -1612,23 +1612,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const editForm = document.createElement('form');
         editForm.className = 'mt-2';
-        editForm.innerHTML = `
-            <textarea class="w-full p-2 bg-black border border-gray-800 rounded">${currentText}</textarea>
-            <div class="flex justify-end gap-2 mt-2">
-                <button type="button" class="cancel-edit border px-2 py-1 rounded">Cancel</button>
-                <button type="submit" class="save-edit border px-2 py-1 rounded">Save</button>
-            </div>
-        `;
-        
-        textElement.replaceWith(editForm);
 
-        editForm.querySelector('.cancel-edit').addEventListener('click', () => {
-             loadCommentsForMessage(messageId, 1, true);
+        // Create textarea
+        const textarea = document.createElement('textarea');
+        textarea.className = 'w-full p-2 bg-black border border-gray-800 rounded';
+        textarea.value = currentText;
+        editForm.appendChild(textarea);
+
+        // Create button container
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'flex justify-end gap-2 mt-2';
+
+        // Create cancel button using createButton function
+        const cancelButton = createButton('Cancel', commentId, 'cancel');
+        cancelButton.type = 'button';
+        cancelButton.classList.remove('p-2'); // Remove default padding
+        cancelButton.classList.add('px-2', 'py-1'); // Add smaller padding
+        cancelButton.addEventListener('click', () => {
+            loadCommentsForMessage(messageId, 1, true);
         });
+
+        // Create save button using createButton function
+        const saveButton = createButton('Save', commentId, 'save');
+        saveButton.type = 'submit';
+        saveButton.classList.remove('p-2'); // Remove default padding
+        saveButton.classList.add('px-2', 'py-1'); // Add smaller padding
+
+        // Add buttons to container
+        buttonContainer.appendChild(cancelButton);
+        buttonContainer.appendChild(saveButton);
+
+        // Add container to form
+        editForm.appendChild(buttonContainer);
+
+        textElement.replaceWith(editForm);
 
         editForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const newText = editForm.querySelector('textarea').value;
+            const newText = textarea.value;
             try {
                 const response = await fetch(`/api/comments/${commentId}`, {
                     method: 'PUT',
