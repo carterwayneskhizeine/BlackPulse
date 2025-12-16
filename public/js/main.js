@@ -498,7 +498,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const actions = document.createElement('div');
         actions.className = 'flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200';
         actions.appendChild(createButton('Copy', message.id, 'copy'));
-        actions.appendChild(createButton('Reply', message.id, 'reply'));
+        const replyButton = createButton('Reply', message.id, 'reply');
+        replyButton.classList.add('hidden'); // Initially hidden, will be shown if no comments
+        actions.appendChild(replyButton);
         actions.appendChild(createButton('Edit', message.id, 'edit'));
         actions.appendChild(createButton('Delete', message.id, 'delete'));
 
@@ -906,8 +908,15 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (action === 'reply') {
             const commentsContainer = document.getElementById(`comments-for-${id}`);
             if (commentsContainer) {
-                // Load comments if not already loaded
-                if (commentsContainer.dataset.loaded !== 'true') {
+                // Check if comments are already loaded
+                if (commentsContainer.dataset.loaded === 'true') {
+                    // Comments are loaded, toggle the comment form visibility
+                    const commentForm = commentsContainer.querySelector('form');
+                    if (commentForm) {
+                        commentForm.classList.toggle('hidden');
+                    }
+                } else {
+                    // Comments not loaded yet, load them
                     loadCommentsForMessage(id);
                 }
             }
@@ -1325,9 +1334,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Mark as loaded
             commentsContainer.dataset.loaded = 'true';
-            
+
             // Render the full comment section structure
             renderCommentSection(commentsContainer, messageId, comments, pagination);
+
+            // Show or hide the message's Reply button based on whether there are comments
+            if (comments.length > 0) {
+                hideMessageReplyButton(messageId);
+                // Ensure comment form is visible when there are comments
+                const commentForm = commentsContainer.querySelector('form');
+                if (commentForm) {
+                    commentForm.classList.remove('hidden');
+                }
+            } else {
+                showMessageReplyButton(messageId);
+                // Hide comment form when there are no comments
+                const commentForm = commentsContainer.querySelector('form');
+                if (commentForm) {
+                    commentForm.classList.add('hidden');
+                }
+            }
 
         } catch (error) {
             console.error(`Error loading comments for message ${messageId}:`, error);
@@ -1344,10 +1370,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (comments.length === 0) {
             commentsListContainer.innerHTML = '<p class="text-gray-500 text-center">No comments yet.</p>';
 
-            // If no comments, add the form at the top (current behavior)
+            // If no comments, add the form at the top but hidden by default
             // 2. Comment Form
             const commentForm = document.createElement('form');
-            commentForm.className = 'flex flex-col gap-4 mb-8';
+            commentForm.className = 'flex flex-col gap-4 mb-8 hidden';
             commentForm.innerHTML = `
                 <textarea
                     class="w-full p-4 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-gray-100 focus:outline-none transition-shadow text-gray-400 placeholder:text-gray-600"
@@ -1610,9 +1636,36 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`/api/comments/${commentId}`, { method: 'DELETE' });
             if (!response.ok) throw new Error('Failed to delete comment');
+
+            // Refresh comments
+            const commentsContainer = document.getElementById(`comments-for-${messageId}`);
+            if (commentsContainer) {
+                // Clear loaded flag to force reload
+                delete commentsContainer.dataset.loaded;
+            }
             loadCommentsForMessage(messageId, 1, true); // Refresh
         } catch (error) {
             console.error('Delete error:', error);
+        }
+    };
+
+    const hideMessageReplyButton = (messageId) => {
+        const messageElement = document.querySelector(`[data-message-id='${messageId}']`);
+        if (!messageElement) return;
+
+        const replyButton = messageElement.querySelector('button[data-action="reply"]');
+        if (replyButton) {
+            replyButton.classList.add('hidden');
+        }
+    };
+
+    const showMessageReplyButton = (messageId) => {
+        const messageElement = document.querySelector(`[data-message-id='${messageId}']`);
+        if (!messageElement) return;
+
+        const replyButton = messageElement.querySelector('button[data-action="reply"]');
+        if (replyButton) {
+            replyButton.classList.remove('hidden');
         }
     };
 
