@@ -830,6 +830,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     messages.forEach(message => {
                         messageList.appendChild(renderMessage(message));
                     });
+                    // 为新消息加载评论以显示正确的Reply按钮状态
+                    loadCommentsForMessage(newMessage.id);
                 } else if (currentUser) {
                     // 如果用户已登录且发送私有消息，立即显示（因为用户可以看到自己的私有消息）
                     messages.unshift(newMessage);
@@ -837,11 +839,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     messages.forEach(message => {
                         messageList.appendChild(renderMessage(message));
                     });
+                    // 为新消息加载评论以显示正确的Reply按钮状态
+                    loadCommentsForMessage(newMessage.id);
                 }
                 // 未登录用户发送的私有消息不显示
 
                 messageInput.value = '';
                 clearSelectedFile(); // 清除文件状态
+
+                // 自动刷新页面以确保所有状态同步
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000); // 1秒后刷新，让用户看到成功提示
             } else {
                 const errorData = await response.json();
                 alert(`Error: ${errorData.error || 'Something went wrong'}`);
@@ -1565,9 +1574,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             inputElement.value = '';
             errorElement.classList.add('hidden');
-            
+
             // Refresh comments for this message
             loadCommentsForMessage(messageId, 1, true); // Force refresh
+
+            // 自动刷新页面以确保所有状态同步
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000); // 1秒后刷新，让用户看到成功提示
 
         } catch (error) {
             console.error('Error posting comment:', error);
