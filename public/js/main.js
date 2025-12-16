@@ -1474,14 +1474,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Edit, Delete, Reply buttons
         if (comment.editable) {
-            actionsElement.innerHTML += `<button data-action="edit" data-id="${comment.id}" class="text-gray-400 hover:text-gray-200 ml-2">Edit</button>`;
+            const editButton = createButton('Edit', comment.id, 'edit');
+            actionsElement.appendChild(editButton);
         }
         if (comment.deletable) {
-            actionsElement.innerHTML += `<button data-action="delete" data-id="${comment.id}" class="text-gray-400 hover:text-red-400 ml-2">Delete</button>`;
+            const deleteButton = createButton('Delete', comment.id, 'delete');
+            actionsElement.appendChild(deleteButton);
         }
         // Only show reply button if nesting depth is less than 2
         if (depth < 2) {
-            actionsElement.innerHTML += `<button data-action="reply" data-id="${comment.id}" class="text-gray-400 hover:text-gray-200 ml-2">Reply</button>`;
+            const replyButton = createButton('Reply', comment.id, 'reply');
+            actionsElement.appendChild(replyButton);
         }
         // For depth 2 and above, no reply button is shown
 
