@@ -1,6 +1,6 @@
 # Anonymous Message Board
 
-A feature-rich anonymous message board web application built with Node.js, Express, EJS, and SQLite3, containerized using Docker and Docker Compose. This application features a pure dark mode interface, support for Markdown content, file uploads, a comment system with infinite nesting, user authentication, Google-style pagination, and allows users to post, edit, and delete messages anonymously.
+A feature-rich anonymous message board web application built with Node.js, Express, EJS, and SQLite3, containerized using Docker and Docker Compose. This application features a pure dark mode interface, support for Markdown content, file uploads (including video playback), a comment system with infinite nesting, user authentication, Google-style pagination, YouTube video embedding, and allows users to post, edit, and delete messages anonymously.
 
 ![Preview of the Application](PreviewImage.jpg)
 
@@ -15,7 +15,8 @@ A feature-rich anonymous message board web application built with Node.js, Expre
 *   **Private Messages with KEY Protection**: Post private messages protected by a KEY. Only users who know the correct KEY can view these messages.
 *   **User Authentication**: Register and login system with session-based authentication.
 *   **User-Specific Private Messages**: Logged-in users can view all their private messages without entering KEYs individually.
-*   **File Upload Support**: Upload and display files in messages (one file per message, max 50MB, supports all file types). Images show previews, other files show download links.
+*   **Embedded Video Content**: Automatically embeds YouTube links pasted into messages as responsive video players.
+*   **File Upload Support**: Upload and display files in messages (one file per message, max 50MB). Images show previews, videos (e.g., MP4) are playable, and other files show download links.
 *   **Pagination with Google-Style Navigation**: Messages are displayed with Google search results-style pagination (e.g., < 1 2 3 4 5 ... 100 >). Each page shows 5 messages with previous/next buttons and direct page navigation.
 *   **Comment System with Infinite Reply Support**: Add comments to any page with unlimited nesting depth, featuring upvoting/downvoting, editing, and deletion capabilities.
 *   **Database Performance Optimization**: Built-in indexes for faster queries, better scalability for research and learning.
@@ -140,9 +141,10 @@ Once the Docker containers are up and running, open your web browser and navigat
     *Note: Each message can contain either text, a file, or both*
 
 *   **View File Messages**:
-    - For image files: displayed with preview above text content
-    - For other files: displayed with file icon, name, type and download link above text content
-    - Click on an image to view it in full size
+    - For image files: displayed with a clickable preview above the text content.
+    - For video files (e.g., MP4): rendered in a video player above the text content.
+    - For other files: displayed with a file icon, name, type, and download link.
+    - Click on an image to view it in full size.
     - File messages follow the same privacy rules as text messages
 
 *   **Remove Selected File**:
@@ -152,6 +154,17 @@ Once the Docker containers are up and running, open your web browser and navigat
 *   **Edit File Messages**:
     - Messages containing files cannot be edited (to maintain one-file-per-message constraint)
     - To modify a file message, delete it and create a new one
+
+### Embedded Videos
+
+*   **Post a YouTube Video**:
+    1. Copy a standard YouTube video link (e.g., `https://www.youtube.com/watch?v=...` or `https://youtu.be/...`).
+    2. Paste the link into the message box on its own line, like this
+    ```
+    [youtube video](https://www.youtube.com/watch?v=...)
+    ```
+    3. Post the message.
+    4. The application will automatically convert the link into a responsive, embedded video player.
 
 ### Comment System
 
