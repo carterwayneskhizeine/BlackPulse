@@ -1462,15 +1462,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // User info
         const userElement = document.createElement('div');
-        userElement.className = 'flex items-center mb-2';
+        userElement.className = 'mb-2';
         userElement.innerHTML = `
-            <div class="flex items-center flex-1">
+            <div class="flex items-center justify-between">
                 <span class="font-semibold text-gray-200">${comment.user.name}</span>
                 ${comment.user.verified ? '<span class="ml-2 text-blue-400 text-sm">✓ Verified</span>' : ''}
-                <span class="ml-2 text-gray-500 text-sm">${commentTime}</span>
             </div>
-            <div class="flex items-center space-x-2">
-                <span class="text-gray-500 text-sm">${comment.score} points</span>
+            <div class="flex items-center justify-between mt-1">
+                <span class="text-gray-500 text-sm">${commentTime}</span>
             </div>
         `;
 
