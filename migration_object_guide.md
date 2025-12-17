@@ -108,11 +108,28 @@ Add an entry to this guide documenting:
 
 **Changes:**
 - **Created:** `public/js/reply-handler.js`
-- **Modified:** `public/js/main.js` (removed lines 1676-1717)
+- **Modified:** `public/js/main.js` (removed lines 1676-1717, made handlePostComment global)
+- **Modified:** `views/index.ejs` (added script import)
+- **Modified:** `public/js/reply-handler.js` (updated to use window.handlePostComment)
+
+**Load Order:** After `main.js` (to ensure window.handlePostComment is available)
+**Dependencies:** Requires `window.handlePostComment` function to be available globally (defined in main.js)
+
+---
+
+### Migration: Comment Styles
+
+**Status:** ✅ Completed
+**Date:** 2025-12-17
+**Extractor:** CSS styles for comments and animations
+
+**Changes:**
+- **Created:** `public/js/comment-styles.js`
+- **Modified:** `public/js/main.js` (removed lines 1683-1704)
 - **Modified:** `views/index.ejs` (added script import)
 
-**Load Order:** After `file-upload.js`, before `main.js`
-**Dependencies:** Requires `handlePostComment` function to be available globally
+**Load Order:** After `file-upload.js`, before `reply-handler.js`
+**Dependencies:** None (self-contained)
 
 ---
 

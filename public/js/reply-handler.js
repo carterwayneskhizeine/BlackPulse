@@ -42,6 +42,13 @@ const handleReply = (commentId, messageId, parentElement) => {
         e.preventDefault();
         const input = replyForm.querySelector('textarea');
         const errorDiv = replyForm.querySelector('.comment-error-message');
-        handlePostComment(messageId, commentId, input, errorDiv);
+        // Use global handlePostComment function from main.js
+        if (window.handlePostComment) {
+            window.handlePostComment(messageId, commentId, input, errorDiv);
+        } else {
+            console.error('handlePostComment function not found');
+            errorDiv.textContent = 'Error: Reply functionality not available';
+            errorDiv.classList.remove('hidden');
+        }
     });
 };
