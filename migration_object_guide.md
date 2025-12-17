@@ -592,6 +592,29 @@ Add an entry to this guide documenting:
 
 ---
 
+### Migration: Main Rendering Function
+
+**Status:** ✅ Completed
+**Date:** 2025-12-17
+**Extractor:** `renderMessage` function
+
+**Changes:**
+- **Created:** `public/js/main-rendering-function.js`
+- **Modified:** `public/js/main.js` (removed lines 301-592, updated function reference)
+- **Modified:** `views/index.ejs` (added script import)
+
+**Load Order:** After `main.js`, before `api-rendering-logic.js`
+**Dependencies:**
+- Requires `window.createButton` function (defined in main.js)
+- Requires `window.converter` instance (defined in main.js)
+- Required by `window.fetchAndRenderMessages` function (defined in api-rendering-logic.js)
+- Fallback: Creates basic button and text converter if dependencies not available
+
+**Global Exposures:**
+- `window.renderMessage`
+
+---
+
 ## Future Considerations
 
 - Consider using a module bundler (Webpack, Rollup) for complex projects
