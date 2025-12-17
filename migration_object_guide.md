@@ -537,6 +537,32 @@ Add an entry to this guide documenting:
 
 ---
 
+### Migration: Pagination Functions
+
+**Status:** ✅ Completed
+**Date:** 2025-12-17
+**Extractor:** Pagination functions and URL state management
+
+**Changes:**
+- **Created:** `public/js/pagination.js`
+- **Modified:** `public/js/main.js` (removed lines 643-779, made pagination variables globally available)
+- **Modified:** `views/index.ejs` (added script import)
+
+**Load Order:** After `message-edit-toggle.js`, before `message-operations.js`
+**Dependencies:**
+- Requires `window.fetchAndRenderMessages` function (defined in main.js)
+- Requires pagination variables: `window.currentPage`, `window.totalPages`, `window.currentPrivateKey` (defined in main.js)
+- Requires DOM elements: `window.privateKeyInput`, `window.sendKeyButton` for parseURLParams
+- Fallback: Provides console error logging for missing dependencies
+
+**Global Exposures:**
+- `window.renderPagination`
+- `window.calculatePagesToShow`
+- `window.updateURL`
+- `window.parseURLParams`
+
+---
+
 ## Future Considerations
 
 - Consider using a module bundler (Webpack, Rollup) for complex projects
