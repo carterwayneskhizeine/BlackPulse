@@ -4,8 +4,10 @@ const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
-const bcrypt = require('bcrypt');
 const multer = require('multer');
+
+// 导入工具函数
+const { hashPassword, comparePassword } = require('./utils/password');
 
 const app = express();
 const port = 1989;
@@ -17,15 +19,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Password utility functions
-const hashPassword = async (password) => {
-  const saltRounds = 10;
-  return await bcrypt.hash(password, saltRounds);
-};
-
-const comparePassword = async (password, hash) => {
-  return await bcrypt.compare(password, hash);
-};
 
 // File upload configuration
 const uploadsDir = path.resolve(__dirname, '..', 'data', 'uploads');
