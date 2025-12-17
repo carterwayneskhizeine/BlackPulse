@@ -9,6 +9,7 @@ const multer = require('multer');
 // 导入工具函数
 const { hashPassword, comparePassword } = require('./utils/password');
 const initializeDatabase = require('./database/init');
+const cleanupOrphanedFiles = require('./database/cleanup');
 
 const app = express();
 const port = 1989;
@@ -80,7 +81,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
     console.log('Connected to the SQLite database.');
 
     // 初始化数据库表结构
-    initializeDatabase(db, cleanupOrphanedImages);
+    initializeDatabase(db, () => cleanupOrphanedFiles(db, uploadsDir));
   }
 });
 
@@ -1155,49 +1156,7 @@ app.post('/api/comments/:id/vote', (req, res) => {
   });
 });
 
-// Function to clean up orphaned files
-const cleanupOrphanedImages = () => {
-  console.log('Checking for orphaned files...');
 
-  fs.readdir(uploadsDir, (err, files) => {
-    if (err) {
-      console.error('Error reading uploads directory:', err);
-      return;
-    }
-
-    // Get all filenames from database (for all types of files)
-    db.all('SELECT image_filename FROM messages WHERE has_image = 1 AND image_filename IS NOT NULL', (err, rows) => {
-      if (err) {
-        console.error('Error fetching filenames from database:', err);
-        return;
-      }
-
-      const dbFilenames = new Set(rows.map(row => row.image_filename));
-      let orphanCount = 0;
-
-      // Check each file
-      files.forEach(filename => {
-        if (!dbFilenames.has(filename)) {
-          const filePath = path.join(uploadsDir, filename);
-          fs.unlink(filePath, (unlinkErr) => {
-            if (unlinkErr) {
-              console.error(`Failed to delete orphaned file ${filename}:`, unlinkErr);
-            } else {
-              console.log(`Deleted orphaned file: ${filename}`);
-              orphanCount++;
-            }
-          });
-        }
-      });
-
-      if (orphanCount > 0) {
-        console.log(`Cleaned up ${orphanCount} orphaned files`);
-      } else {
-        console.log('No orphaned files found');
-      }
-    });
-  });
-};
 
 const server = app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
