@@ -113,6 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Make converter globally available for modules that need it
     window.converter = converter;
 
+    // Make messages array globally available as a getter/setter to maintain reference
+    Object.defineProperty(window, 'messages', {
+        get: function() { return messages; },
+        set: function(value) { messages = value; },
+        enumerable: true,
+        configurable: true
+    });
+
     // --- Helper Functions ---
     const createButton = (text, id, action) => {
         const icons = {
@@ -1029,48 +1037,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const toggleEditView = (id) => {
-        const originalMessage = messages.find(m => m.id == id);
-        if (!originalMessage) return;
 
-        // 如果消息有文件（has_image为1），不允许编辑（因为一个消息只能有一个文件，编辑时不能删除文件）
-        if (originalMessage.has_image === 1) {
-            alert('Cannot edit messages with files. You can only edit the text content of file messages by deleting and reposting.');
-            return;
-        }
-
-        const messageElement = document.querySelector(`[data-message-id='${id}']`);
-        const contentContainer = messageElement.querySelector('.mb-2');
-        const footer = messageElement.querySelector('.flex.justify-between');
-
-        // 找到文本内容div（如果有）
-        const contentDiv = contentContainer.querySelector('.prose');
-        if (!contentDiv) {
-            alert('No text content to edit');
-            return;
-        }
-
-        // Create an input area with the raw markdown
-        const editInput = document.createElement('textarea');
-        editInput.className = 'w-full p-2 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-gray-100 focus:outline-none transition-shadow text-gray-200';
-        editInput.value = originalMessage.content;
-        editInput.rows = 8;
-
-        // Create new action buttons
-        const saveButton = createButton('Save', id, 'save');
-        const cancelButton = createButton('Cancel', id, 'cancel');
-        const newActions = document.createElement('div');
-        newActions.className = 'flex gap-2 mt-2 self-end';
-        newActions.appendChild(saveButton);
-        newActions.appendChild(cancelButton);
-
-        // Replace elements
-        contentDiv.replaceWith(editInput);
-        footer.style.display = 'none'; // Hide the original footer
-        messageElement.appendChild(newActions);
-        editInput.focus();
-    };
-
+    // toggleEditView is now defined in message-edit-toggle.js
     // Make additional functions globally available for initial-setup.js (after all functions are defined)
     window.handlePostSubmit = handlePostSubmit;
     window.handleMessageClick = handleMessageClick;

@@ -405,6 +405,28 @@ Add an entry to this guide documenting:
 
 ---
 
+### Migration: Message Edit Toggle Function
+
+**Status:** ✅ Completed
+**Date:** 2025-12-17
+**Extractor:** `toggleEditView` function
+
+**Changes:**
+- **Created:** `public/js/message-edit-toggle.js`
+- **Modified:** `public/js/main.js` (removed lines 1032-1072, made messages array globally available)
+- **Modified:** `views/index.ejs` (added script import)
+
+**Load Order:** After `message-reply-button.js`, before `main.js`
+**Dependencies:**
+- Requires `window.createButton` function (defined in main.js)
+- Requires `window.messages` array (defined in main.js, made globally accessible)
+- Fallback: Uses global functions and variables as needed
+
+**Global Exposures:**
+- `window.toggleEditView`
+
+---
+
 ## Future Considerations
 
 - Consider using a module bundler (Webpack, Rollup) for complex projects
