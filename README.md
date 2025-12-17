@@ -147,7 +147,7 @@ Once the Docker containers are up and running, open your web browser and navigat
     *Note: Login status is maintained via session cookies*
 
 *   **Logout**:
-    - Click the "登出" button in the top-right corner when logged in
+    - Click the "Logout" button in the top-right corner when logged in
 
 ### File Messages
 
