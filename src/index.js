@@ -103,91 +103,15 @@ app.get('/', (req, res) => {
 
 // ==================== API 路由 ====================
 const authRoutes = require('./routes/auth')(db);
-app.use('/api/auth', authRoutes);
-
-// ==================== Image Upload API ====================
-
-// API: Upload image/file (keeping this endpoint for backward compatibility, but now supports all file types)
-app.post('/api/upload', upload.single('image'), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file provided' });
-    }
-
-    // Return success response with file info
-    res.status(201).json({
-      success: true,
-      filename: req.file.filename,
-      originalName: req.file.originalname,
-      mimeType: req.file.mimetype,
-      size: req.file.size,
-      url: `/uploads/${req.file.filename}`
-    });
-  } catch (error) {
-    console.error('File upload error:', error);
-
-    // Clean up file if there was an error
-    if (req.file && req.file.filename) {
-      try {
-        fs.unlinkSync(path.join(uploadsDir, req.file.filename));
-      } catch (unlinkError) {
-        console.error('Failed to delete file:', unlinkError);
-      }
-    }
-
-    res.status(500).json({ error: error.message || 'Failed to upload file' });
-  }
-});
-
-// API: Upload any type of file
-app.post('/api/upload-file', generalUpload.single('file'), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file provided' });
-    }
-
-    // Additional validation for large files
-    // Check if file size is within limits (redundant with multer but good to double-check)
-    if (req.file.size > 50 * 1024 * 1024) { // 50MB
-      // Clean up the uploaded file
-      fs.unlinkSync(path.join(uploadsDir, req.file.filename));
-      return res.status(400).json({ error: 'File too large. Maximum size is 50MB.' });
-    }
-
-    // Return success response with file info
-    res.status(201).json({
-      success: true,
-      filename: req.file.filename,
-      originalName: req.file.originalname,
-      mimeType: req.file.mimetype,
-      size: req.file.size,
-      url: `/uploads/${req.file.filename}`
-    });
-  } catch (error) {
-    console.error('File upload error:', error);
-
-    // Clean up file if there was an error
-    if (req.file && req.file.filename) {
-      try {
-        fs.unlinkSync(path.join(uploadsDir, req.file.filename));
-      } catch (unlinkError) {
-        console.error('Failed to delete file:', unlinkError);
-      }
-    }
-
-    res.status(500).json({ error: error.message || 'Failed to upload file' });
-  }
-});
-
-// ==================== Messages API ====================
-
 const messageRoutes = require('./routes/messages')(db, uploadsDir);
-
-app.use('/api/messages', messageRoutes);
-
-// ==================== Comments API ====================
 const commentRoutes = require('./routes/comments')(db);
+const uploadRoutes = require('./routes/upload')(upload, generalUpload, uploadsDir);
+
+app.use('/api/auth', authRoutes);
+app.use('/api/messages', messageRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api', uploadRoutes); // 注意：这个必须在其他 /api 路由之后
+
 
 
 
