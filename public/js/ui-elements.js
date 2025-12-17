@@ -2,6 +2,7 @@
 export const messageForm = document.getElementById('message-form');
 export const messageInput = document.getElementById('message-input');
 export const messageList = document.getElementById('message-list');
+export const paginationContainer = document.getElementById('pagination-container');
 
 // Message controls and modals
 export const keyButton = document.getElementById('key-button');

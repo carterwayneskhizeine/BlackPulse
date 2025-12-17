@@ -18,6 +18,10 @@ import {
     cancelPrivate,
     confirmPrivate
 } from './ui-elements.js';
+import {
+    isPrivateFilterMode,
+    setIsPrivateFilterMode
+} from './state.js';
 
 import {
     clearSelectedFile
@@ -73,6 +77,11 @@ export const initEventListeners = () => {
         const isShowingKeyInput = !privateKeyInput.classList.contains('hidden');
 
         if (isShowingKeyInput) {
+            // 如果当前处于私有过滤模式，退出私有过滤模式
+            if (isPrivateFilterMode) {
+                setIsPrivateFilterMode(false);
+            }
+
             // 隐藏 KEY 输入框和 Send 按钮，显示 Post Message 按钮和文件上传按钮
             privateKeyInput.classList.add('hidden');
             sendKeyButton.classList.add('hidden');
@@ -95,14 +104,21 @@ export const initEventListeners = () => {
     // 监听 KEY 输入框的回车键
     privateKeyInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            fetchAndRenderMessages();
+            handleKeySubmit();
         }
     });
 
     // Send 按钮点击事件
-    sendKeyButton.addEventListener('click', () => {
-        fetchAndRenderMessages();
-    });
+    sendKeyButton.addEventListener('click', handleKeySubmit);
+
+    // 处理 KEY 提交的函数
+    function handleKeySubmit() {
+        const key = privateKeyInput.value.trim();
+        if (key) {
+            setIsPrivateFilterMode(true);
+            fetchAndRenderMessages();
+        }
+    }
 
     // --- Modal Event Listeners ---
     publicOption.addEventListener('click', async () => {

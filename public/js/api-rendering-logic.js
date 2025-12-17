@@ -3,6 +3,7 @@ import {
     totalPages,
     currentPrivateKey,
     currentUser,
+    isPrivateFilterMode,
     setCurrentPage,
     setTotalPages,
     setCurrentPrivateKey,
@@ -12,6 +13,9 @@ import {
     privateKeyInput,
     messageList,
     errorMessage
+} from './ui-elements.js';
+import {
+    paginationContainer
 } from './ui-elements.js';
 import {
     checkAuthStatus
@@ -61,15 +65,27 @@ export const fetchAndRenderMessages = async (page = 1) => {
         // 渲染消息
         messageList.innerHTML = '';
         (data.messages || []).forEach(message => {
-            messageList.appendChild(renderMessage(message));
-            // 自动加载评论
-            loadCommentsForMessage(message.id);
+            // 在私有过滤模式下，只显示私有消息
+            if (isPrivateFilterMode && currentPrivateKey) {
+                if (message.is_private === 1) {
+                    messageList.appendChild(renderMessage(message));
+                    // 自动加载评论
+                    loadCommentsForMessage(message.id);
+                }
+            } else {
+                messageList.appendChild(renderMessage(message));
+                // 自动加载评论
+                loadCommentsForMessage(message.id);
+            }
         });
 
-
-        // 渲染分页控件
-        renderPagination();
-
+        // 在私有过滤模式下，隐藏分页控件
+        if (isPrivateFilterMode && currentPrivateKey) {
+            paginationContainer.innerHTML = '';
+        } else {
+            // 渲染分页控件
+            renderPagination();
+        }
 
         // 错误提示处理
         if (currentPrivateKey) {

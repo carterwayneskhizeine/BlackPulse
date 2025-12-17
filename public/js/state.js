@@ -4,6 +4,7 @@ export let selectedFile = null;
 export let currentPage = 1;
 export let totalPages = 1;
 export let currentPrivateKey = '';
+export let isPrivateFilterMode = false;
 
 export function setMessages(newMessages) {
   messages = newMessages;
@@ -27,4 +28,8 @@ export function setTotalPages(pages) {
 
 export function setCurrentPrivateKey(key) {
     currentPrivateKey = key;
+}
+
+export function setIsPrivateFilterMode(mode) {
+    isPrivateFilterMode = mode;
 }
