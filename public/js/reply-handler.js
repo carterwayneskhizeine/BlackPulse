@@ -2,37 +2,37 @@ import {
     handlePostComment
 } from './comment-post.js';
 
-// Handle reply functionality for comments
+// Handle reply functionality for comments in a flat structure
 export const handleReply = (commentId, messageId, parentElement) => {
-    // Remove existing reply forms
-    const existingForm = parentElement.querySelector('.reply-form');
+    // Globally remove any existing reply form to ensure only one is open at a time
+    const existingForm = document.querySelector('.reply-form');
     if (existingForm) {
+        // If the user clicks the same reply button twice, just close the form
+        if (existingForm.dataset.replyTo === commentId) {
+            existingForm.remove();
+            return;
+        }
         existingForm.remove();
-        return;
     }
-
-    // Check the nesting depth of the parent element to determine styling
-    const isDeepNesting = parentElement.closest('[data-comment-id]') ?
-        (parentElement.closest('[data-comment-id]').className.includes('bg-black')) : false;
 
     const replyForm = document.createElement('form');
-    if (isDeepNesting) {
-        // Use the same styling as regular messages for deep nesting
-        replyForm.className = 'reply-form mt-2 ml-3 p-3 bg-black border border-gray-800 rounded-lg';
-    } else {
-        replyForm.className = 'reply-form mt-2 ml-4 pt-2 border-l-2 border-gray-700 pl-3';
-    }
+    // Simple, consistent styling for the reply form
+    replyForm.className = 'reply-form mt-2 mb-3 p-3 bg-black border border-gray-700 rounded-lg';
+    replyForm.dataset.replyTo = commentId; // Keep track of which comment this form is for
 
     replyForm.innerHTML = `
         <textarea class="w-full p-2 bg-black border border-gray-800 rounded text-sm mb-2 min-w-[180px]" rows="2" placeholder="Write a reply..."></textarea>
         <div class="flex justify-end gap-2">
-            <button type="button" class="cancel-reply border px-2 py-1 rounded text-xs">Cancel</button>
-            <button type="submit" class="post-reply border px-2 py-1 rounded text-xs">Reply</button>
+            <button type="button" class="cancel-reply border px-2 py-1 rounded text-xs text-gray-400 hover:text-gray-100">Cancel</button>
+            <button type="submit" class="post-reply border px-2 py-1 rounded text-xs text-gray-400 hover:text-gray-100">Reply</button>
         </div>
         <div class="comment-error-message hidden text-red-400 text-center"></div>
     `;
 
-    parentElement.querySelector('.replies-container').appendChild(replyForm);
+    // Insert the form directly after the comment element being replied to
+    parentElement.after(replyForm);
+    replyForm.querySelector('textarea').focus();
+
 
     replyForm.querySelector('.cancel-reply').addEventListener('click', () => {
         replyForm.remove();
@@ -42,6 +42,7 @@ export const handleReply = (commentId, messageId, parentElement) => {
         e.preventDefault();
         const input = replyForm.querySelector('textarea');
         const errorDiv = replyForm.querySelector('.comment-error-message');
+        // The `commentId` here is the ID of the parent comment
         handlePostComment(messageId, commentId, input, errorDiv);
     });
 };

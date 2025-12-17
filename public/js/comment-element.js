@@ -5,12 +5,13 @@ import {
     converter
 } from './main-rendering-function.js';
 
-// Create a DOM element for a comment (handles nesting and recursion)
-export const createCommentElement = (comment, messageId, depth = 0) => {
+// Create a DOM element for a single, flat comment
+export const createCommentElement = (comment, messageId, parentId, commentMap) => {
     const commentElement = document.createElement('div');
-    // Use the same styling as regular messages for all depths
+    // Add a border and padding, but no complex margins for nesting
     commentElement.className = 'mb-3 bg-black border border-gray-800 rounded-lg p-3';
     commentElement.dataset.commentId = comment.id;
+    commentElement.id = `comment-${comment.id}`; // Add an ID for linking
 
     // Format time for display
     const commentTime = new Date(comment.time).toLocaleString();
@@ -30,15 +31,27 @@ export const createCommentElement = (comment, messageId, depth = 0) => {
 
     // Comment text
     const textElement = document.createElement('div');
-    if (depth === 0) {
+    let commentText = comment.text;
+
+    // If it's a reply, find the parent and prepend an @-mention
+    if (parentId && commentMap.has(parentId)) {
+        const parentComment = commentMap.get(parentId);
+        const parentAuthor = parentComment.user.name;
+        // The mention is a link to the parent comment for better navigation
+        const mentionLink = `<a href="#comment-${parentId}" class="text-blue-400 hover:underline mr-1 no-underline">@${parentAuthor}</a>`;
+        commentText = `${mentionLink} ${comment.text}`;
+    }
+
+
+    if (!parentId) {
         // Apply Tailwind's typography styles for top-level comments for proper markdown rendering
         textElement.className = 'prose prose-invert max-w-none text-gray-200 mb-3';
     } else {
-        // For nested comments, use a simpler style
+        // For replies, use a simpler style but ensure the @-mention link is styled correctly
         textElement.className = 'mb-3 text-gray-300';
     }
-    // Use global converter from main.js
-    textElement.innerHTML = converter.makeHtml(comment.text);
+    // Use global converter from main.js to render markdown
+    textElement.innerHTML = converter.makeHtml(commentText);
 
 
     // Action buttons
@@ -65,42 +78,17 @@ export const createCommentElement = (comment, messageId, depth = 0) => {
         const deleteButton = createButton('Delete', comment.id, 'delete');
         actionsElement.appendChild(deleteButton);
     }
-    // Only show reply button if nesting depth is less than 2
-    if (depth < 2) {
-        const replyButton = createButton('Reply', comment.id, 'reply');
-        actionsElement.appendChild(replyButton);
-    }
-    // For depth 2 and above, no reply button is shown
 
-    // Replies container - limit nesting to 2 levels maximum
-    const repliesContainer = document.createElement('div');
+    // Always show the reply button, allowing for infinite "nesting" in a flat view
+    const replyButton = createButton('Reply', comment.id, 'reply');
+    actionsElement.appendChild(replyButton);
 
-    if (depth >= 2) { // After 2 levels of nesting, stop creating nested styling
-        // Still render the replies but without the nesting indentation and styling
-        repliesContainer.className = 'mt-2 replies-container';
-        if (comment.replies && comment.replies.length > 0) {
-            comment.replies.forEach(reply => {
-                // Use global function for recursive call
-                repliesContainer.appendChild(createCommentElement(reply, messageId, depth + 1)); // Recursive call with incremented depth
-            });
-        }
-    } else {
-        // For nesting levels 0-5, use increasing indentation
-        const marginLeftClass = ['ml-2', 'ml-3', 'ml-4', 'ml-5', 'ml-6', 'ml-6'][depth] || 'ml-6';
-        repliesContainer.className = `${marginLeftClass} mt-2 border-l-2 border-gray-700 pl-2 replies-container`;
 
-        if (comment.replies && comment.replies.length > 0) {
-            comment.replies.forEach(reply => {
-                // Use global function for recursive call
-                repliesContainer.appendChild(createCommentElement(reply, messageId, depth + 1)); // Recursive call with incremented depth
-            });
-        }
-    }
-
+    // Append all parts to the main comment element
     commentElement.appendChild(userElement);
     commentElement.appendChild(textElement);
     commentElement.appendChild(actionsElement);
-    commentElement.appendChild(repliesContainer);
+    // No repliesContainer is needed anymore as the list is flat
 
     return commentElement;
 };
