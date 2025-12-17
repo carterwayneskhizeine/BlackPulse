@@ -52,3 +52,6 @@ const handleReply = (commentId, messageId, parentElement) => {
         }
     });
 };
+
+// Make function globally available for use in comment-section-renderer.js
+window.handleReply = handleReply;

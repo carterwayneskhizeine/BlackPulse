@@ -111,9 +111,13 @@ Add an entry to this guide documenting:
 - **Modified:** `public/js/main.js` (removed lines 1676-1717, made handlePostComment global)
 - **Modified:** `views/index.ejs` (added script import)
 - **Modified:** `public/js/reply-handler.js` (updated to use window.handlePostComment)
+- **Fix applied:** Made `handleReply` globally available as `window.handleReply`
 
 **Load Order:** After `main.js` (to ensure window.handlePostComment is available)
 **Dependencies:** Requires `window.handlePostComment` function to be available globally (defined in main.js)
+
+**Global Exposures:**
+- `window.handleReply`
 
 ---
 
@@ -130,6 +134,32 @@ Add an entry to this guide documenting:
 
 **Load Order:** After `file-upload.js`, before `reply-handler.js`
 **Dependencies:** None (self-contained)
+
+---
+
+### Migration: Comment Section Renderer
+
+**Status:** ✅ Completed
+**Date:** 2025-12-17
+**Extractor:** `renderCommentSection` function
+
+**Changes:**
+- **Created:** `public/js/comment-section-renderer.js`
+- **Modified:** `public/js/main.js` (removed lines 1351-1444, updated function call)
+- **Modified:** `views/index.ejs` (added script import)
+
+**Load Order:** After `reply-handler.js` (last in comment modules)
+**Dependencies:**
+- Requires `window.createCommentElement` function (defined in comment-element.js)
+- Requires `window.handlePostComment` function (defined in comment-post.js)
+- Requires `window.handleVote` function (defined in comment-vote.js)
+- Requires `window.handleEditComment` function (defined in comment-edit.js)
+- Requires `window.handleDeleteComment` function (defined in comment-delete.js)
+- Requires `window.handleReply` function (defined in reply-handler.js)
+- Fallback: Logs errors for missing dependencies but doesn't break functionality
+
+**Global Exposures:**
+- `window.renderCommentSection`
 
 ---
 
