@@ -595,72 +595,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.renderMessage = renderMessage;
 
     // --- API & Rendering Logic ---
-    const fetchAndRenderMessages = async (page = 1) => {
-        try {
-            // 更新当前页码
-            currentPage = page;
+    // fetchAndRenderMessages function is now defined in api-rendering-logic.js
 
-            // 获取当前输入的 private key
-            currentPrivateKey = privateKeyInput.value.trim();
-
-            // 构建 URL
-            let url = `/api/messages?page=${page}&limit=5`;
-            if (currentPrivateKey) {
-                url += `&privateKey=${encodeURIComponent(currentPrivateKey)}`;
-            }
-
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Failed to fetch messages.');
-
-            const data = await response.json();
-            messages = data.messages || [];
-            totalPages = data.pagination?.totalPages || 1;
-
-            // 更新用户状态（如果API返回了userId）
-            if (data.userId && !currentUser) {
-                // 如果API返回了userId但前端不知道，重新检查认证状态
-                await checkAuthStatus();
-            }
-
-            // 渲染消息
-            messageList.innerHTML = '';
-            messages.forEach(message => {
-                messageList.appendChild(renderMessage(message));
-                // 自动加载评论
-                window.loadCommentsForMessage(message.id);
-            });
-
-            // 渲染分页控件
-            renderPagination();
-
-            // 错误提示处理
-            if (currentPrivateKey) {
-                // 使用后端返回的 hasPrivateMessages 标志，如果不存在则回退到前端检查
-                const hasPrivateMessages = data.hasPrivateMessages !== undefined ?
-                    data.hasPrivateMessages :
-                    messages.some(m => m.is_private === 1);
-
-                if (!hasPrivateMessages) {
-                    errorMessage.textContent = 'No matching message found';
-                    errorMessage.classList.remove('hidden');
-                } else {
-                    errorMessage.classList.add('hidden');
-                }
-            } else {
-                errorMessage.classList.add('hidden');
-            }
-
-            // 更新URL状态
-            updateURL();
-        } catch (error) {
-            console.error('Error:', error);
-            messageList.innerHTML = '<p class="text-red-500 text-center">Could not load messages.</p>';
-            errorMessage.classList.add('hidden');
-        }
-    };
-
-    // Make fetchAndRenderMessages globally available for auth-handslers.js
-    window.fetchAndRenderMessages = fetchAndRenderMessages;
+    // Make fetchAndRenderMessages globally available for auth-handlers.js
+    // This is now handled in api-rendering-logic.js
 
     // Pagination functions are now defined in pagination.js
 
@@ -703,9 +641,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // hideMessageReplyButton and showMessageReplyButton functions are now defined in message-reply-button.js
 
     // handleReply function is now defined in reply-handler.js
-    
+
     // Parse URL parameters for pagination and private key
-    parseURLParams();
+    if (window.parseURLParams) {
+        window.parseURLParams();
+    } else {
+        console.error('parseURLParams function not found');
+    }
 
     fetchAndRenderMessages();
 

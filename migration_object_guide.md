@@ -563,6 +563,35 @@ Add an entry to this guide documenting:
 
 ---
 
+### Migration: API & Rendering Logic
+
+**Status:** ✅ Completed
+**Date:** 2025-12-17
+**Extractor:** `fetchAndRenderMessages` function
+
+**Changes:**
+- **Created:** `public/js/api-rendering-logic.js`
+- **Modified:** `public/js/main.js` (removed lines 597-660)
+- **Modified:** `views/index.ejs` (added script import)
+
+**Load Order:** After `main.js`, before `initial-setup.js` (critical: depends on main.js Object.defineProperty calls)
+**Dependencies:**
+- Requires `window.currentPage`, `window.totalPages`, `window.currentPrivateKey` variables (defined in main.js)
+- Requires `window.privateKeyInput`, `window.messageList`, `window.errorMessage` DOM elements (defined in main.js)
+- Requires `window.messages` array (defined in main.js)
+- Requires `window.renderMessage` function (defined in main.js)
+- Requires `window.renderPagination` function (defined in pagination.js)
+- Requires `window.updateURL` function (defined in pagination.js)
+- Requires `window.loadCommentsForMessage` function (defined in comment-loader.js)
+- Requires `window.checkAuthStatus` function (defined in main.js)
+- Requires `window.currentUser` object (defined in main.js)
+- Error handling: Provides console error logging for missing dependencies
+
+**Global Exposures:**
+- `window.fetchAndRenderMessages`
+
+---
+
 ## Future Considerations
 
 - Consider using a module bundler (Webpack, Rollup) for complex projects
