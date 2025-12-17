@@ -173,6 +173,29 @@ Add an entry to this guide documenting:
 
 ---
 
+### Migration: Comment Element Creator
+
+**Status:** ✅ Completed
+**Date:** 2025-12-17
+**Extractor:** `createCommentElement` function
+
+**Changes:**
+- **Created:** `public/js/comment-element.js`
+- **Modified:** `public/js/main.js` (removed lines 1443-1530, made converter global)
+- **Modified:** `views/index.ejs` (added script import)
+
+**Load Order:** After `main.js` (immediately after main.js)
+**Dependencies:**
+- Requires `window.createButton` function (defined in main.js)
+- Requires `window.converter` instance (defined in main.js)
+- Self-dependent: Requires `window.createCommentElement` for recursive calls
+- Fallback: Uses plain text if converter not available, basic DOM elements if createButton not available
+
+**Global Exposures:**
+- `window.createCommentElement`
+
+---
+
 ### Migration: Comment Post Handler
 
 **Status:** ✅ Completed
@@ -184,7 +207,7 @@ Add an entry to this guide documenting:
 - **Modified:** `public/js/main.js` (removed lines 1532-1569)
 - **Modified:** `views/index.ejs` (added script import)
 
-**Load Order:** After `main.js` (immediately after main.js)
+**Load Order:** After `comment-element.js`, before `comment-vote.js`
 **Dependencies:**
 - Requires `window.loadCommentsForMessage` function (defined in main.js)
 - Fallback: page reload if dependency not available
