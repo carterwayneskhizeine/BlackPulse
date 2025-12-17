@@ -1,6 +1,6 @@
 # Anonymous Message Board
 
-A feature-rich anonymous message board web application built with Node.js, Express, EJS, and SQLite3, containerized using Docker and Docker Compose. This application features a pure dark mode interface, support for Markdown content, file uploads (including video playback), a comment system with infinite nesting, user authentication, Google-style pagination, YouTube video embedding, and allows users to post, edit, and delete messages anonymously.
+A feature-rich anonymous message board web application built with Node.js, Express, and EJS. It uses SQLite3 for data storage and is fully containerized with Docker. The frontend is built with **modern, modular JavaScript (ESM)**, and the application features a pure dark mode interface, support for Markdown content, file uploads (including video playback), a comment system with infinite nesting, user authentication, Google-style pagination, YouTube video embedding, and allows users to post, edit, and delete messages anonymously.
 
 ![Preview of the Application](PreviewImage.jpg)
 
@@ -716,6 +716,20 @@ The following modifications were made to implement the comment system with infin
    - Added delegated event listeners for comment actions (vote, edit, delete, reply)
    - Implemented recursive reply rendering to support unlimited nesting depth
    - Added functionality for posting replies at any level of nesting
+
+#### JavaScript Code Modernization (ES Modules)
+The entire frontend JavaScript codebase was refactored from a collection of scripts dependent on the global `window` object to a modern, modular architecture using ES Modules (`import`/`export`).
+
+*   **Clearer Dependencies**: Each JavaScript file now explicitly declares its dependencies, making the codebase easier to understand, maintain, and debug.
+*   **Single Entry Point**: `main.js` now acts as the sole entry point for the application, loaded with `type="module"` in `index.ejs`. It is responsible for initializing all other modules and event listeners.
+*   **Improved Maintainability & Scalability**: This refactoring eliminates the risk of global namespace pollution, improves code organization, and lays the groundwork for future optimizations like tree-shaking with a bundler.
+*   **Key Files Created/Modified**:
+    *   `public/js/main.js`: Rewritten to be the application's central coordinator.
+    *   `public/js/state.js`: New module to manage shared application state (e.g., `currentUser`, `messages`).
+    *   `public/js/ui-elements.js`: New module to centralize all DOM element selections.
+    *   `public/js/utils.js`: New module for shared utility functions (`createButton`, `showError`, etc.).
+    *   All other `.js` files in `public/js/`: Refactored to remove global dependencies, now importing required functions/variables and exporting their own functionality.
+    *   `views/index.ejs`: Modified to load only the `main.js` module script, removing all other individual script tags.
 
 ## Development
 
