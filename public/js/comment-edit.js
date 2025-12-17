@@ -1,9 +1,12 @@
-// Comment Edit Module
-// Purpose: Handles editing of comments in the message board
-// Dependencies: createButton and loadCommentsForMessage functions (should be available globally)
+import {
+    createButton
+} from './utils.js';
+import {
+    loadCommentsForMessage
+} from './comment-loader.js';
 
 // Handle editing of a comment with inline form
-const handleEditComment = (commentId, messageId, container) => {
+export const handleEditComment = (commentId, messageId, container) => {
     const commentElement = container.querySelector(`[data-comment-id='${commentId}']`);
     if (!commentElement) {
         console.error(`Comment element with ID ${commentId} not found`);
@@ -32,54 +35,25 @@ const handleEditComment = (commentId, messageId, container) => {
     const buttonContainer = document.createElement('div');
     buttonContainer.className = 'flex justify-end gap-2 mt-2';
 
-    // Use global createButton function from main.js
-    if (window.createButton) {
-        // Create cancel button
-        const cancelButton = window.createButton('Cancel', commentId, 'cancel');
-        cancelButton.type = 'button';
-        cancelButton.classList.remove('p-2'); // Remove default padding
-        cancelButton.classList.add('px-2', 'py-1'); // Add smaller padding
-        cancelButton.addEventListener('click', () => {
-            if (window.loadCommentsForMessage) {
-                window.loadCommentsForMessage(messageId, 1, true);
-            } else {
-                console.error('loadCommentsForMessage function not found, reloading page');
-                window.location.reload();
-            }
-        });
+    // Create cancel button
+    const cancelButton = createButton('Cancel', commentId, 'cancel');
+    cancelButton.type = 'button';
+    cancelButton.classList.remove('p-2'); // Remove default padding
+    cancelButton.classList.add('px-2', 'py-1'); // Add smaller padding
+    cancelButton.addEventListener('click', () => {
+        loadCommentsForMessage(messageId, 1, true);
+    });
 
-        // Create save button
-        const saveButton = window.createButton('Save', commentId, 'save');
-        saveButton.type = 'submit';
-        saveButton.classList.remove('p-2'); // Remove default padding
-        saveButton.classList.add('px-2', 'py-1'); // Add smaller padding
+    // Create save button
+    const saveButton = createButton('Save', commentId, 'save');
+    saveButton.type = 'submit';
+    saveButton.classList.remove('p-2'); // Remove default padding
+    saveButton.classList.add('px-2', 'py-1'); // Add smaller padding
 
-        // Add buttons to container
-        buttonContainer.appendChild(cancelButton);
-        buttonContainer.appendChild(saveButton);
-    } else {
-        console.error('createButton function not found, falling back to basic buttons');
-        // Fallback to basic buttons if createButton is not available
-        const cancelButton = document.createElement('button');
-        cancelButton.textContent = 'Cancel';
-        cancelButton.type = 'button';
-        cancelButton.className = 'px-2 py-1 border border-gray-700 hover:border-gray-100 text-gray-200 hover:text-gray-100 rounded';
-        cancelButton.addEventListener('click', () => {
-            if (window.loadCommentsForMessage) {
-                window.loadCommentsForMessage(messageId, 1, true);
-            } else {
-                window.location.reload();
-            }
-        });
+    // Add buttons to container
+    buttonContainer.appendChild(cancelButton);
+    buttonContainer.appendChild(saveButton);
 
-        const saveButton = document.createElement('button');
-        saveButton.textContent = 'Save';
-        saveButton.type = 'submit';
-        saveButton.className = 'px-2 py-1 border border-gray-700 hover:border-gray-100 text-gray-200 hover:text-gray-100 rounded';
-
-        buttonContainer.appendChild(cancelButton);
-        buttonContainer.appendChild(saveButton);
-    }
 
     // Add container to form
     editForm.appendChild(buttonContainer);
@@ -97,24 +71,19 @@ const handleEditComment = (commentId, messageId, container) => {
         try {
             const response = await fetch(`/api/comments/${commentId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: newText }),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: newText
+                }),
             });
             if (!response.ok) throw new Error('Failed to save comment');
 
-            // Use global loadCommentsForMessage function from main.js
-            if (window.loadCommentsForMessage) {
-                window.loadCommentsForMessage(messageId, 1, true); // Refresh
-            } else {
-                console.error('loadCommentsForMessage function not found, reloading page');
-                window.location.reload();
-            }
+            loadCommentsForMessage(messageId, 1, true); // Refresh
         } catch (error) {
             console.error('Save comment error:', error);
             alert('Failed to save comment. Please try again.');
         }
     });
 };
-
-// Make function globally available for use in main.js
-window.handleEditComment = handleEditComment;

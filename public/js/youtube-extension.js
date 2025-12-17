@@ -3,7 +3,7 @@
  * Converts YouTube links to embedded iframes
  * Supports youtube.com/watch?v= and youtu.be/ URLs
  */
-const youtubeExtension = {
+export const youtubeExtension = {
     type: 'output',
     regex: /<p><a href="https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w\d\-_]+)[^"]*">.+<\/a><\/p>/g,
     replace: function(match, videoId) {
@@ -12,6 +12,3 @@ const youtubeExtension = {
                 </div>`;
     }
 };
-
-// Make extension globally available for main.js
-window.youtubeExtension = youtubeExtension;

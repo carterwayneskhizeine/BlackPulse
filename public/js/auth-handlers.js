@@ -1,9 +1,36 @@
-// Authentication Handlers Module
-// Purpose: Handles all authentication-related event handlers and modals
-// Dependencies: updateUIForUser, fetchAndRenderMessages, showError, clearError, checkAuthStatus functions (should be available globally)
+import {
+    loginBtn,
+    logoutBtn,
+    loginModal,
+    registerModal,
+    loginForm,
+    registerForm,
+    loginUsername,
+    loginPassword,
+    registerUsername,
+    registerPassword,
+    registerConfirmPassword,
+    cancelLogin,
+    cancelRegister,
+    loginError,
+    registerError,
+    registerFromLoginBtn
+} from './ui-elements.js';
+import {
+    updateUIForUser
+} from './auth-ui-helper.js';
+import {
+    fetchAndRenderMessages
+} from './api-rendering-logic.js';
+import {
+    showError,
+    clearError,
+    checkAuthStatus
+} from './utils.js';
+
 
 // Initialize authentication event handlers and listeners
-const initAuthHandlers = () => {
+export const initAuthHandlers = () => {
     // Login button
     loginBtn.addEventListener('click', () => {
         clearError(loginError);
@@ -34,18 +61,8 @@ const initAuthHandlers = () => {
             });
 
             if (response.ok) {
-                if (window.updateUIForUser) {
-                    window.updateUIForUser(null);
-                } else {
-                    console.error('updateUIForUser function not found');
-                }
-                if (window.fetchAndRenderMessages) {
-                    window.fetchAndRenderMessages(); // 重新加载消息（不再显示私有消息）
-                } else {
-                    console.error('fetchAndRenderMessages function not found');
-                    // Fallback: reload page
-                    window.location.reload();
-                }
+                updateUIForUser(null);
+                fetchAndRenderMessages(); // 重新加载消息（不再显示私有消息）
             } else {
                 const errorData = await response.json();
                 alert(`登出失败: ${errorData.error || '未知错误'}`);
@@ -85,18 +102,8 @@ const initAuthHandlers = () => {
 
             if (response.ok) {
                 loginModal.close();
-                if (window.updateUIForUser) {
-                    window.updateUIForUser(data.user);
-                } else {
-                    console.error('updateUIForUser function not found');
-                }
-                if (window.fetchAndRenderMessages) {
-                    window.fetchAndRenderMessages(); // 重新加载消息（显示用户的私有消息）
-                } else {
-                    console.error('fetchAndRenderMessages function not found');
-                    // Fallback: reload page
-                    window.location.reload();
-                }
+                updateUIForUser(data.user);
+                fetchAndRenderMessages(); // 重新加载消息（显示用户的私有消息）
             } else {
                 showError(loginError, data.error || 'Login failed');
             }
@@ -155,18 +162,8 @@ const initAuthHandlers = () => {
                 clearError(loginError);
                 loginUsername.value = '';
                 loginPassword.value = '';
-                if (window.updateUIForUser) {
-                    window.updateUIForUser(data.user);
-                } else {
-                    console.error('updateUIForUser function not found');
-                }
-                if (window.fetchAndRenderMessages) {
-                    window.fetchAndRenderMessages(); // 重新加载消息
-                } else {
-                    console.error('fetchAndRenderMessages function not found');
-                    // Fallback: reload page
-                    window.location.reload();
-                }
+                updateUIForUser(data.user);
+                fetchAndRenderMessages(); // 重新加载消息
             } else {
                 showError(registerError, data.error || 'Registration failed');
             }
@@ -206,16 +203,9 @@ const initAuthHandlers = () => {
     });
 
     // Check authentication status on page load
-    if (window.checkAuthStatus) {
-        window.checkAuthStatus().then(user => {
-            if (user) {
-                console.log('User is logged in:', user.username);
-            }
-        });
-    } else {
-        console.error('checkAuthStatus function not found');
-    }
+    checkAuthStatus().then(user => {
+        if (user) {
+            console.log('User is logged in:', user.username);
+        }
+    });
 };
-
-// Make function globally available for use in main.js
-window.initAuthHandlers = initAuthHandlers;

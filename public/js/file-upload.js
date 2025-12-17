@@ -1,7 +1,11 @@
+import {
+    fileStatus
+} from './ui-elements.js';
+
 // File Upload Helper Functions
 // Handles file uploads with progress tracking and error handling
 
-const uploadFile = async (file) => {
+export const uploadFile = async (file) => {
     return new Promise((resolve, reject) => {
         // Create XMLHttpRequest to handle progress events
         const xhr = new XMLHttpRequest();
@@ -62,6 +66,3 @@ const uploadFile = async (file) => {
         xhr.send(formData);
     });
 };
-
-// Make function globally available
-window.uploadFile = uploadFile;

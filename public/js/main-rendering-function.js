@@ -1,39 +1,30 @@
-// Main Rendering Function Module
-// Purpose: Handles rendering of individual messages to the DOM
-// Dependencies:
-// - Requires window.createButton function (defined in main.js)
-// - Requires window.converter instance (defined in main.js)
-// - Required by api-rendering-logic.js for message rendering
+import {
+    createButton
+} from './utils.js';
+import {
+    youtubeExtension
+} from './youtube-extension.js';
+
+
+let extensions = [];
+if (youtubeExtension &&
+    typeof youtubeExtension === 'object' &&
+    youtubeExtension.type &&
+    youtubeExtension.regex &&
+    youtubeExtension.replace) {
+    extensions.push(youtubeExtension);
+}
+
+export const converter = new showdown.Converter({
+    ghCompatibleHeaderId: true,
+    strikethrough: true,
+    tables: true,
+    noHeaderId: false,
+    extensions: extensions
+});
 
 // Main message rendering function
-const renderMessage = (message) => {
-    // Check dependencies
-    if (!window.createButton) {
-        console.error('renderMessage: createButton function not available');
-        // Fallback: create basic button
-        window.createButton = (text, id, action) => {
-            const button = document.createElement('button');
-            button.innerHTML = text;
-            button.title = text;
-            button.dataset.id = id;
-            button.dataset.action = action;
-            button.className = 'text-sm p-2 rounded-md transition-colors border border-gray-700 hover:border-gray-100 text-gray-200 hover:text-gray-100';
-            return button;
-        };
-    }
-
-    if (!window.converter) {
-        console.error('renderMessage: converter instance not available');
-        // Fallback: use plain text without markdown conversion
-        window.converter = {
-            makeHtml: (text) => {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
-        };
-    }
-
+export const renderMessage = (message) => {
     const messageElement = document.createElement('div');
     messageElement.className = 'bg-black border border-gray-800 p-4 rounded-lg shadow-md animate-fade-in flex flex-col group';
     messageElement.dataset.messageId = message.id;
@@ -240,7 +231,7 @@ const renderMessage = (message) => {
     if (message.content && message.content.trim() !== '') {
         const contentDiv = document.createElement('div');
         contentDiv.className = 'prose prose-invert max-w-none text-gray-200';
-        contentDiv.innerHTML = window.converter.makeHtml(message.content);
+        contentDiv.innerHTML = converter.makeHtml(message.content);
 
         // Add copy buttons to code blocks
         const codeBlocks = contentDiv.querySelectorAll('pre code');
@@ -303,12 +294,12 @@ const renderMessage = (message) => {
 
     const actions = document.createElement('div');
     actions.className = 'flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200';
-    actions.appendChild(window.createButton('Copy', message.id, 'copy'));
-    const replyButton = window.createButton('Reply', message.id, 'reply');
+    actions.appendChild(createButton('Copy', message.id, 'copy'));
+    const replyButton = createButton('Reply', message.id, 'reply');
     replyButton.classList.add('hidden'); // Initially hidden, will be shown if no comments
     actions.appendChild(replyButton);
-    actions.appendChild(window.createButton('Edit', message.id, 'edit'));
-    actions.appendChild(window.createButton('Delete', message.id, 'delete'));
+    actions.appendChild(createButton('Edit', message.id, 'edit'));
+    actions.appendChild(createButton('Delete', message.id, 'delete'));
 
     footer.appendChild(timestamp);
     footer.appendChild(actions);
@@ -324,6 +315,3 @@ const renderMessage = (message) => {
 
     return messageElement;
 };
-
-// Make function globally available
-window.renderMessage = renderMessage;

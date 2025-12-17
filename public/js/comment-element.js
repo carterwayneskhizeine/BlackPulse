@@ -1,9 +1,12 @@
-// Comment Element Module
-// Purpose: Handles creating DOM elements for comments with nesting support
-// Dependencies: createButton function and converter instance (should be available globally)
+import {
+    createButton
+} from './utils.js';
+import {
+    converter
+} from './main-rendering-function.js';
 
 // Create a DOM element for a comment (handles nesting and recursion)
-const createCommentElement = (comment, messageId, depth = 0) => {
+export const createCommentElement = (comment, messageId, depth = 0) => {
     const commentElement = document.createElement('div');
     // Use the same styling as regular messages for all depths
     commentElement.className = 'mb-3 bg-black border border-gray-800 rounded-lg p-3';
@@ -29,13 +32,8 @@ const createCommentElement = (comment, messageId, depth = 0) => {
     const textElement = document.createElement('div');
     textElement.className = 'mb-3 text-gray-300';
     // Use global converter from main.js
-    if (window.converter) {
-        textElement.innerHTML = window.converter.makeHtml(comment.text);
-    } else {
-        // Fallback: use plain text if converter not available
-        textElement.textContent = comment.text;
-        console.error('converter instance not found, using plain text for comment content');
-    }
+    textElement.innerHTML = converter.makeHtml(comment.text);
+
 
     // Action buttons
     const actionsElement = document.createElement('div');
@@ -53,22 +51,18 @@ const createCommentElement = (comment, messageId, depth = 0) => {
     `;
 
     // Edit, Delete, Reply buttons
-    if (window.createButton) {
-        if (comment.editable) {
-            const editButton = window.createButton('Edit', comment.id, 'edit');
-            actionsElement.appendChild(editButton);
-        }
-        if (comment.deletable) {
-            const deleteButton = window.createButton('Delete', comment.id, 'delete');
-            actionsElement.appendChild(deleteButton);
-        }
-        // Only show reply button if nesting depth is less than 2
-        if (depth < 2) {
-            const replyButton = window.createButton('Reply', comment.id, 'reply');
-            actionsElement.appendChild(replyButton);
-        }
-    } else {
-        console.error('createButton function not found, comment action buttons will not work');
+    if (comment.editable) {
+        const editButton = createButton('Edit', comment.id, 'edit');
+        actionsElement.appendChild(editButton);
+    }
+    if (comment.deletable) {
+        const deleteButton = createButton('Delete', comment.id, 'delete');
+        actionsElement.appendChild(deleteButton);
+    }
+    // Only show reply button if nesting depth is less than 2
+    if (depth < 2) {
+        const replyButton = createButton('Reply', comment.id, 'reply');
+        actionsElement.appendChild(replyButton);
     }
     // For depth 2 and above, no reply button is shown
 
@@ -81,11 +75,7 @@ const createCommentElement = (comment, messageId, depth = 0) => {
         if (comment.replies && comment.replies.length > 0) {
             comment.replies.forEach(reply => {
                 // Use global function for recursive call
-                if (window.createCommentElement) {
-                    repliesContainer.appendChild(window.createCommentElement(reply, messageId, depth + 1)); // Recursive call with incremented depth
-                } else {
-                    console.error('createCommentElement function not found for recursive call');
-                }
+                repliesContainer.appendChild(createCommentElement(reply, messageId, depth + 1)); // Recursive call with incremented depth
             });
         }
     } else {
@@ -96,11 +86,7 @@ const createCommentElement = (comment, messageId, depth = 0) => {
         if (comment.replies && comment.replies.length > 0) {
             comment.replies.forEach(reply => {
                 // Use global function for recursive call
-                if (window.createCommentElement) {
-                    repliesContainer.appendChild(window.createCommentElement(reply, messageId, depth + 1)); // Recursive call with incremented depth
-                } else {
-                    console.error('createCommentElement function not found for recursive call');
-                }
+                repliesContainer.appendChild(createCommentElement(reply, messageId, depth + 1)); // Recursive call with incremented depth
             });
         }
     }
@@ -112,6 +98,3 @@ const createCommentElement = (comment, messageId, depth = 0) => {
 
     return commentElement;
 };
-
-// Make function globally available for use in main.js and for recursive calls
-window.createCommentElement = createCommentElement;

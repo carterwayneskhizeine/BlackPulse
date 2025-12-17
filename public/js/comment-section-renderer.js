@@ -1,9 +1,25 @@
-// Comment Section Renderer Module
-// Purpose: Handles rendering of comment sections with forms, pagination, and event delegation
-// Dependencies: Multiple comment handling functions (should be available globally)
+import {
+    createCommentElement
+} from './comment-element.js';
+import {
+    handlePostComment
+} from './comment-post.js';
+import {
+    handleVote
+} from './comment-vote.js';
+import {
+    handleEditComment
+} from './comment-edit.js';
+import {
+    handleDeleteComment
+} from './comment-delete.js';
+import {
+    handleReply
+} from './reply-handler.js';
+
 
 // Render the complete comment section structure
-const renderCommentSection = (container, messageId, comments, pagination) => {
+export const renderCommentSection = (container, messageId, comments, pagination) => {
     container.innerHTML = ''; // Clear previous content
 
     // 1. Comments List
@@ -32,11 +48,7 @@ const renderCommentSection = (container, messageId, comments, pagination) => {
     } else {
         // If there are comments, add them first
         comments.forEach(comment => {
-            if (window.createCommentElement) {
-                commentsListContainer.appendChild(window.createCommentElement(comment, messageId, 0)); // Start with depth 0 for top-level comments
-            } else {
-                console.error('createCommentElement function not found, skipping comment rendering');
-            }
+            commentsListContainer.appendChild(createCommentElement(comment, messageId, 0)); // Start with depth 0 for top-level comments
         });
         container.appendChild(commentsListContainer);
 
@@ -78,11 +90,7 @@ const renderCommentSection = (container, messageId, comments, pagination) => {
         const input = formToUse.querySelector('textarea');
         const errorDiv = formToUse.querySelector('.comment-error-message');
 
-        if (window.handlePostComment) {
-            window.handlePostComment(messageId, null, input, errorDiv);
-        } else {
-            console.error('handlePostComment function not found, comment submission will not work');
-        }
+        handlePostComment(messageId, null, input, errorDiv);
     });
 
     // 5. Delegated event listeners for comment actions
@@ -96,33 +104,14 @@ const renderCommentSection = (container, messageId, comments, pagination) => {
 
         if (action === 'vote') {
             const vote = button.dataset.vote === 'up' ? 1 : -1;
-            if (window.handleVote) {
-                window.handleVote(commentId, vote, messageId);
-            } else {
-                console.error('handleVote function not found, voting will not work');
-            }
+            handleVote(commentId, vote, messageId);
         } else if (action === 'edit') {
-            if (window.handleEditComment) {
-                window.handleEditComment(commentId, messageId, commentsListContainer);
-            } else {
-                console.error('handleEditComment function not found, editing will not work');
-            }
+            handleEditComment(commentId, messageId, commentsListContainer);
         } else if (action === 'delete') {
-            if (window.handleDeleteComment) {
-                window.handleDeleteComment(commentId, messageId);
-            } else {
-                console.error('handleDeleteComment function not found, deletion will not work');
-            }
+            handleDeleteComment(commentId, messageId);
         } else if (action === 'reply') {
             const commentElement = button.closest('[data-comment-id]');
-            if (window.handleReply) {
-                window.handleReply(commentId, messageId, commentElement);
-            } else {
-                console.error('handleReply function not found, replying will not work');
-            }
+            handleReply(commentId, messageId, commentElement);
         }
     });
 };
-
-// Make function globally available for use in main.js
-window.renderCommentSection = renderCommentSection;

@@ -1,22 +1,38 @@
-// Message Post API Module
-// Purpose: Handles posting messages to the API including file attachments
-// Dependencies:
-// - Requires window.messages array (defined in main.js)
-// - Requires window.messageTypeModal DOM element (defined in main.js)
-// - Requires window.messageList DOM element (defined in main.js)
-// - Requires window.messageInput DOM element (defined in main.js)
-// - Requires window.currentUser object (defined in main.js)
-// - Requires window.renderMessage function (defined in main.js)
-// - Requires window.clearSelectedFile function (defined in main.js)
-// - Requires window.loadCommentsForMessage function (defined in comment-loader.js)
+import {
+    messages,
+    currentUser,
+    selectedFile,
+    setMessages
+} from './state.js';
+import {
+    messageTypeModal,
+    messageList,
+    messageInput,
+    typeSelection,
+    privateKeyEntry,
+    modalPrivateKey
+} from './ui-elements.js';
+import {
+    renderMessage
+} from './main-rendering-function.js';
+import {
+    clearSelectedFile
+} from './utils.js';
+import {
+    loadCommentsForMessage
+} from './comment-loader.js';
+import {
+    uploadFile
+} from './file-upload.js';
 
-const postMessageToAPI = async (content, isPrivate, privateKey) => {
+
+export const postMessageToAPI = async (content, isPrivate, privateKey) => {
     try {
         // 获取文件数据
         let fileData = null;
-        if (window.messageTypeModal && window.messageTypeModal.dataset.fileData) {
+        if (messageTypeModal.dataset.fileData) {
             try {
-                fileData = JSON.parse(window.messageTypeModal.dataset.fileData);
+                fileData = JSON.parse(messageTypeModal.dataset.fileData);
             } catch (e) {
                 console.error('Failed to parse file data:', e);
             }
@@ -48,52 +64,27 @@ const postMessageToAPI = async (content, isPrivate, privateKey) => {
         if (response.ok) {
             const newMessage = await response.json();
 
-            // 如果是 public 消息，立即显示
-            if (!isPrivate) {
-                window.messages.unshift(newMessage);
-                if (window.messageList) {
-                    window.messageList.innerHTML = '';
-                    window.messages.forEach(message => {
-                        const renderedMessage = window.renderMessage ? window.renderMessage(message) : null;
-                        if (renderedMessage) {
-                            window.messageList.appendChild(renderedMessage);
-                        }
-                    });
-                    // 为新消息加载评论以显示正确的Reply按钮状态
-                    if (window.loadCommentsForMessage) {
-                        window.loadCommentsForMessage(newMessage.id);
-                    }
-                }
-            } else if (window.currentUser) {
-                // 如果用户已登录且发送私有消息，立即显示（因为用户可以看到自己的私有消息）
-                window.messages.unshift(newMessage);
-                if (window.messageList) {
-                    window.messageList.innerHTML = '';
-                    window.messages.forEach(message => {
-                        const renderedMessage = window.renderMessage ? window.renderMessage(message) : null;
-                        if (renderedMessage) {
-                            window.messageList.appendChild(renderedMessage);
-                        }
-                    });
-                    // 为新消息加载评论以显示正确的Reply按钮状态
-                    if (window.loadCommentsForMessage) {
-                        window.loadCommentsForMessage(newMessage.id);
-                    }
-                }
-            }
-            // 未登录用户发送的私有消息不显示
+            // 如果是 public 消息或用户已登录，则立即在 UI 中显示新消息
+            if (!isPrivate || currentUser) {
+                // 更新 state
+                setMessages([newMessage, ...messages]);
 
-            if (window.messageInput) {
-                window.messageInput.value = '';
-            }
-            if (window.clearSelectedFile) {
-                window.clearSelectedFile(); // 清除文件状态
+                // 创建新消息的 DOM 元素
+                const renderedMessage = renderMessage(newMessage);
+
+                // 将新消息添加到列表顶部
+                if (renderedMessage) {
+                    messageList.prepend(renderedMessage);
+                }
+                
+                // 为新消息加载评论以显示正确的 Reply 按钮状态
+                loadCommentsForMessage(newMessage.id);
             }
 
-            // 自动刷新页面以确保所有状态同步
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000); // 1秒后刷新，让用户看到成功提示
+            // 清理输入框和文件选择
+            messageInput.value = '';
+            clearSelectedFile();
+
         } else {
             const errorData = await response.json();
             alert(`Error: ${errorData.error || 'Something went wrong'}`);
@@ -104,5 +95,34 @@ const postMessageToAPI = async (content, isPrivate, privateKey) => {
     }
 };
 
-// Make function globally available
-window.postMessageToAPI = postMessageToAPI;
+export const handlePostSubmit = async (e) => {
+    e.preventDefault();
+    const content = messageInput.value.trim();
+
+    if (!content && !selectedFile) {
+        alert("Message content can't be empty unless you're uploading a file.");
+        return;
+    }
+
+    try {
+        let uploadedFileData = null;
+        if (selectedFile) {
+            // 如果有文件，先上传文件
+            uploadedFileData = await uploadFile(selectedFile.file);
+            messageTypeModal.dataset.fileData = JSON.stringify(uploadedFileData);
+        } else {
+            messageTypeModal.dataset.fileData = '';
+        }
+
+        // 弹出消息类型选择模态框
+        messageTypeModal.dataset.pendingContent = content;
+        // 重置模态框视图
+        typeSelection.classList.remove('hidden');
+        privateKeyEntry.classList.add('hidden');
+        modalPrivateKey.value = '';
+        messageTypeModal.showModal();
+    } catch (uploadError) {
+        console.error('File upload failed:', uploadError);
+        alert(uploadError.message || 'File upload failed. Please try again.');
+    }
+};

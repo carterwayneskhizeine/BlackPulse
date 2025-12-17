@@ -1,9 +1,9 @@
-// Comment Post Module
-// Purpose: Handles posting of comments in the message board
-// Dependencies: loadCommentsForMessage function (should be available globally)
+import {
+    loadCommentsForMessage
+} from './comment-loader.js';
 
 // Handle posting a new comment (top-level or reply)
-const handlePostComment = async (messageId, parentId, inputElement, errorElement) => {
+export const handlePostComment = async (messageId, parentId, inputElement, errorElement) => {
     const content = inputElement.value.trim();
     if (!content) {
         errorElement.textContent = 'Comment cannot be empty.';
@@ -14,8 +14,14 @@ const handlePostComment = async (messageId, parentId, inputElement, errorElement
     try {
         const response = await fetch('/api/comments', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ messageId, pid: parentId, text: content }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                messageId,
+                pid: parentId,
+                text: content
+            }),
         });
 
         if (!response.ok) {
@@ -26,14 +32,8 @@ const handlePostComment = async (messageId, parentId, inputElement, errorElement
         inputElement.value = '';
         errorElement.classList.add('hidden');
 
-        // Use global loadCommentsForMessage function from main.js
-        if (window.loadCommentsForMessage) {
-            window.loadCommentsForMessage(messageId, 1, true); // Force refresh
-        } else {
-            console.error('loadCommentsForMessage function not found, reloading page');
-            window.location.reload();
-            return;
-        }
+        loadCommentsForMessage(messageId, 1, true); // Force refresh
+
 
         // 自动刷新页面以确保所有状态同步
         setTimeout(() => {
@@ -46,6 +46,3 @@ const handlePostComment = async (messageId, parentId, inputElement, errorElement
         errorElement.classList.remove('hidden');
     }
 };
-
-// Make function globally available for use in reply-handler.js and main.js
-window.handlePostComment = handlePostComment;

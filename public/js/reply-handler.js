@@ -1,9 +1,9 @@
-// Reply Handler Module
-// Purpose: Handles reply functionality for comments in the message board
-// Dependencies: handlePostComment function (should be available globally)
+import {
+    handlePostComment
+} from './comment-post.js';
 
 // Handle reply functionality for comments
-const handleReply = (commentId, messageId, parentElement) => {
+export const handleReply = (commentId, messageId, parentElement) => {
     // Remove existing reply forms
     const existingForm = parentElement.querySelector('.reply-form');
     if (existingForm) {
@@ -13,7 +13,7 @@ const handleReply = (commentId, messageId, parentElement) => {
 
     // Check the nesting depth of the parent element to determine styling
     const isDeepNesting = parentElement.closest('[data-comment-id]') ?
-                         (parentElement.closest('[data-comment-id]').className.includes('bg-black')) : false;
+        (parentElement.closest('[data-comment-id]').className.includes('bg-black')) : false;
 
     const replyForm = document.createElement('form');
     if (isDeepNesting) {
@@ -42,16 +42,6 @@ const handleReply = (commentId, messageId, parentElement) => {
         e.preventDefault();
         const input = replyForm.querySelector('textarea');
         const errorDiv = replyForm.querySelector('.comment-error-message');
-        // Use global handlePostComment function from main.js
-        if (window.handlePostComment) {
-            window.handlePostComment(messageId, commentId, input, errorDiv);
-        } else {
-            console.error('handlePostComment function not found');
-            errorDiv.textContent = 'Error: Reply functionality not available';
-            errorDiv.classList.remove('hidden');
-        }
+        handlePostComment(messageId, commentId, input, errorDiv);
     });
 };
-
-// Make function globally available for use in comment-section-renderer.js
-window.handleReply = handleReply;

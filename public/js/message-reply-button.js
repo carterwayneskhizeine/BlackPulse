@@ -3,7 +3,7 @@
 // Dependencies: None
 
 // Hide the reply button for a specific message
-const hideMessageReplyButton = (messageId) => {
+export const hideMessageReplyButton = (messageId) => {
     const messageElement = document.querySelector(`[data-message-id='${messageId}']`);
     if (!messageElement) return;
 
@@ -14,7 +14,7 @@ const hideMessageReplyButton = (messageId) => {
 };
 
 // Show the reply button for a specific message
-const showMessageReplyButton = (messageId) => {
+export const showMessageReplyButton = (messageId) => {
     const messageElement = document.querySelector(`[data-message-id='${messageId}']`);
     if (!messageElement) return;
 
@@ -23,7 +23,3 @@ const showMessageReplyButton = (messageId) => {
         replyButton.classList.remove('hidden');
     }
 };
-
-// Make functions globally available for use in main.js
-window.hideMessageReplyButton = hideMessageReplyButton;
-window.showMessageReplyButton = showMessageReplyButton;
