@@ -63,7 +63,25 @@ docker compose up --build -d
     cd AnonymousMessageBoard
     ```
 
-2.  **Build and run the application using Docker Compose:**
+2.  **Configure AI functionality (optional):**
+    
+    To enable the AI-powered comment responses feature (`@goldierill` mentions), you need to set up environment variables:
+    
+    *   Create a `.env` file in the root directory by copying the example:
+        ```bash
+        cp .env_example .env
+        ```
+    
+    *   Edit the `.env` file with your LiteLLM configuration:
+        ```
+        LITE_LLM_API_KEY=your-actual-api-key
+        LITE_LLM_URL=http://your-llm-endpoint/v1/chat/completions
+        LITE_LLM_MODEL=your-model-name
+        ```
+    
+    *   **Note**: If you don't configure these variables, the AI functionality will be disabled, but the rest of the application will work normally.
+
+3.  **Build and run the application using Docker Compose:**
     ```bash
     docker compose up --build -d
     ```
@@ -200,6 +218,20 @@ Once the Docker containers are up and running, open your web browser and navigat
     - Comments are displayed in a nested tree structure.
     - Click on a comment to expand/collapse its replies.
     - Use pagination to navigate through large comment sections.
+
+#### AI-Powered Responses
+
+*   **Get AI Response**:
+    1. Post a comment mentioning `@goldierill` (e.g., "@goldierill what do you think about this?")
+    2. The AI will analyze the original message and your comment
+    3. An AI-generated response from 'GoldieRill' will automatically appear as a reply to your comment
+    4. The response is context-aware and based on the content of the discussion
+
+*   **AI Configuration Requirements**:
+    - The AI feature requires proper configuration of environment variables in the `.env` file
+    - Uses LiteLLM API for generating responses
+    - Supports various LLM providers through LiteLLM proxy
+    - If not configured, the mention will be treated as a regular comment without AI response
 
 #### User-Specific Features
 *   **Automatic Private Message Access**: Once logged in, all your private messages are automatically displayed without needing to enter KEYs.
