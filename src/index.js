@@ -110,36 +110,9 @@ app.use(session({
   }
 }));
 
-// Authentication middleware
-const requireAuth = (req, res, next) => {
-  if (req.session && req.session.userId) {
-    next();
-  } else {
-    res.status(401).json({ error: 'Authentication required' });
-  }
-};
-
-// Get current user middleware
-const getCurrentUser = (req, res, next) => {
-  if (req.session && req.session.userId) {
-    req.userId = req.session.userId;
-    req.username = req.session.username;
-
-    // Get user's admin status
-    db.get('SELECT is_admin FROM users WHERE id = ?', [req.session.userId], (err, user) => {
-      if (err) {
-        console.error('Error checking user admin status:', err);
-      } else if (user) {
-        req.isAdmin = user.is_admin === 1;
-      }
-      next();
-    });
-  } else {
-    next();
-  }
-};
-
-// Apply getCurrentUser middleware to all routes
+// Auth Middleware
+const { requireAuth, createGetCurrentUserMiddleware } = require('./middleware/auth');
+const getCurrentUser = createGetCurrentUserMiddleware(db);
 app.use(getCurrentUser);
 
 // Middleware to check image access permissions
