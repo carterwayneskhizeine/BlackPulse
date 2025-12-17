@@ -2,8 +2,6 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
-const session = require('express-session');
-const SQLiteStore = require('connect-sqlite3')(session);
 // 导入工具函数
 const { hashPassword, comparePassword } = require('./utils/password');
 const initializeDatabase = require('./database/init');
@@ -46,21 +44,8 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(express.json());
 
 // Session middleware
-app.use(session({
-  store: new SQLiteStore({
-    dir: path.resolve(__dirname, '..', 'data'),
-    db: 'sessions.db',
-    table: 'sessions'
-  }),
-  secret: 'anonymous-message-board-secret-key-change-in-production',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production'
-  }
-}));
+const sessionMiddleware = require('./middleware/session');
+app.use(sessionMiddleware);
 
 // Auth Middleware
 const { requireAuth, createGetCurrentUserMiddleware } = require('./middleware/auth');
