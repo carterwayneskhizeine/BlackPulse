@@ -100,6 +100,22 @@ Add an entry to this guide documenting:
 
 ---
 
+### Migration: Reply Handler
+
+**Status:** ✅ Completed
+**Date:** 2025-12-17
+**Extractor:** `handleReply` function
+
+**Changes:**
+- **Created:** `public/js/reply-handler.js`
+- **Modified:** `public/js/main.js` (removed lines 1676-1717)
+- **Modified:** `views/index.ejs` (added script import)
+
+**Load Order:** After `file-upload.js`, before `main.js`
+**Dependencies:** Requires `handlePostComment` function to be available globally
+
+---
+
 ## Best Practices
 
 ### ✅ Do:
