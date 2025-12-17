@@ -427,6 +427,31 @@ Add an entry to this guide documenting:
 
 ---
 
+### Migration: Message Operations Handler
+
+**Status:** ✅ Completed
+**Date:** 2025-12-17
+**Extractor:** `deleteMessage` and `saveMessage` functions
+
+**Changes:**
+- **Created:** `public/js/message-operations.js`
+- **Modified:** `public/js/main.js` (removed lines 968-1038, updated function calls)
+- **Modified:** `views/index.ejs` (added script import)
+
+**Load Order:** After `message-edit-toggle.js`, before `main.js`
+**Dependencies:**
+- Requires `window.messages` array (defined in main.js)
+- Requires `window.renderMessage` function (defined in main.js)
+- Requires `window.fetchAndRenderMessages` function (defined in main.js)
+- Requires `window.loadCommentsForMessage` function (defined in comment-loader.js)
+- Fallback: Provides error handling and conditional checks for missing dependencies
+
+**Global Exposures:**
+- `window.deleteMessage`
+- `window.saveMessage`
+
+---
+
 ## Future Considerations
 
 - Consider using a module bundler (Webpack, Rollup) for complex projects

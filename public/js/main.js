@@ -552,6 +552,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return messageElement;
     };
 
+    // Make renderMessage globally available for message-operations.js
+    window.renderMessage = renderMessage;
+
     // --- API & Rendering Logic ---
     const fetchAndRenderMessages = async (page = 1) => {
         try {
@@ -909,7 +912,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (action === 'delete') {
             if (confirm('Are you sure you want to delete this message?')) {
-                deleteMessage(id);
+                window.deleteMessage(id);
             }
         } else if (action === 'edit') {
             // Hide comments when entering edit mode, similar to the reply button behavior
@@ -919,7 +922,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             toggleEditView(id);
         } else if (action === 'save') {
-            saveMessage(id);
+            window.saveMessage(id);
         } else if (action === 'cancel') {
             const originalMessage = messages.find(m => m.id == id);
             if (originalMessage) {
@@ -965,77 +968,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const deleteMessage = async (id) => {
-        const messageElement = document.querySelector(`[data-message-id='${id}']`);
-        const originalIndex = messages.findIndex(m => m.id == id);
-        const originalMessage = messages[originalIndex];
-
-        // Optimistically remove from DOM
-        if (messageElement) {
-            messageElement.remove();
-        }
-        // And from local state
-        messages = messages.filter(m => m.id != id);
-
-        try {
-            const response = await fetch(`/api/messages/${id}`, {
-                method: 'DELETE'
-            });
-            if (response.status !== 204) {
-                throw new Error('Server failed to delete message.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert(error.message);
-            // On error, restore the message in the local array and re-render
-            if (originalMessage && originalIndex !== -1) {
-                messages.splice(originalIndex, 0, originalMessage);
-            }
-            fetchAndRenderMessages(); // Fallback to full render on error
-        }
-    };
-
-    const saveMessage = async (id) => {
-        const messageElement = document.querySelector(`[data-message-id='${id}']`);
-        const input = messageElement.querySelector('textarea');
-        const content = input.value.trim();
-        if (!content) return;
-
-        try {
-            const response = await fetch(`/api/messages/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    content
-                })
-            });
-            if (response.ok) {
-                const updatedMessage = await response.json();
-
-                // Update local messages array
-                const index = messages.findIndex(m => m.id == id);
-                if (index !== -1) {
-                    messages[index] = updatedMessage;
-                }
-
-                // Create a new rendered element for the updated message
-                const newMessageElement = renderMessage(updatedMessage);
-
-                // Replace the old element with the new one
-                messageElement.replaceWith(newMessageElement);
-
-                // Load comments for the updated message (comments are visible by default)
-                window.loadCommentsForMessage(id);
-            } else {
-                throw new Error('Failed to save message.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert(error.message);
-        }
-    };
+    // Message delete and save functions are now defined in message-operations.js
 
 
     // toggleEditView is now defined in message-edit-toggle.js
