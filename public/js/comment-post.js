@@ -32,13 +32,8 @@ export const handlePostComment = async (messageId, parentId, inputElement, error
         inputElement.value = '';
         errorElement.classList.add('hidden');
 
-        loadCommentsForMessage(messageId, 1, true); // Force refresh
-
-
-        // 自动刷新页面以确保所有状态同步
-        setTimeout(() => {
-            window.location.reload();
-        }, 1000); // 1秒后刷新，让用户看到成功提示
+        // 不再刷新页面，直接重新加载该消息的评论
+        await loadCommentsForMessage(messageId, 1, true); // Force refresh
 
     } catch (error) {
         console.error('Error posting comment:', error);
