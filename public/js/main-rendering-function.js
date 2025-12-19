@@ -243,7 +243,7 @@ export const renderMessage = (message) => {
     // Convert markdown to HTML and apply typography styles (如果有文本内容)
     if (message.content && message.content.trim() !== '') {
         const contentDiv = document.createElement('div');
-        contentDiv.className = 'prose prose-invert max-w-none text-gray-300 prose-headings:text-gray-100 prose-a:text-bp-gold prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-bp-gold prose-code:text-bp-gold prose-code:bg-bp-black prose-code:px-1 prose-code:rounded prose-pre:bg-bp-black prose-pre:border prose-pre:border-bp-gray';
+        contentDiv.className = 'prose prose-invert max-w-none text-gray-300 prose-headings:text-gray-100 prose-a:text-bp-gold prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-bp-gold prose-code:text-bp-gold prose-code:bg-bp-black prose-code:px-1 prose-code:rounded prose-pre:bg-bp-black prose-pre:border prose-pre:border-bp-gray break-words';
         contentDiv.innerHTML = converter.makeHtml(message.content);
 
         // Add copy buttons to code blocks (preserved logic, updated styling)

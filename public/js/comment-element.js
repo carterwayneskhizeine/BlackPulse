@@ -58,7 +58,7 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
     }
 
     // Apply Tailwind's typography styles
-    textElement.className = 'prose prose-invert prose-sm max-w-none text-gray-300 mb-2 leading-relaxed';
+    textElement.className = 'prose prose-invert prose-sm max-w-none text-gray-300 mb-2 leading-relaxed break-words';
     textElement.innerHTML = converter.makeHtml(commentText);
 
 
