@@ -1,5 +1,5 @@
 {
-  "name": "goldie-black-pulse-message-board",
+  "name": "black-pulse",
   "version": "2.0.0",
   "description": "Anonymous message board application",
   "main": "src/index.js",

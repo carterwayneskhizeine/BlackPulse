@@ -1,7 +1,7 @@
 services:
   message-board:
     build: .
-    container_name: message-board-app
+    container_name: black-pulse
     ports:
       - "0.0.0.0:1989:1989"
     env_file:
