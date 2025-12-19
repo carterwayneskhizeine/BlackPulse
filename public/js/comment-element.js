@@ -8,26 +8,41 @@ import {
 // Create a DOM element for a single, flat comment
 export const createCommentElement = (comment, messageId, parentId, commentMap) => {
     const commentElement = document.createElement('div');
-    // Add a border and padding, but no complex margins for nesting
-    commentElement.className = 'mb-3 bg-black border border-gray-800 rounded-lg p-3';
+    // Minimalist list style for comments
+    commentElement.className = 'mb-2 p-3 rounded hover:bg-bp-gray/20 transition-colors border-b border-bp-gray/30 last:border-0';
     commentElement.dataset.commentId = comment.id;
-    commentElement.id = `comment-${comment.id}`; // Add an ID for linking
+    commentElement.id = `comment-${comment.id}`; 
 
-    // Format time for display
+    // Format time
     const commentTime = new Date(comment.time).toLocaleString();
 
-    // User info
+    // User info header
     const userElement = document.createElement('div');
-    userElement.className = 'mb-2';
-    userElement.innerHTML = `
-        <div class="flex items-center justify-between">
-            <span class="font-semibold text-gray-200">${comment.user.name}</span>
-            ${comment.user.verified ? '<span class="ml-2 text-blue-400 text-sm">✓ Verified</span>' : ''}
-        </div>
-        <div class="flex items-center justify-between mt-1">
-            <span class="text-gray-500 text-sm">${commentTime}</span>
-        </div>
-    `;
+    userElement.className = 'flex items-center justify-between mb-1';
+    
+    const userInfo = document.createElement('div');
+    userInfo.className = 'flex items-center gap-2';
+    
+    // Avatar placeholder or just name
+    const name = document.createElement('span');
+    name.className = 'font-bold text-sm text-bp-gold';
+    name.textContent = comment.user.name;
+    
+    userInfo.appendChild(name);
+    
+    if (comment.user.verified) {
+        const verified = document.createElement('span');
+        verified.className = 'text-blue-400 text-xs bg-blue-400/10 px-1 rounded';
+        verified.textContent = '✓';
+        userInfo.appendChild(verified);
+    }
+    
+    const time = document.createElement('span');
+    time.className = 'text-xs text-bp-text-muted';
+    time.textContent = commentTime;
+    
+    userElement.appendChild(userInfo);
+    userElement.appendChild(time);
 
     // Comment text
     const textElement = document.createElement('div');
@@ -37,43 +52,66 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
     if (parentId && commentMap.has(parentId)) {
         const parentComment = commentMap.get(parentId);
         const parentAuthor = parentComment.user.name;
-        // The mention is a link to the parent comment for better navigation
-        const mentionLink = `<a href="#comment-${parentId}" class="text-blue-400 hover:underline mr-1 no-underline">@${parentAuthor}</a>`;
+        // The mention is a link
+        const mentionLink = `<a href="#comment-${parentId}" class="text-bp-gold hover:underline mr-1 no-underline bg-bp-gold/10 px-1 rounded text-xs font-bold">@${parentAuthor}</a>`;
         commentText = `${mentionLink} ${comment.text}`;
     }
 
-    // Apply Tailwind's typography styles for ALL comments for proper markdown rendering
-    textElement.className = 'prose prose-invert max-w-none text-gray-200 mb-3';
-    // Use global converter from main.js to render markdown
+    // Apply Tailwind's typography styles
+    textElement.className = 'prose prose-invert prose-sm max-w-none text-gray-300 mb-2 leading-relaxed';
     textElement.innerHTML = converter.makeHtml(commentText);
 
 
     // Action buttons
     const actionsElement = document.createElement('div');
-    actionsElement.className = 'flex items-center gap-2 text-sm';
+    actionsElement.className = 'flex items-center gap-3 text-xs';
 
-    // Vote buttons
-    actionsElement.innerHTML = `
-        <button data-action="vote" data-vote="up" data-id="${comment.id}" class="text-gray-400 hover:text-blue-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>
-        </button>
-        <span class="text-gray-400">${comment.score}</span>
-        <button data-action="vote" data-vote="down" data-id="${comment.id}" class="text-gray-400 hover:text-red-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-        </button>
-    `;
+    // Vote buttons logic (manually building to have custom layout if needed, or reusing buttons)
+    // We'll use simple text/icon mix here
+    const voteContainer = document.createElement('div');
+    voteContainer.className = 'flex items-center gap-1 bg-bp-black rounded-full border border-bp-gray px-1';
+    
+    const upBtn = document.createElement('button');
+    upBtn.dataset.action = 'vote';
+    upBtn.dataset.vote = 'up';
+    upBtn.dataset.id = comment.id;
+    upBtn.className = 'p-1 hover:text-bp-gold text-bp-text-muted transition-colors';
+    upBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>`;
+    
+    const score = document.createElement('span');
+    score.className = 'text-gray-400 font-mono text-[10px] min-w-[12px] text-center';
+    score.textContent = comment.score;
+    
+    const downBtn = document.createElement('button');
+    downBtn.dataset.action = 'vote';
+    downBtn.dataset.vote = 'down';
+    downBtn.dataset.id = comment.id;
+    downBtn.className = 'p-1 hover:text-red-400 text-bp-text-muted transition-colors';
+    downBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>`;
+    
+    voteContainer.appendChild(upBtn);
+    voteContainer.appendChild(score);
+    voteContainer.appendChild(downBtn);
+    
+    actionsElement.appendChild(voteContainer);
 
-    // Edit, Delete, Reply buttons
+    // Divider
+    // const divider = document.createElement('span');
+    // divider.className = 'text-bp-gray';
+    // divider.textContent = '|';
+    // actionsElement.appendChild(divider);
+
+    // Edit, Delete, Reply buttons (Using utils.createButton which returns btn-bp-icon)
+    // We might want text buttons here for clarity in comments?
+    // Let's stick to icons to keep it clean.
+    
     if (comment.editable) {
-        const editButton = createButton('Edit', comment.id, 'edit');
-        actionsElement.appendChild(editButton);
+        actionsElement.appendChild(createButton('Edit', comment.id, 'edit'));
     }
     if (comment.deletable) {
-        const deleteButton = createButton('Delete', comment.id, 'delete');
-        actionsElement.appendChild(deleteButton);
+        actionsElement.appendChild(createButton('Delete', comment.id, 'delete'));
     }
 
-    // Always show the reply button, allowing for infinite "nesting" in a flat view
     const replyButton = createButton('Reply', comment.id, 'reply');
     actionsElement.appendChild(replyButton);
 
@@ -82,7 +120,6 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
     commentElement.appendChild(userElement);
     commentElement.appendChild(textElement);
     commentElement.appendChild(actionsElement);
-    // No repliesContainer is needed anymore as the list is flat
 
     return commentElement;
 };

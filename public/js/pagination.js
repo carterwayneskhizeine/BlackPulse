@@ -48,14 +48,14 @@ export const renderPagination = () => {
     pagesToShow.forEach((pageNum, index) => {
         if (pageNum === '...') {
             const ellipsis = document.createElement('span');
-            ellipsis.className = 'px-3 py-2 text-gray-500';
+            ellipsis.className = 'px-3 py-2 text-bp-text-muted';
             ellipsis.textContent = '...';
             paginationContainer.appendChild(ellipsis);
         } else {
             const pageButton = createPaginationButton(pageNum.toString(), `page-${pageNum}`, `Go to page ${pageNum}`);
             if (pageNum === currentPage) {
-                pageButton.classList.add('bg-gray-800', 'border-gray-100', 'text-gray-100');
-                pageButton.classList.remove('hover:border-gray-100', 'hover:text-gray-100');
+                // Active State: Gold background, Black text
+                pageButton.className = 'bg-bp-gold text-bp-black font-bold py-2 px-4 rounded-md shadow-glow transition-all';
             }
             pageButton.addEventListener('click', () => fetchAndRenderMessages(pageNum));
             paginationContainer.appendChild(pageButton);
@@ -80,7 +80,7 @@ export const renderPagination = () => {
 const createPaginationButton = (text, id, title) => {
     const button = document.createElement('button');
     button.id = id;
-    button.className = 'border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-3 rounded-lg transition-colors';
+    button.className = 'btn-bp-outline text-sm py-2 px-3 hover:text-bp-gold hover:border-bp-gold';
     button.innerHTML = text;
     button.title = title;
     return button;

@@ -2,41 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 极客黑风格增强 */
 @layer base {
-  /* 确保纯黑背景 */
-  html {
-    background-color: #000000;
+  body {
+    @apply bg-bp-black text-bp-text antialiased selection:bg-bp-gold selection:text-bp-black;
   }
-
-  /* 优化滚动条样式 */
+  
+  /* Custom Scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
   }
-
   ::-webkit-scrollbar-track {
-    background: #000000;
+    @apply bg-bp-black;
   }
-
   ::-webkit-scrollbar-thumb {
-    background: #374151;
-    border-radius: 4px;
+    @apply bg-bp-gray rounded-full;
   }
-
   ::-webkit-scrollbar-thumb:hover {
-    background: #4B5563;
+    @apply bg-bp-gold-dim;
   }
 }
 
 @layer components {
-  /* 线框按钮统一样式 */
-  .btn-outline {
-    @apply border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors;
+  /* Buttons */
+  .btn-bp-primary {
+    @apply bg-bp-gold text-bp-black font-bold py-2 px-6 rounded-md hover:bg-yellow-400 hover:shadow-glow transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-bp-outline {
+    @apply border border-bp-gray text-bp-text-muted font-medium py-2 px-4 rounded-md hover:border-bp-gold hover:text-bp-gold transition-all duration-200 active:scale-95 bg-transparent;
+  }
+  
+  .btn-bp-danger {
+    @apply border border-bp-gray text-red-500 font-medium py-2 px-4 rounded-md hover:border-red-500 hover:bg-red-500/10 transition-all duration-200;
   }
 
-  /* 输入框统一样式 */
-  .input-geek {
-    @apply bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-gray-100 focus:outline-none text-gray-400 placeholder:text-gray-600;
+  .btn-bp-icon {
+    @apply p-2 text-bp-text-muted hover:text-bp-gold transition-colors rounded-full hover:bg-bp-gray;
   }
+
+  /* Inputs */
+  .input-bp {
+    @apply w-full bg-bp-dark border border-bp-gray rounded-md p-3 text-bp-text placeholder-gray-600 focus:outline-none focus:border-bp-gold focus:ring-1 focus:ring-bp-gold transition-all duration-200;
+  }
+
+  /* Cards */
+  .card-bp {
+    @apply bg-bp-dark border border-bp-gray rounded-lg p-5 shadow-sm hover:border-gray-700 transition-colors duration-200;
+  }
+  
+  /* Badges */
+  .badge-bp {
+    @apply text-xs font-bold px-2 py-0.5 rounded border border-bp-gray text-bp-text-muted;
+  }
+
+  /* Typography helpers */
+  .link-bp {
+    @apply text-bp-gold hover:text-yellow-300 hover:underline transition-colors;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
 }

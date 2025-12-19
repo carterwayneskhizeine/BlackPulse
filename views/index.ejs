@@ -6,212 +6,233 @@
     <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anonymous Message Board</title>
+    <title>BlackPulse | Anonymous Board</title>
     <link href="/style.css?v=<%= new Date().getTime() %>" rel="stylesheet">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
 </head>
-<body class="bg-black text-gray-200 flex items-center justify-center min-h-screen">
+<body class="bg-bp-black text-bp-text min-h-screen flex flex-col font-sans selection:bg-bp-gold selection:text-bp-black">
 
-    <div class="mx-auto p-4 md:p-8 w-full lg:w-2/3">
-
-        <!-- Header -->
-        <header class="text-center mb-8 flex justify-between items-center">
-            <div class="text-left">
-                <h1 class="text-4xl font-bold text-gray-100">Anonymous Message Board</h1>
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-50 bg-bp-black/90 backdrop-blur-md border-b border-bp-gray h-16 transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
+            <!-- Brand -->
+            <div class="flex items-center gap-4">
+                <h1 class="text-xl font-bold tracking-tight text-white select-none cursor-default"><span class="text-bp-gold">Black</span>Pulse</h1>
+                <!-- Desktop Search placeholder -->
+                <div class="hidden md:block relative group">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 group-focus-within:text-bp-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    <input type="text" placeholder="Search..." class="bg-bp-dark border border-bp-gray rounded-full py-1.5 pl-9 pr-4 text-sm w-48 focus:w-64 transition-all focus:border-bp-gold outline-none placeholder-gray-600 text-gray-300">
+                </div>
             </div>
 
             <!-- User Area -->
-            <div id="user-area" class="flex gap-3 items-center">
-                <!-- Guest view (not logged in) -->
+            <div id="user-area" class="flex items-center gap-3">
+                 <!-- Guest view -->
                 <div id="guest-view" class="<%= user ? 'hidden' : '' %>">
-                    <button id="login-btn" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
+                    <button id="login-btn" class="btn-bp-outline text-sm py-1.5 px-4">
                         Login
                     </button>
                 </div>
 
-                <!-- User view (logged in) -->
-                <div id="user-view" class="<%= user ? '' : 'hidden' %> flex items-center gap-3">
-                    <span class="text-gray-400">Welcome, <span id="username-display" class="text-gray-100"><%= user ? user.username : '' %></span></span>
-                    <button id="logout-btn" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
+                <!-- User view -->
+                <div id="user-view" class="<%= user ? '' : 'hidden' %> flex items-center gap-4">
+                    <span class="text-sm text-bp-text-muted hidden sm:inline-block">Welcome, <span id="username-display" class="text-bp-gold font-medium"><%= user ? user.username : '' %></span></span>
+                    <button id="logout-btn" class="btn-bp-outline text-sm py-1.5 px-4 hover:border-red-500 hover:text-red-500 hover:bg-red-500/10">
                         Logout
                     </button>
                 </div>
             </div>
-        </header>
-
-        <!-- Message Form -->
-        <div class="mb-8">
-            <form id="message-form" class="flex flex-col gap-4">
-                <textarea
-                    id="message-input"
-                    name="content"
-                    class="w-full p-4 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-gray-100 focus:outline-none transition-shadow text-gray-400 placeholder:text-gray-600"
-                    rows="3"
-                    placeholder="What's on your mind?"></textarea>
-
-                <!-- File Upload Section -->
-                <div class="flex flex-col gap-2">
-                    <div class="flex items-center gap-2">
-                        <input type="file" id="file-upload" accept="*" class="hidden">
-                        <span id="file-status" class="text-sm text-gray-500 hidden">No file selected</span>
-                    </div>
-
-                    <!-- File Preview -->
-                    <div id="file-preview-container" class="hidden">
-                        <div class="relative inline-block">
-                            <div id="file-preview-content" class="max-h-48 rounded-lg border border-gray-800 p-3 bg-gray-900">
-                                <div id="file-preview-icon" class="text-center mb-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                </div>
-                                <div id="file-preview-name" class="text-center text-sm text-gray-300 break-all"></div>
-                                <div id="file-preview-type" class="text-center text-xs text-gray-500 mt-1"></div>
-                                <div id="file-preview-size" class="text-center text-xs text-gray-500 mt-1"></div>
-                            </div>
-                            <button type="button" id="remove-file-button" class="absolute top-1 right-1 bg-black/80 backdrop-blur-sm text-xs px-2 py-1 rounded border border-gray-700 text-gray-200 hover:border-gray-100 hover:text-gray-100">
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 按钮容器 -->
-                <div class="flex flex-col gap-2">
-                    <div class="flex gap-2 items-center">
-                        <!-- KEY 按钮（左侧） -->
-                        <button type="button" id="key-button"
-                                class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                            KEY
-                        </button>
-
-                        <!-- KEY 输入框（默认隐藏） -->
-                        <input type="text" id="private-key-input" placeholder="Enter private key"
-                               class="hidden flex-1 p-2 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-gray-100 focus:outline-none text-gray-400 placeholder:text-gray-600">
-
-                        <!-- Send 按钮（默认隐藏） -->
-                        <button type="button" id="send-key-button"
-                                class="hidden border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                            Send
-                        </button>
-
-                        <!-- 右侧按钮组 -->
-                        <div class="flex items-center ml-auto">
-                            <!-- File Upload Button (paperclip icon) -->
-                            <button type="button" id="upload-file-button" class="bg-transparent border-none text-gray-400 hover:text-gray-100 font-bold py-2 px-3 rounded-lg transition-colors mr-[5px]">
-                                +
-                            </button>
-
-                            <!-- Post Message 按钮（右侧，保持原样式和位置） -->
-                            <button type="submit" id="post-message-button" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                                Post Message
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 错误提示区域（在KEY输入框下方） -->
-                    <div id="error-message" class="hidden text-red-400 text-center font-bold p-3 bg-black rounded-lg border border-red-800" role="alert"></div>
-                </div>
-            </form>
         </div>
+    </header>
 
-        <!-- Message List -->
-        <main id="message-list" class="space-y-4">
-            <!-- Messages will be dynamically injected here by JavaScript -->
+    <!-- Main Grid -->
+    <div class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Sidebar (Desktop) -->
+        <aside class="hidden lg:block lg:col-span-3 space-y-6">
+            <!-- Filter Widget -->
+            <div class="card-bp space-y-3 sticky top-24">
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Feeds</h3>
+                <nav class="flex flex-col space-y-1">
+                    <button class="flex items-center gap-3 px-3 py-2 rounded-md bg-bp-gold/10 text-bp-gold font-medium transition-colors text-left w-full group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Latest
+                    </button>
+                    <button class="flex items-center gap-3 px-3 py-2 rounded-md text-bp-text-muted hover:bg-bp-gray hover:text-bp-text transition-colors text-left w-full group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        Private
+                    </button>
+                    <button class="flex items-center gap-3 px-3 py-2 rounded-md text-bp-text-muted hover:bg-bp-gray hover:text-bp-text transition-colors text-left w-full group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        Trending
+                    </button>
+                </nav>
+
+                <div class="border-t border-bp-gray my-4"></div>
+
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">System</h3>
+                 <div class="text-sm text-bp-text-muted bg-bp-black/50 p-3 rounded border border-bp-gray/50">
+                    <p class="mb-2">Welcome to <span class="text-bp-gold">BlackPulse</span>.</p>
+                    <p class="text-xs text-gray-600">v2.0 • Dark Mode Only</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="lg:col-span-9 space-y-6">
+            
+            <!-- Message Composer -->
+            <div class="card-bp border-t-2 border-t-bp-gold shadow-glow">
+                <form id="message-form" class="flex flex-col gap-4">
+                     <!-- Text Area -->
+                    <textarea
+                        id="message-input"
+                        name="content"
+                        class="input-bp min-h-[120px] resize-y"
+                        rows="3"
+                        placeholder="What's on your mind? Use Markdown for rich text..."></textarea>
+
+                     <!-- File Preview (Hidden by default) -->
+                     <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2">
+                            <input type="file" id="file-upload" accept="*" class="hidden">
+                            <span id="file-status" class="text-xs text-bp-text-muted hidden">No file selected</span>
+                        </div>
+                        <div id="file-preview-container" class="hidden">
+                             <div class="relative inline-block mt-2 group">
+                                <div id="file-preview-content" class="max-h-56 rounded-lg border border-bp-gray p-3 bg-bp-black">
+                                     <div id="file-preview-icon" class="text-center mb-2"></div>
+                                     <div id="file-preview-name" class="text-center text-sm text-bp-text-muted break-all font-mono"></div>
+                                     <div id="file-preview-type" class="text-center text-xs text-gray-600 mt-1"></div>
+                                     <div id="file-preview-size" class="text-center text-xs text-gray-600 mt-1"></div>
+                                </div>
+                                <button type="button" id="remove-file-button" class="absolute -top-2 -right-2 bg-bp-dark text-bp-red border border-bp-gray rounded-full p-1.5 hover:bg-bp-gray hover:scale-110 transition-all shadow-lg z-10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                     </div>
+
+                     <!-- Actions Bar -->
+                     <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between pt-2 border-t border-bp-gray/30 mt-2">
+                        
+                         <!-- Left: KEY Controls -->
+                         <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <button type="button" id="key-button" class="btn-bp-outline text-xs h-9 px-3 flex items-center gap-2 group">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-bp-text-muted group-hover:text-bp-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
+                                KEY
+                            </button>
+                            
+                            <input type="text" id="private-key-input" placeholder="Private key..." class="hidden input-bp h-9 py-1 text-sm w-full sm:w-48 font-mono">
+                            
+                            <button type="button" id="send-key-button" class="hidden btn-bp-primary text-xs h-9 px-4">
+                                Send
+                            </button>
+                         </div>
+
+                         <!-- Right: Upload & Post -->
+                         <div class="flex items-center gap-3 ml-auto">
+                            <!-- File Upload Trigger -->
+                             <button type="button" id="upload-file-button" class="btn-bp-icon" title="Upload File">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                             </button>
+
+                             <button type="submit" id="post-message-button" class="btn-bp-primary h-9 flex items-center gap-2 px-5 text-sm">
+                                <span>Post</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                             </button>
+                         </div>
+                     </div>
+                     
+                     <!-- Error Message -->
+                     <div id="error-message" class="hidden text-red-400 text-sm font-medium p-3 bg-red-900/10 rounded border border-red-900/50 text-center animate-fade-in" role="alert"></div>
+                </form>
+            </div>
+
+            <!-- Mobile Filters (Horizontal Scroll) -->
+            <div class="lg:hidden flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                <button class="btn-bp-primary text-xs whitespace-nowrap px-4 py-1.5 h-auto rounded-full">Latest</button>
+                <button class="btn-bp-outline text-xs whitespace-nowrap px-4 py-1.5 h-auto rounded-full bg-bp-dark">Private</button>
+                <button class="btn-bp-outline text-xs whitespace-nowrap px-4 py-1.5 h-auto rounded-full bg-bp-dark">Trending</button>
+            </div>
+
+            <!-- Message List -->
+            <div id="message-list" class="space-y-6">
+                <!-- Content injected via JS -->
+            </div>
+
+            <!-- Pagination -->
+            <div id="pagination-container" class="py-6 flex justify-center"></div>
+
         </main>
+    </div>
 
-        <!-- Pagination Controls (will be injected by JavaScript) -->
-        <div id="pagination-container"></div>
-
-        <!-- 消息类型选择弹窗 -->
-        <dialog id="message-type-modal" class="bg-black text-gray-200 p-6 rounded-lg shadow-lg border border-gray-800 backdrop:bg-black backdrop:bg-opacity-75">
-            <h2 class="text-xl font-bold mb-4 text-gray-100">Choose Message Type</h2>
-
-            <div id="type-selection" class="flex flex-col gap-3">
-                <button id="public-option" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                    Public Message
-                </button>
-                <button id="private-option" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                    Private Message
-                </button>
-            </div>
-
-            <div id="private-key-entry" class="hidden mt-4">
-                <label for="modal-private-key" class="block mb-2 text-sm font-bold text-gray-400">Enter a KEY for your private message:</label>
-                <input type="text" id="modal-private-key" placeholder="Any text or symbols..."
-                       class="w-full p-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-gray-100 focus:outline-none text-gray-400 placeholder:text-gray-600 mb-4">
-                <div class="flex justify-end gap-2">
-                    <button id="cancel-private" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                        Cancel
-                    </button>
-                    <button id="confirm-private" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                        Confirm
-                    </button>
-                </div>
-            </div>
-        </dialog>
-
-        <!-- Login Modal -->
-        <dialog id="login-modal" class="bg-black text-gray-200 p-6 rounded-lg shadow-lg border border-gray-800 backdrop:bg-black backdrop:bg-opacity-75">
-            <h2 class="text-xl font-bold mb-4 text-gray-100">Login</h2>
-            <form id="login-form" class="space-y-4">
-                <input type="text" id="login-username" placeholder="Username"
-                       class="w-full p-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-gray-100 focus:outline-none text-gray-400 placeholder:text-gray-600">
-                <input type="password" id="login-password" placeholder="Password"
-                       class="w-full p-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-gray-100 focus:outline-none text-gray-400 placeholder:text-gray-600">
-                <div id="login-error" class="text-red-400 text-sm hidden"></div>
-                <div class="flex justify-between items-center">
-                    <button type="button" id="register-from-login" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                        Register
-                    </button>
-                    <div class="flex gap-2">
-                        <button type="button" id="cancel-login" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                            Cancel
-                        </button>
-                        <button type="submit" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                            Login
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </dialog>
-
-        <!-- Register Modal -->
-        <dialog id="register-modal" class="bg-black text-gray-200 p-6 rounded-lg shadow-lg border border-gray-800 backdrop:bg-black backdrop:bg-opacity-75">
-            <h2 class="text-xl font-bold mb-4 text-gray-100">Register</h2>
-            <form id="register-form" class="space-y-4">
-                <input type="text" id="register-username" placeholder="Username (3-20 characters)"
-                       class="w-full p-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-gray-100 focus:outline-none text-gray-400 placeholder:text-gray-600">
-                <input type="password" id="register-password" placeholder="Password (at least 6 characters)"
-                       class="w-full p-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-gray-100 focus:outline-none text-gray-400 placeholder:text-gray-600">
-                <input type="password" id="register-confirm-password" placeholder="Confirm Password"
-                       class="w-full p-3 bg-black border border-gray-800 rounded-lg focus:ring-2 focus:ring-gray-100 focus:outline-none text-gray-400 placeholder:text-gray-600">
-                <div id="register-error" class="text-red-400 text-sm hidden"></div>
-                <div class="flex justify-end gap-2">
-                    <button type="button" id="cancel-register" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                        Cancel
-                    </button>
-                    <button type="submit" class="border border-gray-700 hover:border-gray-100 text-gray-400 hover:text-gray-100 font-bold py-2 px-4 rounded-lg transition-colors">
-                        Register
-                    </button>
-                </div>
-            </form>
-        </dialog>
-
-        <!-- Footer -->
-        <footer class="text-center mt-12 text-gray-600">
-            <p>&copy; 2025 Goldie Rill. All rights reserved.</p>
-            <div class="flex justify-center mt-4">
-                <a href="https://github.com/carterwayneskhizeine/AnonymousMessageBoard" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-gray-100" aria-label="GitHub Repository">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 mb-3.75" viewBox="0 0 16 16">
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-bp-gray py-8 bg-bp-black">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+             <p class="text-bp-text-muted text-sm">&copy; 2025 Goldie Rill. All rights reserved.</p>
+             <div class="flex justify-center mt-4">
+                <a href="https://github.com/carterwayneskhizeine/AnonymousMessageBoard" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-bp-gold transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6" viewBox="0 0 16 16">
                         <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
                     </svg>
                 </a>
-            </div>
-        </footer>
+             </div>
+        </div>
+    </footer>
 
-    </div>
+    <!-- Modals -->
+    
+    <!-- Message Type Modal -->
+    <dialog id="message-type-modal" class="bg-bp-dark text-bp-text p-6 rounded-lg shadow-glow-strong border border-bp-gray backdrop:bg-black/90 max-w-sm w-full m-auto">
+         <h2 class="text-xl font-bold mb-6 text-white text-center">Choose Message Type</h2>
+         <div id="type-selection" class="flex flex-col gap-3">
+             <button id="public-option" class="btn-bp-primary w-full justify-center py-3">Public Message</button>
+             <button id="private-option" class="btn-bp-outline w-full justify-center py-3">Private Message</button>
+         </div>
+         <div id="private-key-entry" class="hidden mt-4">
+             <label for="modal-private-key" class="block mb-2 text-sm font-bold text-gray-400">Set a KEY:</label>
+             <input type="text" id="modal-private-key" placeholder="Secret Key..." class="input-bp mb-4">
+             <div class="flex justify-end gap-2">
+                 <button id="cancel-private" class="btn-bp-outline text-xs">Cancel</button>
+                 <button id="confirm-private" class="btn-bp-primary text-xs">Confirm</button>
+             </div>
+         </div>
+    </dialog>
+
+    <!-- Login Modal -->
+    <dialog id="login-modal" class="bg-bp-dark text-bp-text p-6 rounded-lg shadow-glow-strong border border-bp-gray backdrop:bg-black/90 max-w-sm w-full m-auto">
+        <h2 class="text-xl font-bold mb-4 text-white">Login</h2>
+        <form id="login-form" class="space-y-4">
+            <input type="text" id="login-username" placeholder="Username" class="input-bp">
+            <input type="password" id="login-password" placeholder="Password" class="input-bp">
+            <div id="login-error" class="text-red-400 text-sm hidden"></div>
+            <div class="flex justify-between items-center mt-6">
+                 <button type="button" id="register-from-login" class="text-xs text-bp-text-muted hover:text-bp-gold underline">Create Account</button>
+                 <div class="flex gap-2">
+                     <button type="button" id="cancel-login" class="btn-bp-outline text-xs py-1.5">Cancel</button>
+                     <button type="submit" class="btn-bp-primary text-xs py-1.5">Login</button>
+                 </div>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Register Modal -->
+    <dialog id="register-modal" class="bg-bp-dark text-bp-text p-6 rounded-lg shadow-glow-strong border border-bp-gray backdrop:bg-black/90 max-w-sm w-full m-auto">
+        <h2 class="text-xl font-bold mb-4 text-white">Register</h2>
+        <form id="register-form" class="space-y-4">
+            <input type="text" id="register-username" placeholder="Username (3-20 chars)" class="input-bp">
+            <input type="password" id="register-password" placeholder="Password (min 6 chars)" class="input-bp">
+            <input type="password" id="register-confirm-password" placeholder="Confirm Password" class="input-bp">
+            <div id="register-error" class="text-red-400 text-sm hidden"></div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button type="button" id="cancel-register" class="btn-bp-outline text-xs py-1.5">Cancel</button>
+                <button type="submit" class="btn-bp-primary text-xs py-1.5">Register</button>
+            </div>
+        </form>
+    </dialog>
 
     <script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
     <script type="module" src="/js/main.js"></script>

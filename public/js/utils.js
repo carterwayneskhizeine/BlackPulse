@@ -18,7 +18,7 @@ export const createButton = (text, id, action) => {
     button.title = text;
     button.dataset.id = id;
     button.dataset.action = action;
-    button.className = 'text-sm p-2 rounded-md transition-colors border border-gray-700 hover:border-gray-100 text-gray-200 hover:text-gray-100';
+    button.className = 'btn-bp-icon'; // Use new BlackPulse icon button class
     return button;
 };
 
