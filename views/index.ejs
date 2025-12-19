@@ -18,11 +18,13 @@
             <!-- Brand -->
             <div class="flex items-center gap-4">
                 <h1 class="text-xl font-bold tracking-tight text-white select-none cursor-default"><span class="text-bp-gold">Black</span>Pulse</h1>
-                <!-- Search Container -->
-                <div id="global-search-container" class="hidden md:block relative group transition-all duration-300 ease-in-out absolute md:relative top-20 md:top-auto left-4 right-4 md:left-auto md:right-auto z-40 md:z-auto">
+                
+                <!-- Desktop Search Container -->
+                <div id="desktop-search-container" class="hidden md:block relative group transition-all duration-300 ease-in-out">
                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 group-focus-within:text-bp-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                    <input id="global-search-input" type="text" placeholder="Search..." class="bg-bp-dark border border-bp-gray rounded-full py-1.5 pl-9 pr-4 text-sm w-full md:w-48 focus:w-full md:focus:w-64 transition-all focus:border-bp-gold outline-none placeholder-gray-600 text-gray-300 shadow-lg md:shadow-none">
+                    <input id="desktop-search-input" type="text" placeholder="Search..." class="bg-bp-dark border border-bp-gray rounded-full py-1.5 pl-9 pr-4 text-sm w-full md:w-48 focus:w-full md:focus:w-64 transition-all focus:border-bp-gold outline-none placeholder-gray-600 text-gray-300 shadow-lg md:shadow-none">
                 </div>
+
                 <!-- Mobile Search Toggle -->
                 <button id="mobile-search-toggle" class="md:hidden text-gray-400 hover:text-bp-gold focus:outline-none p-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,6 +52,14 @@
             </div>
         </div>
     </header>
+
+    <!-- Mobile Search Container -->
+    <div id="mobile-search-container" class="hidden md:hidden bg-bp-black p-4 border-b border-bp-gray">
+        <div class="relative">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <input id="mobile-search-input" type="text" placeholder="Search..." class="bg-bp-dark border border-bp-gray rounded-full py-1.5 pl-9 pr-4 text-sm w-full outline-none placeholder-gray-600 text-gray-300 focus:border-bp-gold">
+        </div>
+    </div>
 
     <!-- Main Grid -->
     <div class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">

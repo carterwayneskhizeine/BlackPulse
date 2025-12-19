@@ -192,11 +192,12 @@ export const initEventListeners = () => {
     if(mobileFeedTrendingBtn) mobileFeedTrendingBtn.addEventListener('click', () => handleFeedChange('trending'));
     
     // Mobile Search Toggle
-    if(mobileSearchToggle && globalSearchContainer) {
+    const mobileSearchContainer = document.getElementById('mobile-search-container');
+    if(mobileSearchToggle && mobileSearchContainer) {
         mobileSearchToggle.addEventListener('click', () => {
-             globalSearchContainer.classList.toggle('hidden');
-             const input = globalSearchContainer.querySelector('input');
-             if(!globalSearchContainer.classList.contains('hidden') && input) {
+             mobileSearchContainer.classList.toggle('hidden');
+             const input = mobileSearchContainer.querySelector('input');
+             if(!mobileSearchContainer.classList.contains('hidden') && input) {
                  input.focus();
              }
         });
