@@ -116,9 +116,15 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
     actionsElement.appendChild(replyButton);
 
 
-    // Append all parts to the main comment element
     commentElement.appendChild(userElement);
     commentElement.appendChild(textElement);
+
+    // Store raw text for editing, so it can be retrieved by the edit handler
+    const rawTextElement = document.createElement('div');
+    rawTextElement.className = 'raw-comment-text hidden';
+    rawTextElement.textContent = comment.text || '';
+    commentElement.appendChild(rawTextElement);
+
     commentElement.appendChild(actionsElement);
 
     return commentElement;
