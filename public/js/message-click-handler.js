@@ -58,7 +58,7 @@ export const handleMessageClick = (e) => {
             navigator.clipboard.writeText(messageToCopy.content)
                 .then(() => {
                     const originalHTML = button.innerHTML;
-                    button.textContent = 'Copied!';
+                    button.innerHTML = '<span style="font-size: 50%">Copied!</span>';
                     setTimeout(() => {
                         button.innerHTML = originalHTML;
                     }, 1500);

@@ -218,7 +218,7 @@ export const renderMessage = (message) => {
                 navigator.clipboard.writeText(message.private_key).then(() => {
                     const originalHTML = keyDisplay.innerHTML;
                     keyDisplay.textContent = 'Copied!';
-                    keyDisplay.className = 'font-mono text-xs text-green-400 bg-bp-black px-2 py-0.5 rounded border border-green-900 ml-1';
+                    keyDisplay.className = 'font-mono text-xs text-bp-gold bg-bp-black px-2 py-0.5 rounded border border-bp-gold ml-1';
 
                     // 2秒后恢复原状
                     setTimeout(() => {
