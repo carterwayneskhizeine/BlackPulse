@@ -20,9 +20,11 @@ import {
     feedLatestBtn,
     feedPrivateBtn,
     feedTrendingBtn,
+    feedPostsBtn,
     mobileFeedLatestBtn,
     mobileFeedPrivateBtn,
     mobileFeedTrendingBtn,
+    mobileFeedPostsBtn,
     mobileSearchToggle,
     globalSearchContainer
 } from './ui-elements.js';
@@ -186,10 +188,12 @@ export const initEventListeners = () => {
     if(feedLatestBtn) feedLatestBtn.addEventListener('click', () => handleFeedChange('latest'));
     if(feedPrivateBtn) feedPrivateBtn.addEventListener('click', () => handleFeedChange('private'));
     if(feedTrendingBtn) feedTrendingBtn.addEventListener('click', () => handleFeedChange('trending'));
+    if(feedPostsBtn) feedPostsBtn.addEventListener('click', () => handleFeedChange('posts'));
 
     if(mobileFeedLatestBtn) mobileFeedLatestBtn.addEventListener('click', () => handleFeedChange('latest'));
     if(mobileFeedPrivateBtn) mobileFeedPrivateBtn.addEventListener('click', () => handleFeedChange('private'));
     if(mobileFeedTrendingBtn) mobileFeedTrendingBtn.addEventListener('click', () => handleFeedChange('trending'));
+    if(mobileFeedPostsBtn) mobileFeedPostsBtn.addEventListener('click', () => handleFeedChange('posts'));
     
     // Mobile Search Toggle
     const mobileSearchContainer = document.getElementById('mobile-search-container');
@@ -207,12 +211,14 @@ export const initEventListeners = () => {
         const desktopBtns = {
             latest: feedLatestBtn,
             private: feedPrivateBtn,
-            trending: feedTrendingBtn
+            trending: feedTrendingBtn,
+            posts: feedPostsBtn
         };
         const mobileBtns = {
             latest: mobileFeedLatestBtn,
             private: mobileFeedPrivateBtn,
-            trending: mobileFeedTrendingBtn
+            trending: mobileFeedTrendingBtn,
+            posts: mobileFeedPostsBtn
         };
     
         // Desktop Classes

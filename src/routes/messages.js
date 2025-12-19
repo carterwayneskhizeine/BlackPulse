@@ -22,10 +22,14 @@ module.exports = function(db, uploadsDir) {
     let baseSql;
     let params = [];
 
-    // 逻辑调整：新增 type=private 过滤
+    // 逻辑调整：新增 type=private 和 type=posts 过滤
     if (type === 'private' && req.userId) {
       // 仅显示当前登录用户的私有消息
       baseSql = "FROM messages m WHERE m.is_private = 1 AND m.user_id = ?";
+      params = [req.userId];
+    } else if (type === 'posts' && req.userId) {
+      // 仅显示当前登录用户的公共消息
+      baseSql = "FROM messages m WHERE m.is_private = 0 AND m.user_id = ?";
       params = [req.userId];
     } else if (privateKey && privateKey.trim() !== '') {
       // 按 KEY 查询 (显示公共消息 + 匹配的私有消息)
