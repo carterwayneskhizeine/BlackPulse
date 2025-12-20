@@ -10,7 +10,7 @@ const { getAIResponse } = require('../utils/ai-handler');
  * @param {string} uploadsDir - 上传目录
  * @returns {express.Router}
  */
-module.exports = function(db, uploadsDir) {
+module.exports = function (db, uploadsDir) {
   // API: 获取所有消息
   router.get('/', (req, res) => {
     const { privateKey, page = 1, limit = 5, type } = req.query;
@@ -28,9 +28,14 @@ module.exports = function(db, uploadsDir) {
       baseSql = "FROM messages m WHERE m.is_private = 1 AND m.user_id = ?";
       params = [req.userId];
     } else if (type === 'posts' && req.userId) {
-      // 仅显示当前登录用户的公共消息
-      baseSql = "FROM messages m WHERE m.is_private = 0 AND m.user_id = ?";
-      params = [req.userId];
+      // 显示当前登录用户的消息（公共 + 匹配的私有）
+      if (privateKey && privateKey.trim() !== '') {
+        baseSql = "FROM messages m WHERE (m.is_private = 0 OR (m.is_private = 1 AND m.private_key = ?)) AND m.user_id = ?";
+        params = [privateKey.trim(), req.userId];
+      } else {
+        baseSql = "FROM messages m WHERE m.is_private = 0 AND m.user_id = ?";
+        params = [req.userId];
+      }
     } else if (privateKey && privateKey.trim() !== '') {
       // 按 KEY 查询 (显示公共消息 + 匹配的私有消息)
       baseSql = "FROM messages m WHERE m.is_private = 0 OR (m.is_private = 1 AND m.private_key = ?)";
@@ -107,14 +112,22 @@ module.exports = function(db, uploadsDir) {
 
   // API: 获取热门消息
   router.get('/trending', (req, res) => {
-    const { page = 1, limit = 5 } = req.query;
+    const { page = 1, limit = 5, privateKey } = req.query;
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const offset = (pageNum - 1) * limitNum;
 
-    // 热门消息只包含公共消息
-    const baseSql = "FROM messages m WHERE m.is_private = 0";
-    const params = [];
+    // 热门消息: 公共消息 + 匹配的私有消息
+    let baseSql;
+    let params = [];
+
+    if (privateKey && privateKey.trim() !== '') {
+      baseSql = "FROM messages m WHERE m.is_private = 0 OR (m.is_private = 1 AND m.private_key = ?)";
+      params = [privateKey.trim()];
+    } else {
+      baseSql = "FROM messages m WHERE m.is_private = 0";
+      params = [];
+    }
 
     // 查询总数
     const countSql = `SELECT COUNT(m.id) as total ${baseSql}`;
@@ -161,6 +174,8 @@ module.exports = function(db, uploadsDir) {
           };
         });
 
+        const hasPrivateMessages = processedRows.some(row => row.is_private === 1);
+
         res.json({
           messages: processedRows,
           pagination: {
@@ -170,7 +185,9 @@ module.exports = function(db, uploadsDir) {
             totalPages,
             hasNextPage: pageNum < totalPages,
             hasPrevPage: pageNum > 1
-          }
+          },
+          hasPrivateMessages: hasPrivateMessages,
+          privateKeyProvided: !!privateKey
         });
       });
     });
@@ -223,17 +240,17 @@ module.exports = function(db, uploadsDir) {
         }
 
         const processedRows = rows.map(row => {
-            let likers = [];
-            try {
-              likers = JSON.parse(row.likers || '[]');
-            } catch (e) {
-              console.error(`Error parsing likers for message ${row.id}:`, e);
-            }
-            return {
-              ...row,
-              has_ai_reply: row.has_ai_reply === 1,
-              userHasLiked: likers.includes(currentUserIdentifier)
-            };
+          let likers = [];
+          try {
+            likers = JSON.parse(row.likers || '[]');
+          } catch (e) {
+            console.error(`Error parsing likers for message ${row.id}:`, e);
+          }
+          return {
+            ...row,
+            has_ai_reply: row.has_ai_reply === 1,
+            userHasLiked: likers.includes(currentUserIdentifier)
+          };
         });
 
         res.json({
@@ -311,57 +328,57 @@ module.exports = function(db, uploadsDir) {
     const finalContent = content ? content.trim() : '';
 
     db.run(`INSERT INTO messages (content, is_private, private_key, user_id, has_image, image_filename, image_mime_type, image_size) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [finalContent, isPrivateInt, finalPrivateKey, userId, hasImageInt, imageFilename, imageMimeType, imageSize], function(err) {
-      if (err) {
-        if (hasImage && imageFilename) {
-          const imagePath = path.join(uploadsDir, imageFilename);
-          try {
-            fs.unlinkSync(imagePath);
-            console.log(`Cleaned up file due to DB error: ${imageFilename}`);
-          } catch (unlinkError) {
-            console.error(`Failed to clean up file ${imageFilename}:`, unlinkError);
-          }
-        }
-        return res.status(500).json({ error: err.message });
-      }
-      db.get(`SELECT * FROM messages WHERE id = ?`, [this.lastID], (err, row) => {
+      [finalContent, isPrivateInt, finalPrivateKey, userId, hasImageInt, imageFilename, imageMimeType, imageSize], function (err) {
         if (err) {
+          if (hasImage && imageFilename) {
+            const imagePath = path.join(uploadsDir, imageFilename);
+            try {
+              fs.unlinkSync(imagePath);
+              console.log(`Cleaned up file due to DB error: ${imageFilename}`);
+            } catch (unlinkError) {
+              console.error(`Failed to clean up file ${imageFilename}:`, unlinkError);
+            }
+          }
           return res.status(500).json({ error: err.message });
         }
-        
-        // 立即响应用户
-        res.status(201).json(row);
+        db.get(`SELECT * FROM messages WHERE id = ?`, [this.lastID], (err, row) => {
+          if (err) {
+            return res.status(500).json({ error: err.message });
+          }
 
-        // --- AI 触发逻辑 (异步) ---
-        if (row.content && row.content.toLowerCase().includes('@goldierill')) {
-          console.log(`[AI Trigger] Mention detected in message ID: ${row.id}.`);
-          
-          // 使用异步IIFE处理AI逻辑
-          (async () => {
-            try {
-              const aiResponseText = await getAIResponse(row.content);
+          // 立即响应用户
+          res.status(201).json(row);
 
-              if (aiResponseText) {
-                console.log(`[AI] Received response. Saving to DB for message ${row.id}.`);
-                // 将AI响应作为新评论保存
-                db.run(`INSERT INTO comments (pid, user_id, username, text, message_id) VALUES (?, ?, ?, ?, ?)`,
-                  [null, null, 'GoldieRill', aiResponseText, row.id], function(err) {
-                    if (err) {
-                      console.error('[AI Error] Failed to insert AI comment into database:', err);
-                    } else {
-                      console.log(`[AI Success] AI comment saved with ID: ${this.lastID}.`);
-                    }
-                  });
-              } else {
-                console.log('[AI] Handler returned no response. Not saving comment.');
+          // --- AI 触发逻辑 (异步) ---
+          if (row.content && row.content.toLowerCase().includes('@goldierill')) {
+            console.log(`[AI Trigger] Mention detected in message ID: ${row.id}.`);
+
+            // 使用异步IIFE处理AI逻辑
+            (async () => {
+              try {
+                const aiResponseText = await getAIResponse(row.content);
+
+                if (aiResponseText) {
+                  console.log(`[AI] Received response. Saving to DB for message ${row.id}.`);
+                  // 将AI响应作为新评论保存
+                  db.run(`INSERT INTO comments (pid, user_id, username, text, message_id) VALUES (?, ?, ?, ?, ?)`,
+                    [null, null, 'GoldieRill', aiResponseText, row.id], function (err) {
+                      if (err) {
+                        console.error('[AI Error] Failed to insert AI comment into database:', err);
+                      } else {
+                        console.log(`[AI Success] AI comment saved with ID: ${this.lastID}.`);
+                      }
+                    });
+                } else {
+                  console.log('[AI] Handler returned no response. Not saving comment.');
+                }
+              } catch (aiError) {
+                console.error(`[AI Error] An error occurred during AI processing for message ${row.id}:`, aiError);
               }
-            } catch (aiError) {
-              console.error(`[AI Error] An error occurred during AI processing for message ${row.id}:`, aiError);
-            }
-          })();
-        }
+            })();
+          }
+        });
       });
-    });
   });
 
   // API: 删除消息
@@ -395,7 +412,7 @@ module.exports = function(db, uploadsDir) {
         }
       }
 
-      db.run(`DELETE FROM messages WHERE id = ?`, id, function(err) {
+      db.run(`DELETE FROM messages WHERE id = ?`, id, function (err) {
         if (err) {
           return res.status(500).json({ error: err.message });
         }
@@ -430,7 +447,7 @@ module.exports = function(db, uploadsDir) {
         return res.status(403).json({ error: 'You can only update your own messages' });
       }
 
-      db.run(`UPDATE messages SET content = ? WHERE id = ?`, [content, id], function(err) {
+      db.run(`UPDATE messages SET content = ? WHERE id = ?`, [content, id], function (err) {
         if (err) {
           return res.status(500).json({ error: err.message });
         }
@@ -476,7 +493,7 @@ module.exports = function(db, uploadsDir) {
 
       // 2. 确定当前用户ID
       const currentUserIdentifier = req.userId ? `user_${req.userId}` : `anonymous_${req.ip || 'unknown'}`;
-      
+
       // 3. 检查用户是否已点赞
       const userIndex = likers.indexOf(currentUserIdentifier);
       let newLikesCount;
@@ -499,7 +516,7 @@ module.exports = function(db, uploadsDir) {
       db.run(
         `UPDATE messages SET likes = ?, likers = ? WHERE id = ?`,
         [newLikesCount, newLikersJson, messageId],
-        function(err) {
+        function (err) {
           if (err) {
             console.error('Error updating message likes:', err);
             return res.status(500).json({ error: err.message });
