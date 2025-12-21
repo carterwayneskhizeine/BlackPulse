@@ -138,6 +138,8 @@ export const initEventListeners = () => {
             sendKeyButton.classList.add('hidden');
             postMessageButton.classList.remove('hidden');
             uploadFileButton.classList.remove('hidden');
+            // 显示 MD 按钮
+            stackeditButton.classList.remove('hidden');
             privateKeyInput.value = '';
             // 隐藏错误提示
             errorMessage.classList.add('hidden');
@@ -149,6 +151,8 @@ export const initEventListeners = () => {
             sendKeyButton.classList.remove('hidden');
             postMessageButton.classList.add('hidden');
             uploadFileButton.classList.add('hidden');
+            // 隐藏 MD 按钮
+            stackeditButton.classList.add('hidden');
             privateKeyInput.focus();
         }
     });
