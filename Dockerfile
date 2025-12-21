@@ -16,9 +16,9 @@ RUN npm install
 # Create vendor directory for showdown.min.js
 RUN mkdir -p public/js/vendor
 
-# Move showdown.min.js and stackedit.min.js to public/js/vendor using 'cp' within the container
-RUN cp node_modules/showdown/dist/showdown.min.js public/js/vendor/showdown.min.js && \
-    cp node_modules/stackedit-js/docs/lib/stackedit.min.js public/js/vendor/stackedit.min.js
+# Copy showdown.min.js and then copy our modified stackedit.min.js
+RUN cp node_modules/showdown/dist/showdown.min.js public/js/vendor/showdown.min.js
+COPY stackedit.min.js public/js/vendor/stackedit.min.js
 
 # Copy the rest of the application source code
 COPY . .

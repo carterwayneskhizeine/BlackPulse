@@ -97,7 +97,10 @@ export const handleMessageClick = (e) => {
             stackedit.openFile({
                 name: 'Edit Message',
                 content: {
-                    text: textarea.value
+                    text: textarea.value,
+                    properties: {
+                        colorTheme: 'dark'
+                    }
                 }
             });
             stackedit.on('fileChange', (file) => {

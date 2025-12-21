@@ -35,8 +35,8 @@ A feature-rich anonymous message board web application built with Node.js, Expre
 *   **Templating**: EJS
 *   **Styling**: Tailwind CSS (configured for `darkMode: 'class'`)
 *   **Client-side Logic**: Native JavaScript (Fetch API)
-*   **Markdown Rendering**: Showdown.js
 *   **File Upload**: Multer for handling file uploads (all types, up to 50MB)
+*   **Markdown Editor**: StackEdit (customized for dark mode)
 *   **Containerization**: Docker, Docker Compose
 
 ## Getting Started
@@ -840,6 +840,26 @@ The following modifications were made to implement the ability to like/unlike ma
 5.  **`public/js/api-rendering-logic.js`**:
     -   Modified the `fetchAndRenderMessages` function to detect when the `currentFeedType` is 'trending'.
     -   When it is, the function now calls the new `/api/messages/trending` endpoint instead of the standard message list endpoint.
+
+#### StackEdit Markdown Editor Integration
+The application integrates a customized version of the **StackEdit Markdown Editor** to provide a rich, distraction-free editing experience for both new messages and existing message edits.
+
+1. **`stackedit.js/` (Local Customization)**:
+   - A local clone of the `stackedit-js` library is maintained within the project to allow for deep customization of the editor's appearance, overcoming remote API limitations.
+   - **Simulated Dark Mode**: To match the application's pure dark aesthetic, we implemented a custom **CSS Filter Solution** within the library's core:
+     - Injected `filter: invert(90%) hue-rotate(180deg);` into the editor's `iframe`. This transforms the light-themed StackEdit interface into a beautiful dark mode.
+     - Modified the internal `styleContent` to set the container background to `rgba(0, 0, 0, 0.7)` and the iframe container to `#1e1e1e`, effectively eliminating "white flash" during loading.
+     - Updated the close button SVG color to `#aaa` for better visibility.
+   - These changes were applied directly to the minified `docs/lib/stackedit.min.js` to ensure they are active in the production bundle.
+
+2. **`Dockerfile` Build Logic**:
+   - The build process was updated to prioritize our local dark-mode-optimized version over the standard npm package.
+   - A `COPY` command was added to specifically move `stackedit.min.js` into the `public/js/vendor/` directory, ensuring the containerized application uses the modified library.
+
+3. **Frontend Implementation**:
+   - **Main Composer**: Integrated into `public/js/initial-setup.js` to provide full-screen Markdown editing for new posts.
+   - **Message Editing**: Added to the edit view in `public/js/message-edit-toggle.js`, allowing users to use the MD editor even when tweaking existing messages.
+   - **Styling**: The `createButton` utility in `public/js/utils.js` was extended to support a specialized "MD" button style that fits perfectly into the BlackPulse UI.
 
 ## Development
 
