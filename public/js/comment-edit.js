@@ -1,5 +1,6 @@
 import {
-    createButton
+    createButton,
+    createStackEditButton
 } from './utils.js';
 import {
     loadCommentsForMessage
@@ -42,6 +43,9 @@ export const handleEditComment = (commentId, messageId, container) => {
     const buttonContainer = document.createElement('div');
     buttonContainer.className = 'flex justify-end gap-2 mt-2';
 
+    // Create MD button
+    const mdButton = createStackEditButton(textarea, editForm);
+
     // Create cancel button
     const cancelButton = createButton('Cancel', commentId, 'cancel');
     cancelButton.type = 'button';
@@ -58,6 +62,7 @@ export const handleEditComment = (commentId, messageId, container) => {
     saveButton.classList.add('px-2', 'py-1'); // Add smaller padding
 
     // Add buttons to container
+    buttonContainer.appendChild(mdButton);
     buttonContainer.appendChild(cancelButton);
     buttonContainer.appendChild(saveButton);
 
