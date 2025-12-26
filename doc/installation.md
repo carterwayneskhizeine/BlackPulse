@@ -23,7 +23,7 @@ docker compose up --build -d
 
 ```bash
 git clone https://github.com/carterwayneskhizeine/BlackPulse.git
-cd AnonymousMessageBoard
+cd BlackPulse
 ```
 
 ### 2. Configure AI Functionality (Optional)
