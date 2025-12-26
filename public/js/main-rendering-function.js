@@ -22,11 +22,29 @@ if (youtubeExtension &&
     extensions.push(youtubeExtension);
 }
 
+// Mermaid extension for Showdown
+const mermaidExtension = {
+    type: 'output',
+    filter: function (text) {
+        // Find code blocks with language-mermaid and convert to div.mermaid
+        return text.replace(/<pre><code class="mermaid language-mermaid">([\s\S]+?)<\/code><\/pre>/g, (match, code) => {
+            const decodedCode = code
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&amp;/g, '&');
+            return `<div class="mermaid">${decodedCode}</div>`;
+        });
+    }
+};
+extensions.push(mermaidExtension);
+
 export const converter = new showdown.Converter({
     ghCompatibleHeaderId: true,
     strikethrough: true,
+    tasklists: true,
     tables: true,
     noHeaderId: false,
+    simplifiedAutoLink: true,
     extensions: extensions
 });
 
@@ -362,6 +380,15 @@ wrapper.className = 'relative group/code';
     if (message.has_ai_reply) {
         setTimeout(() => {
             loadCommentsForMessage(message.id);
+        }, 0);
+    }
+
+    // 触发 Mermaid 渲染
+    if (message.content && message.content.includes('```mermaid')) {
+        setTimeout(() => {
+            mermaid.run({
+                nodes: messageElement.querySelectorAll('.mermaid'),
+            });
         }, 0);
     }
 

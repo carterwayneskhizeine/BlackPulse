@@ -61,6 +61,15 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
     textElement.className = 'prose prose-invert prose-sm max-w-none text-gray-300 mb-2 leading-relaxed break-words';
     textElement.innerHTML = converter.makeHtml(commentText);
 
+    // Trigger Mermaid rendering for comments
+    if (commentText && commentText.includes('```mermaid')) {
+        setTimeout(() => {
+            mermaid.run({
+                nodes: textElement.querySelectorAll('.mermaid'),
+            });
+        }, 0);
+    }
+
 
     // Action buttons
     const actionsElement = document.createElement('div');

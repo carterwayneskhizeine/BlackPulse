@@ -390,6 +390,15 @@
     </dialog>
 
     <script src="/js/vendor/showdown.min.js?v=<%= Date.now() %>"></script>
+    <script src="/js/vendor/mermaid.min.js?v=<%= Date.now() %>"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            securityLevel: 'loose',
+            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+        });
+    </script>
     <script src="/js/vendor/stackedit.min.js?v=<%= Date.now() %>"></script>
     <script type="module" src="/js/main.js?v=<%= Date.now() %>"></script>
 </body>

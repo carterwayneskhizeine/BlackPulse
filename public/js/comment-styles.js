@@ -22,5 +22,12 @@ style.innerHTML = `
     .reply-form {
         min-width: 200px;
     }
+
+    /* Reply textarea focus gold border */
+    .reply-textarea:focus {
+        outline: none;
+        border-color: #FFD700;
+        box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.1);
+    }
 `;
 document.head.appendChild(style);

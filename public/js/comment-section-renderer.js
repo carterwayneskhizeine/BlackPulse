@@ -16,6 +16,9 @@ import {
 import {
     handleReply
 } from './reply-handler.js';
+import {
+    createStackEditButton
+} from './utils.js';
 
 /**
  * Flattens the nested comment structure into a sorted, flat list for rendering.
@@ -120,16 +123,31 @@ export const renderCommentSection = (container, messageId, comments, pagination)
                 class="input-bp min-h-[80px]"
                 rows="2"
                 placeholder="Add a comment..."></textarea>
-            <div class="flex justify-end gap-2">
-                <button type="button" class="btn-bp-outline text-sm py-1.5 px-5 comment-cancel-btn">
-                    Cancel
-                </button>
+            <div class="flex justify-end gap-2" id="comment-form-actions">
                 <button type="submit" class="btn-bp-primary text-sm py-1.5 px-5">
                     Post Comment
                 </button>
             </div>
             <div class="comment-error-message hidden text-red-400 text-center font-bold p-3 bg-black rounded-lg border border-red-800" role="alert"></div>
         `;
+
+        // Get the textarea and actions container
+        const textarea = commentForm.querySelector('textarea');
+        const actionsContainer = commentForm.querySelector('#comment-form-actions');
+        const postBtn = actionsContainer.querySelector('button[type="submit"]');
+
+        // Create Cancel button
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.className = 'btn-bp-outline text-sm py-1.5 px-5 comment-cancel-btn hover:text-bp-gold hover:border-bp-gold';
+        cancelBtn.textContent = 'Cancel';
+        // Insert Cancel before Post Comment
+        actionsContainer.insertBefore(cancelBtn, postBtn);
+
+        // Create and add StackEdit button
+        const stackeditBtn = createStackEditButton(textarea, commentForm);
+        // Insert StackEdit before Cancel
+        actionsContainer.insertBefore(stackeditBtn, cancelBtn);
 
         const toggleFormButton = document.createElement('button');
         toggleFormButton.className = 'btn-bp-icon ml-auto'; // Same style as other action buttons
