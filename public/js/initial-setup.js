@@ -306,27 +306,27 @@ export const initEventListeners = () => {
     // --- Sidebar Toggle ---
     if (sidebarToggleBtn && desktopSidebar && mainContent && mainContentWrapper) {
         sidebarToggleBtn.addEventListener('click', () => {
-            desktopSidebar.classList.toggle('lg:block');
+            // Toggle between hidden and visible states
+            const isCurrentlyHidden = desktopSidebar.classList.contains('lg:hidden');
 
-            // Check if the sidebar is now hidden on large screens
-            const isSidebarHidden = !desktopSidebar.classList.contains('lg:block');
+            if (isCurrentlyHidden) {
+                // Show sidebar
+                desktopSidebar.classList.remove('lg:hidden');
+                desktopSidebar.classList.add('lg:block');
 
-            if (isSidebarHidden) {
-                // --- COLLAPSED STATE ---
-                // Main content becomes a full-width flex container to center its child
+                // Main content becomes 9 columns (not centered, full width of 9 cols)
+                mainContent.classList.remove('lg:col-span-12', 'lg:flex', 'lg:justify-center');
+                mainContent.classList.add('lg:col-span-9');
+                mainContentWrapper.classList.remove('lg:w-3/4');
+            } else {
+                // Hide sidebar
+                desktopSidebar.classList.remove('lg:block');
+                desktopSidebar.classList.add('lg:hidden');
+
+                // Main content becomes 12 columns and centered
                 mainContent.classList.remove('lg:col-span-9');
                 mainContent.classList.add('lg:col-span-12', 'lg:flex', 'lg:justify-center');
-
-                // Inner wrapper gets a fixed 3/4 width on large screens
-                mainContentWrapper.classList.add('lg:w-9/12');
-            } else {
-                // --- VISIBLE STATE ---
-                // Main content reverts to a 9-column grid item
-                mainContent.classList.add('lg:col-span-9');
-                mainContent.classList.remove('lg:col-span-12', 'lg:flex', 'lg:justify-center');
-
-                // Inner wrapper reverts to full width of its parent grid cell
-                mainContentWrapper.classList.remove('lg:w-9/12');
+                mainContentWrapper.classList.add('lg:w-3/4');
             }
         });
     }
