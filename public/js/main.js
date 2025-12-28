@@ -11,10 +11,14 @@ import {
     parseURLParams
 } from './pagination.js';
 import { initSearchHandler } from './search-handler.js';
+import { initHeaderScroll } from './header-scroll.js';
 import './comment-styles.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Application initializing...");
+
+    // 0. Initialize header scroll behavior
+    initHeaderScroll();
 
     // 1. 解析URL参数
     parseURLParams();
