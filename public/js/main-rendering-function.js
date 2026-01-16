@@ -266,7 +266,55 @@ export const renderMessage = (message) => {
     if (message.content && message.content.trim() !== '') {
         const contentDiv = document.createElement('div');
         contentDiv.className = 'prose prose-invert max-w-none text-gray-300 prose-headings:text-gray-100 prose-a:text-bp-gold prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-bp-gold prose-code:text-bp-gold prose-code:bg-bp-black prose-code:px-1 prose-code:rounded prose-pre:bg-bp-black prose-pre:border prose-pre:border-bp-gray break-words';
-        contentDiv.innerHTML = converter.makeHtml(message.content);
+
+        // 转换markdown内容为HTML
+        const htmlContent = converter.makeHtml(message.content);
+
+        // 创建一个临时元素来检测行数
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        tempDiv.style.visibility = 'hidden';
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.width = '100%';
+        tempDiv.className = 'prose prose-invert max-w-none';
+        document.body.appendChild(tempDiv);
+
+        // 检测行数（使用line-height和高度计算）
+        const lineHeight = parseFloat(window.getComputedStyle(tempDiv).lineHeight);
+        const totalHeight = tempDiv.offsetHeight;
+        const estimatedLines = Math.ceil(totalHeight / lineHeight);
+
+        document.body.removeChild(tempDiv);
+
+        // 如果超过9行，应用折叠样式
+        let showMoreButton = null;
+        if (estimatedLines > 9) {
+            contentDiv.innerHTML = htmlContent;
+            contentDiv.style.display = '-webkit-box';
+            contentDiv.style.webkitLineClamp = '9';
+            contentDiv.style.webkitBoxOrient = 'vertical';
+            contentDiv.style.overflow = 'hidden';
+            contentDiv.classList.add('content-collapsed');
+
+            // 创建"显示更多"按钮
+            showMoreButton = document.createElement('button');
+            showMoreButton.className = 'text-bp-gold hover:text-bp-gold/80 text-sm font-medium transition-colors mt-2';
+            showMoreButton.textContent = '显示更多';
+            showMoreButton.dataset.expanded = 'false';
+
+            showMoreButton.addEventListener('click', () => {
+                if (showMoreButton.dataset.expanded === 'false') {
+                    // 展开内容
+                    contentDiv.style.display = 'block';
+                    contentDiv.style.maxHeight = 'none';
+                    contentDiv.style.webkitLineClamp = 'unset';
+                    contentDiv.classList.remove('content-collapsed');
+                    showMoreButton.style.display = 'none';
+                }
+            });
+        } else {
+            contentDiv.innerHTML = htmlContent;
+        }
 
         // Add copy buttons to code blocks (preserved logic, updated styling)
         const codeBlocks = contentDiv.querySelectorAll('pre code');
@@ -300,6 +348,11 @@ wrapper.className = 'relative group/code';
         });
 
         contentContainer.appendChild(contentDiv);
+
+        // 如果有"显示更多"按钮，添加到内容后面
+        if (showMoreButton) {
+            contentContainer.appendChild(showMoreButton);
+        }
     }
 
     // Footer with timestamp and actions

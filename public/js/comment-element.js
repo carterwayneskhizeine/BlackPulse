@@ -57,9 +57,88 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
         commentText = `${mentionLink} ${comment.text}`;
     }
 
+    // 转换markdown内容为HTML
+    const htmlContent = converter.makeHtml(commentText);
+
+    // 创建一个临时元素来检测行数
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    tempDiv.style.visibility = 'hidden';
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.width = '100%';
+    tempDiv.className = 'prose prose-invert prose-sm max-w-none';
+    document.body.appendChild(tempDiv);
+
+    // 检测行数（使用line-height和高度计算）
+    const lineHeight = parseFloat(window.getComputedStyle(tempDiv).lineHeight);
+    const totalHeight = tempDiv.offsetHeight;
+    const estimatedLines = Math.ceil(totalHeight / lineHeight);
+
+    document.body.removeChild(tempDiv);
+
     // Apply Tailwind's typography styles
     textElement.className = 'prose prose-invert prose-sm max-w-none text-gray-300 mb-2 leading-relaxed break-words';
-    textElement.innerHTML = converter.makeHtml(commentText);
+
+    // 如果超过9行，应用折叠样式
+    let showMoreButton = null;
+    if (estimatedLines > 9) {
+        textElement.innerHTML = htmlContent;
+        textElement.style.display = '-webkit-box';
+        textElement.style.webkitLineClamp = '9';
+        textElement.style.webkitBoxOrient = 'vertical';
+        textElement.style.overflow = 'hidden';
+        textElement.classList.add('content-collapsed');
+
+        // 创建"显示更多"按钮
+        showMoreButton = document.createElement('button');
+        showMoreButton.className = 'text-bp-gold hover:text-bp-gold/80 text-xs font-medium transition-colors mt-1';
+        showMoreButton.textContent = '显示更多';
+        showMoreButton.dataset.expanded = 'false';
+
+        showMoreButton.addEventListener('click', () => {
+            if (showMoreButton.dataset.expanded === 'false') {
+                // 展开内容
+                textElement.style.display = 'block';
+                textElement.style.maxHeight = 'none';
+                textElement.style.webkitLineClamp = 'unset';
+                textElement.classList.remove('content-collapsed');
+                showMoreButton.style.display = 'none';
+            }
+        });
+    } else {
+        textElement.innerHTML = htmlContent;
+    }
+
+    // Add copy buttons to code blocks
+    const codeBlocks = textElement.querySelectorAll('pre code');
+    codeBlocks.forEach((codeBlock) => {
+        const pre = codeBlock.parentElement;
+        if (pre.querySelector('.copy-code-btn')) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'relative group/code';
+
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+        pre.classList.add('overflow-x-auto');
+
+        const copyButton = document.createElement('button');
+        copyButton.className = 'copy-code-btn absolute top-2 right-2 bg-bp-gray text-xs px-2 py-1 rounded text-gray-300 opacity-0 group-hover/code:opacity-100 transition-all z-10 hover:bg-bp-gold hover:text-black font-medium';
+        copyButton.innerHTML = 'Copy';
+        copyButton.onclick = (e) => {
+            e.stopPropagation();
+            navigator.clipboard.writeText(codeBlock.textContent.trim())
+                .then(() => {
+                    const original = copyButton.innerHTML;
+                    copyButton.innerHTML = 'Copied!';
+                    setTimeout(() => {
+                        copyButton.innerHTML = original;
+                    }, 2000);
+                })
+                .catch(err => console.error('Copy failed:', err));
+        };
+        wrapper.appendChild(copyButton);
+    });
 
     // Trigger Mermaid rendering for comments
     if (commentText && commentText.includes('```mermaid')) {
@@ -100,10 +179,13 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
     // divider.textContent = '|';
     // actionsElement.appendChild(divider);
 
+    // Copy button
+    actionsElement.appendChild(createButton('Copy', comment.id, 'copy'));
+
     // Edit, Delete, Reply buttons (Using utils.createButton which returns btn-bp-icon)
     // We might want text buttons here for clarity in comments?
     // Let's stick to icons to keep it clean.
-    
+
     if (comment.editable) {
         actionsElement.appendChild(createButton('Edit', comment.id, 'edit'));
     }
@@ -117,6 +199,11 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
 
     commentElement.appendChild(userElement);
     commentElement.appendChild(textElement);
+
+    // 如果有"显示更多"按钮，添加到文本后面
+    if (showMoreButton) {
+        commentElement.appendChild(showMoreButton);
+    }
 
     // Store raw text for editing, so it can be retrieved by the edit handler
     const rawTextElement = document.createElement('div');
