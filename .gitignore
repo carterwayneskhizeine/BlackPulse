@@ -15,3 +15,9 @@
 exported_messages.md
 
 exported_messages/
+
+exported_messages_individual/
+
+.claude/
+
+MessageID.txt

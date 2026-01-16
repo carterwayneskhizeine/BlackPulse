@@ -30,9 +30,9 @@ def export_data():
         cursor = conn.cursor()
 
         # 4. Query Data
-        # We assume the table is named 'messages' and has 'id' and 'content' columns.
+        # Query messages including private_key information
         print(f"Reading data from {DB_PATH}...")
-        cursor.execute("SELECT id, content FROM messages ORDER BY id ASC")
+        cursor.execute("SELECT id, content, private_key, is_private FROM messages ORDER BY id ASC")
         rows = cursor.fetchall()
 
         if not rows:
@@ -50,11 +50,15 @@ def export_data():
         for row in rows:
             msg_id = row['id']
             content = row['content'] if row['content'] else "(No Content)"
+            private_key = row['private_key']
+            is_private = row['is_private']
 
             # Calculate lines needed for this message
-            # Header (2 lines) + content lines + separator (3 lines)
+            # Header (2 lines) + private key section (if exists, 3 lines) + content lines + separator (3 lines)
             content_lines = len(content.split('\n'))
             lines_needed = 2 + content_lines + 3
+            if private_key:
+                lines_needed += 3
 
             # Check if we need to create a new file
             if current_file is None or current_lines + lines_needed > MAX_LINES_PER_FILE:
@@ -78,6 +82,11 @@ def export_data():
 
             # Write message
             current_file.write(f"## Message ID: {msg_id}\n\n")
+
+            # Write Private Key if exists
+            if private_key:
+                current_file.write(f"**Private Key:** `{private_key}`\n\n")
+
             current_file.write(f"{content}\n\n")
             current_file.write("---\n\n")
 

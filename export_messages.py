@@ -23,11 +23,11 @@ def export_data():
         cursor = conn.cursor()
         
         # 3. Query Data
-        # We assume the table is named 'messages' and has 'id' and 'content' columns.
+        # Query messages including private_key information
         print(f"Reading data from {DB_PATH}...")
-        cursor.execute("SELECT id, content FROM messages ORDER BY id ASC")
+        cursor.execute("SELECT id, content, private_key, is_private FROM messages ORDER BY id ASC")
         rows = cursor.fetchall()
-        
+
         if not rows:
             print("No messages found in the database.")
             return
@@ -38,12 +38,19 @@ def export_data():
             f.write(f"# BlackPulse Messages Export\n\n")
             f.write(f"**Total Messages:** {len(rows)}\n\n")
             f.write("---\n\n")
-            
+
             for row in rows:
                 msg_id = row['id']
                 content = row['content'] if row['content'] else "(No Content)"
-                
+                private_key = row['private_key']
+                is_private = row['is_private']
+
                 f.write(f"## Message ID: {msg_id}\n\n")
+
+                # Write Private Key if exists
+                if private_key:
+                    f.write(f"**Private Key:** `{private_key}`\n\n")
+
                 f.write(f"{content}\n\n")
                 f.write("---\n\n")
                 
