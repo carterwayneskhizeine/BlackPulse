@@ -361,7 +361,7 @@ wrapper.className = 'relative group/code';
 
     const timestamp = document.createElement('div');
     timestamp.className = 'text-xs text-bp-text-muted font-mono';
-    timestamp.textContent = new Date(message.timestamp + 'Z').toLocaleString('en-CA', {
+    const timeString = new Date(message.timestamp + 'Z').toLocaleString('en-CA', {
         timeZone: 'Asia/Shanghai',
         year: 'numeric',
         month: '2-digit',
@@ -370,6 +370,8 @@ wrapper.className = 'relative group/code';
         minute: '2-digit',
         hourCycle: 'h23'
     });
+    const messageId = parseInt(message.id, 10); // 去掉前导0
+    timestamp.textContent = `${timeString} ${messageId}`;
 
     const actions = document.createElement('div');
     actions.className = 'flex gap-1 opacity-80 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200';
