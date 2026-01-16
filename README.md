@@ -3,6 +3,7 @@
 A feature-rich anonymous message board web application built with Node.js, Express, and EJS. It uses SQLite3 for data storage and is fully containerized with Docker. The frontend is built with **modern, modular JavaScript (ESM)**, and the application features a pure dark mode interface, support for Markdown content, file uploads (including video playback), a comment system with infinite nesting, **AI-powered responses to specific mentions**, user authentication, Google-style pagination, YouTube video embedding, and allows users to post, edit, and delete messages anonymously.
 
 ![Preview of the Application](PreviewImage.jpg)
+![Preview of Invitation](PreviewInvitation.jpg)
 
 ## Features
 
@@ -26,6 +27,8 @@ A feature-rich anonymous message board web application built with Node.js, Expre
 *   **Comment System with Infinite Reply Support**: Add comments to any page with unlimited nesting depth, featuring liking, editing, and deletion capabilities.
 *   **Trending Feed**: A "Trending" feed that uses a Reddit-style algorithm to sort messages based on the **total likes on comments** and time-decay, allowing users to discover the most popular and engaging content dynamically.
 *   **Liked Messages Feed**: Logged-in users can easily access a dedicated "Liked" feed, showcasing all messages they have personally liked.
+*   **Private Invitation Access**: Transform your board into a private, invitation-only community. Visitors must verify an invitation code (configured via environment variable) before accessing any content. The system preserves URL parameters (such as private message keys) and redirects users to their intended destination after verification.
+*   **Password Change**: Logged-in users can securely change their passwords through a user-friendly dropdown menu in the header.
 
 ## Tech Stack
 
@@ -48,6 +51,8 @@ For detailed information about installation, usage, and development, please refe
   - [Public Messages](doc/usage/public-messages.md)
   - [Private Messages](doc/usage/private-messages.md)
   - [User Authentication](doc/usage/user-authentication.md)
+  - [Password Change](doc/usage/password-change.md)
+  - [Private Invitation Access](doc/usage/private-invitation.md)
   - [File Upload](doc/usage/file-upload.md)
   - [Embedded Videos](doc/usage/embedded-videos.md)
   - [Comment System](doc/usage/comment-system.md)
@@ -64,11 +69,18 @@ For detailed information about installation, usage, and development, please refe
 git clone https://github.com/carterwayneskhizeine/BlackPulse.git
 cd BlackPulse
 
+# (Optional) Configure invitation access for private mode
+# Edit .env to set:
+#   INVITATION_MODE=true
+#   INVITATION_CODE=your-secret-code
+# Default is public access (INVITATION_MODE=false)
+
 # Build and run with Docker
 docker compose up --build -d
 
 # Access the application
 # Open http://localhost:1989 in your browser
+# If INVITATION_MODE=true, you'll be prompted for the code
 ```
 
 ## License

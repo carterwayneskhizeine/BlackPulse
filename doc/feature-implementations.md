@@ -289,3 +289,109 @@ The application integrates a customized version of the **StackEdit Markdown Edit
    - **Main Composer**: Integrated into `public/js/initial-setup.js` to provide full-screen Markdown editing for new posts.
    - **Message Editing**: Added to the edit view in `public/js/message-edit-toggle.js`, allowing users to use the MD editor even when tweaking existing messages.
    - **Styling**: The `createButton` utility in `public/js/utils.js` was extended to support a specialized "MD" button style that fits perfectly into the BlackPulse UI.
+
+## Private Invitation Access Feature
+
+### Overview
+
+Transformed the public message board into a private, invitation-only community. All visitors must verify their invitation code before accessing any content. The system preserves the original URL parameters (such as private message keys) and redirects users to their intended destination after verification.
+
+### Files Modified
+
+1. **`.env`**:
+   - Added `INVITATION_MODE` environment variable to enable/disable invitation access (default: `false`)
+   - Added `INVITATION_CODE` environment variable for the invitation code (must be set in `.env`, no hardcoded defaults)
+   - When `INVITATION_MODE=true`, visitors must enter the code to access the site
+   - When `INVITATION_MODE=false` or not set, the site operates normally (public access)
+
+2. **`src/middleware/invite.js`** (New):
+   - Created `requireInvitation` middleware to check if invitation mode is enabled
+   - Checks `INVITATION_MODE` environment variable: only active when set to `'true'`
+   - Created `verifyInvitationCode` function to validate invitation codes against `INVITATION_CODE`
+   - Middleware excludes API routes and static assets from invitation check
+   - Stores verification status in session: `req.session.invitationVerified`
+   - Redirects unverified users to `/invite?redirect=<original_url>`
+
+3. **`src/routes/invite.js`** (New):
+   - `GET /invite` - Renders invitation verification page
+   - `POST /api/invite/verify` - Verifies invitation code and marks session as verified
+   - Handles redirect to original destination after successful verification
+   - Returns 401 for invalid codes
+
+4. **`views/invite.ejs`** (New):
+   - Beautiful, responsive invitation verification page matching BlackPulse dark theme
+   - Features:
+     - Lock icon with gold accent
+     - Centered card layout with animations
+     - Form with code input field
+     - Error message display area
+     - Submit button with loading state
+     - Auto-focus on input field
+     - Shake animation on invalid code
+   - JavaScript handles form submission via fetch API
+   - Preserves redirect URL from query parameters
+
+5. **`src/index.js`**:
+   - Imported `requireInvitation` middleware and `createInviteRoutes`
+   - Added invitation routes before main routes (crucial for redirect flow)
+   - Applied `requireInvitation` middleware to main route
+   - Invitation verification page is excluded from invitation check
+
+### User Flow
+
+1. **First Visit**:
+   - User navigates to any URL (e.g., `https://message.goldie-rill.top/`)
+   - Middleware checks session for `invitationVerified` flag
+   - If not verified, redirects to `/invite?redirect=/`
+
+2. **With Private Key**:
+   - User navigates to `https://message.goldie-rill.top/?key=100`
+   - Redirected to `/invite?redirect=%2F%3Fkey%3D100`
+   - After verification, redirected to original URL with key parameter intact
+
+3. **Verification Process**:
+   - User enters invitation code (e.g., `8964`)
+   - Form submits to `POST /api/invite/verify`
+   - Server validates code against `INVITATION_CODE` environment variable
+   - On success: sets `req.session.invitationVerified = true`
+   - User redirected to intended destination
+
+4. **Subsequent Visits**:
+   - Session cookie contains verification flag
+   - User accesses site directly without re-entering code
+   - Verification persists until session expires or browser is closed
+
+### Security Considerations
+
+- **Environment Variables**: Both `INVITATION_MODE` and `INVITATION_CODE` stored in `.env` file, not committed to version control
+- **Session-Based**: Verification stored in server-side session, not client-accessible
+- **Code Comparison**: Simple string comparison, case-sensitive
+- **No Bypass**: Middleware applies to all routes except API and static assets
+- **Graceful Degradation**: If `INVITATION_MODE` is not set to `true`, site operates normally (public access)
+
+### Customization
+
+**To enable invitation access**, set the mode to `true` and set your code in the `.env` file:
+```env
+INVITATION_MODE=true
+INVITATION_CODE=your-custom-code-here
+```
+
+**To change the invitation code**:
+```env
+INVITATION_CODE=your-new-code-here
+```
+
+**To disable invitation requirement and make the site public again**:
+```env
+INVITATION_MODE=false
+```
+Or simply remove the `INVITATION_MODE` line (defaults to `false`)
+
+### Technical Notes
+
+- Invitation verification page uses inline JavaScript for self-contained functionality
+- Form submission uses fetch API for asynchronous verification
+- Error handling provides clear feedback for invalid codes
+- Loading state prevents double-submission
+- Responsive design works on mobile and desktop

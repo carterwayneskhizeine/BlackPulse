@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Verification | BlackPulse</title>
+    <link href="/style.css?v=<%= new Date().getTime() %>" rel="stylesheet">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <style>
+        .invite-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .invite-card {
+            max-width: 420px;
+            width: 100%;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lock-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0.05) 100%);
+            border-radius: 50%;
+            border: 2px solid rgba(234, 179, 8, 0.2);
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+
+<body
+    class="bg-bp-black text-bp-text min-h-screen flex flex-col font-sans selection:bg-bp-gold selection:text-bp-black">
+
+    <div class="invite-container">
+        <div class="invite-card card-bp border-t-2 border-t-bp-gold shadow-glow-strong">
+            <!-- Lock Icon -->
+            <div class="lock-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-bp-gold" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+
+            <!-- Header -->
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-bold text-white mb-2">
+                    <span class="text-bp-gold">Black</span>Pulse
+                </h1>
+                <p class="text-bp-text-muted text-sm">Private Access Required</p>
+            </div>
+
+            <!-- Description -->
+            <p class="text-center text-bp-text-muted text-sm mb-6">
+                This is a private community. Please enter your invitation code to continue.
+            </p>
+
+            <!-- Form -->
+            <form id="invite-form" class="space-y-4">
+                <div>
+                    <label for="invite-code" class="block mb-2 text-sm font-bold text-gray-400">
+                        Invitation Code
+                    </label>
+                    <input type="text" id="invite-code" name="code"
+                        class="input-bp text-center text-lg tracking-wider font-mono"
+                        placeholder="Enter code..." autocomplete="off" required>
+                </div>
+
+                <!-- Error Message -->
+                <div id="error-message"
+                    class="hidden text-red-400 text-sm font-medium p-3 bg-red-900/10 rounded border border-red-900/50 text-center">
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submit-btn"
+                    class="btn-bp-primary w-full justify-center py-3 text-base font-medium">
+                    <span>Verify Access</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="mt-6 pt-6 border-t border-bp-gray/30 text-center">
+                <p class="text-xs text-bp-text-muted">
+                    Protected by invitation access control
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('invite-form');
+        const codeInput = document.getElementById('invite-code');
+        const errorDiv = document.getElementById('error-message');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // Get redirect URL from query parameter or default to root
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectTo = urlParams.get('redirect') || '/';
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            form.classList.add('shake');
+            setTimeout(() => form.classList.remove('shake'), 500);
+        }
+
+        function clearError() {
+            errorDiv.classList.add('hidden');
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearError();
+
+            const code = codeInput.value.trim();
+
+            if (!code) {
+                showError('Please enter an invitation code');
+                return;
+            }
+
+            // Disable button and show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="flex items-center gap-2">Verifying...</span>';
+
+            try {
+                const response = await fetch('/api/invite/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Success - redirect to intended destination
+                    window.location.href = data.redirectTo || redirectTo;
+                } else {
+                    showError(data.error || 'Invalid invitation code');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `
+                        <span>Verify Access</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                    `;
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                showError('Network error. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <span>Verify Access</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                `;
+            }
+        });
+
+        // Auto-focus input on page load
+        codeInput.focus();
+
+        // Allow Enter key to submit
+        codeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+
+</html>

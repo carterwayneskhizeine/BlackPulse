@@ -12,6 +12,7 @@ const connectDatabase = require('./config/database');
 // Local Modules: Middleware
 const sessionMiddleware = require('./middleware/session');
 const { createGetCurrentUserMiddleware } = require('./middleware/auth');
+const { requireInvitation } = require('./middleware/invite');
 const createImageAccessMiddleware = require('./middleware/imageAccess');
 const { upload, generalUpload, uploadsDir } = require('./middleware/upload');
 
@@ -22,6 +23,7 @@ const createMessageRoutes = require('./routes/messages');
 const createCommentRoutes = require('./routes/comments');
 const createUploadRoutes = require('./routes/upload');
 const createSearchRoutes = require('./routes/search');
+const createInviteRoutes = require('./routes/invite');
 
 
 // ==================== Initialization ====================
@@ -62,8 +64,13 @@ app.use('/uploads', express.static(uploadsDir));
 
 
 // ==================== Routes ====================
-// Main route
-app.use('/', createMainRoutes(db));
+// Invitation verification route (must be before main routes)
+const inviteRoutes = createInviteRoutes();
+app.use('/invite', inviteRoutes);
+app.use('/api/invite', inviteRoutes);
+
+// Main route (with invitation check)
+app.use('/', requireInvitation, createMainRoutes(db));
 
 // API routes
 const authRoutes = createAuthRoutes(db);
