@@ -14,7 +14,17 @@ import {
     cancelRegister,
     loginError,
     registerError,
-    registerFromLoginBtn
+    registerFromLoginBtn,
+    userMenuTrigger,
+    userDropdownMenu,
+    changePasswordBtn,
+    changePasswordModal,
+    changePasswordForm,
+    currentPasswordInput,
+    newPasswordInput,
+    confirmNewPasswordInput,
+    changePasswordError,
+    cancelChangePassword
 } from './ui-elements.js';
 import {
     updateUIForUser
@@ -206,6 +216,113 @@ export const initAuthHandlers = () => {
     checkAuthStatus().then(user => {
         if (user) {
             console.log('User is logged in:', user.username);
+        }
+    });
+
+    // User dropdown menu toggle
+    userMenuTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdownMenu.classList.toggle('hidden');
+        // Rotate arrow icon
+        const arrow = userMenuTrigger.querySelector('svg:last-child');
+        arrow.style.transform = userDropdownMenu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+        if (!userDropdownMenu.classList.contains('hidden')) {
+            userDropdownMenu.classList.add('hidden');
+            const arrow = userMenuTrigger.querySelector('svg:last-child');
+            arrow.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    // Prevent dropdown from closing when clicking inside
+    userDropdownMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    // Change password button
+    changePasswordBtn.addEventListener('click', () => {
+        // Close dropdown
+        userDropdownMenu.classList.add('hidden');
+        const arrow = userMenuTrigger.querySelector('svg:last-child');
+        arrow.style.transform = 'rotate(0deg)';
+
+        // Clear form and show modal
+        clearError(changePasswordError);
+        currentPasswordInput.value = '';
+        newPasswordInput.value = '';
+        confirmNewPasswordInput.value = '';
+        changePasswordModal.showModal();
+    });
+
+    // Change password form submission
+    changePasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearError(changePasswordError);
+
+        const currentPassword = currentPasswordInput.value.trim();
+        const newPassword = newPasswordInput.value.trim();
+        const confirmNewPassword = confirmNewPasswordInput.value.trim();
+
+        // Validation
+        if (!currentPassword || !newPassword || !confirmNewPassword) {
+            showError(changePasswordError, 'All fields are required');
+            return;
+        }
+
+        if (newPassword !== confirmNewPassword) {
+            showError(changePasswordError, 'New passwords do not match');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            showError(changePasswordError, 'New password must be at least 6 characters');
+            return;
+        }
+
+        if (currentPassword === newPassword) {
+            showError(changePasswordError, 'New password must be different from current password');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/auth/change-password', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                changePasswordModal.close();
+                // Show success message
+                alert('Password changed successfully!');
+            } else {
+                showError(changePasswordError, data.error || 'Failed to change password');
+            }
+        } catch (error) {
+            console.error('Change password error:', error);
+            showError(changePasswordError, 'Network error, please try again');
+        }
+    });
+
+    // Cancel change password
+    cancelChangePassword.addEventListener('click', () => {
+        changePasswordModal.close();
+    });
+
+    // Close change password modal when clicking outside
+    changePasswordModal.addEventListener('click', (e) => {
+        if (e.target === changePasswordModal) {
+            changePasswordModal.close();
         }
     });
 };

@@ -2,6 +2,7 @@ import {
     guestView,
     userView,
     usernameDisplay,
+    dropdownUsername,
     privateKeyInput,
     sendKeyButton,
     feedPrivateBtn,
@@ -27,6 +28,7 @@ export const updateUIForUser = (user) => {
         guestView.classList.add('hidden');
         userView.classList.remove('hidden');
         usernameDisplay.textContent = user.username;
+        dropdownUsername.textContent = user.username;
 
         // Show User Specific Feed buttons
         if (feedPrivateBtn) {

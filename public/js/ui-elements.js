@@ -84,3 +84,18 @@ export const adminPrivateModal = document.getElementById('admin-private-modal');
 export const adminModalPrivateKey = document.getElementById('admin-modal-private-key');
 export const adminCancelPrivate = document.getElementById('admin-cancel-private');
 export const adminConfirmPrivate = document.getElementById('admin-confirm-private');
+
+// User Dropdown Menu Elements
+export const userMenuTrigger = document.getElementById('user-menu-trigger');
+export const userDropdownMenu = document.getElementById('user-dropdown-menu');
+export const changePasswordBtn = document.getElementById('change-password-btn');
+
+// Change Password Modal Elements
+export const changePasswordModal = document.getElementById('change-password-modal');
+export const changePasswordForm = document.getElementById('change-password-form');
+export const currentPasswordInput = document.getElementById('current-password');
+export const newPasswordInput = document.getElementById('new-password');
+export const confirmNewPasswordInput = document.getElementById('confirm-new-password');
+export const changePasswordError = document.getElementById('change-password-error');
+export const cancelChangePassword = document.getElementById('cancel-change-password');
+export const dropdownUsername = document.getElementById('dropdown-username');

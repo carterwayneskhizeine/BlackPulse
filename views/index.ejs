@@ -66,15 +66,52 @@
                 </div>
 
                 <!-- User view -->
-                <div id="user-view" class="<%= user ? '' : 'hidden' %> flex items-center gap-4">
-                    <span class="text-sm text-bp-text-muted hidden sm:inline-block">Welcome, <span id="username-display"
-                            class="text-bp-gold font-medium">
+                <div id="user-view" class="<%= user ? '' : 'hidden' %> relative">
+                    <!-- User menu trigger -->
+                    <button id="user-menu-trigger"
+                        class="flex items-center gap-2 text-sm text-bp-text-muted hover:text-bp-text transition-colors py-1.5 px-3 rounded-md hover:bg-bp-gray focus:outline-none">
+                        <span id="username-display" class="hidden sm:inline-block text-bp-gold font-medium">
                             <%= user ? user.username : '' %>
-                        </span></span>
-                    <button id="logout-btn"
-                        class="btn-bp-outline text-sm py-1.5 px-4 hover:border-red-500 hover:text-red-500 hover:bg-red-500/10">
-                        Logout
+                        </span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
                     </button>
+
+                    <!-- User dropdown menu -->
+                    <div id="user-dropdown-menu"
+                        class="hidden absolute right-0 mt-2 w-56 bg-bp-dark border border-bp-gray rounded-lg shadow-glow-strong py-2 z-50">
+                        <!-- User info header -->
+                        <div class="px-4 py-3 border-b border-bp-gray">
+                            <p class="text-sm text-bp-text-muted">Signed in as</p>
+                            <p id="dropdown-username" class="text-sm font-bold text-bp-gold truncate">
+                                <%= user ? user.username : '' %>
+                            </p>
+                        </div>
+
+                        <!-- Menu items -->
+                        <div class="py-1">
+                            <button id="change-password-btn"
+                                class="w-full flex items-center gap-3 px-4 py-2 text-sm text-bp-text-muted hover:text-bp-text hover:bg-bp-gray transition-colors text-left">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                                </svg>
+                                Change Password
+                            </button>
+                        </div>
+
+                        <div class="border-t border-bp-gray"></div>
+
+                        <div class="py-1">
+                            <button id="logout-btn"
+                                class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:text-red-500 hover:bg-red-500/10 transition-colors text-left">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -385,6 +422,22 @@
             <div class="flex justify-end gap-2 mt-6">
                 <button type="button" id="cancel-register" class="btn-bp-outline text-xs py-1.5">Cancel</button>
                 <button type="submit" class="btn-bp-primary text-xs py-1.5">Register</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Change Password Modal -->
+    <dialog id="change-password-modal"
+        class="bg-bp-dark text-bp-text p-6 rounded-lg shadow-glow-strong border border-bp-gray backdrop:bg-black/90 max-w-sm w-full m-auto">
+        <h2 class="text-xl font-bold mb-4 text-white">Change Password</h2>
+        <form id="change-password-form" class="space-y-4">
+            <input type="password" id="current-password" placeholder="Current Password" class="input-bp" required>
+            <input type="password" id="new-password" placeholder="New Password (min 6 chars)" class="input-bp" required>
+            <input type="password" id="confirm-new-password" placeholder="Confirm New Password" class="input-bp" required>
+            <div id="change-password-error" class="text-red-400 text-sm hidden"></div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button type="button" id="cancel-change-password" class="btn-bp-outline text-xs py-1.5">Cancel</button>
+                <button type="submit" class="btn-bp-primary text-xs py-1.5">Change</button>
             </div>
         </form>
     </dialog>

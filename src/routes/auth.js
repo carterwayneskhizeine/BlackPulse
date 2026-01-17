@@ -135,5 +135,62 @@ module.exports = function(db) {
     }
   });
 
+  // 修改密码
+  router.put('/change-password', async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+
+    // 验证用户已登录
+    if (!req.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    // 输入验证
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current password and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' });
+    }
+
+    if (currentPassword === newPassword) {
+      return res.status(400).json({ error: 'New password must be different from current password' });
+    }
+
+    try {
+      // 获取用户信息
+      db.get('SELECT id, username, password_hash FROM users WHERE id = ?', [req.userId], async (err, user) => {
+        if (err) {
+          return res.status(500).json({ error: 'Database error' });
+        }
+
+        if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+
+        // 验证当前密码
+        const isValidPassword = await comparePassword(currentPassword, user.password_hash);
+        if (!isValidPassword) {
+          return res.status(401).json({ error: 'Current password is incorrect' });
+        }
+
+        // 哈希新密码
+        const newPasswordHash = await hashPassword(newPassword);
+
+        // 更新密码
+        db.run('UPDATE users SET password_hash = ? WHERE id = ?', [newPasswordHash, req.userId], function(err) {
+          if (err) {
+            return res.status(500).json({ error: 'Failed to update password' });
+          }
+
+          res.json({ message: 'Password updated successfully' });
+        });
+      });
+    } catch (error) {
+      console.error('Change password error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   return router;
 }
