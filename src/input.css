@@ -70,3 +70,24 @@
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out forwards;
 }
+
+/* Drag and Drop Upload Styles */
+.drag-over-active {
+  @apply border-2 border-dashed border-bp-gold relative;
+  background-color: rgba(251, 191, 36, 0.1) !important;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Drag hint overlay (optional) */
+.drag-over-active::after {
+  content: 'Drop file to upload';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fbbf24;
+  font-size: 1.5rem;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 10;
+}

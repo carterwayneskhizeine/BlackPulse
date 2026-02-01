@@ -3,7 +3,7 @@ services:
     build: .
     container_name: black-pulse
     ports:
-      - "0.0.0.0:1989:1989"
+      - "0.0.0.0:61989:1989"
     env_file:
       - ./.env
     volumes:
