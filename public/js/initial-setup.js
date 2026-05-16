@@ -348,11 +348,11 @@ export const initEventListeners = () => {
         };
 
         // Desktop Classes
-        const activeClassesDesktop = ['bg-bp-gold/10', 'text-bp-gold', 'font-medium'];
+        const activeClassesDesktop = ['bg-bp-blue/10', 'text-bp-blue', 'font-medium'];
         const inactiveClassesDesktop = ['text-bp-text-muted', 'hover:bg-bp-gray', 'hover:text-bp-text'];
 
         // Mobile Classes
-        // Active: btn-bp-primary (bg-bp-gold text-bp-black ...)
+        // Active: btn-bp-primary (bg-bp-blue text-bp-black ...)
         // Inactive: btn-bp-outline bg-bp-dark (border ... text-muted ...)
 
         Object.keys(desktopBtns).forEach(type => {
@@ -382,3 +382,4 @@ export const initEventListeners = () => {
         });
     }
 };
+

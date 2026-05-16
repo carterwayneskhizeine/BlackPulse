@@ -25,7 +25,7 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
     
     // Avatar placeholder or just name
     const name = document.createElement('span');
-    name.className = 'font-bold text-sm text-bp-gold';
+    name.className = 'font-bold text-sm text-bp-blue';
     name.textContent = comment.user.name;
     
     userInfo.appendChild(name);
@@ -53,7 +53,7 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
         const parentComment = commentMap.get(parentId);
         const parentAuthor = parentComment.user.name;
         // The mention is a link
-        const mentionLink = `<a href="#comment-${parentId}" class="text-bp-gold hover:underline mr-1 no-underline bg-bp-gold/10 px-1 rounded text-xs font-bold">@${parentAuthor}</a>`;
+        const mentionLink = `<a href="#comment-${parentId}" class="text-bp-blue hover:underline mr-1 no-underline bg-bp-blue/10 px-1 rounded text-xs font-bold">@${parentAuthor}</a>`;
         commentText = `${mentionLink} ${comment.text}`;
     }
 
@@ -91,7 +91,7 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
 
         // 创建"显示更多"按钮
         showMoreButton = document.createElement('button');
-        showMoreButton.className = 'text-bp-gold hover:text-bp-gold/80 text-xs font-medium transition-colors mt-1';
+        showMoreButton.className = 'text-bp-blue hover:text-bp-blue/80 text-xs font-medium transition-colors mt-1';
         showMoreButton.textContent = '显示更多';
         showMoreButton.dataset.expanded = 'false';
 
@@ -123,7 +123,7 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
         pre.classList.add('overflow-x-auto');
 
         const copyButton = document.createElement('button');
-        copyButton.className = 'copy-code-btn absolute top-2 right-2 bg-bp-gray text-xs px-2 py-1 rounded text-gray-300 opacity-0 group-hover/code:opacity-100 transition-all z-10 hover:bg-bp-gold hover:text-black font-medium';
+        copyButton.className = 'copy-code-btn absolute top-2 right-2 bg-bp-gray text-xs px-2 py-1 rounded text-gray-300 opacity-0 group-hover/code:opacity-100 transition-all z-10 hover:bg-bp-blue hover:text-white font-medium';
         copyButton.innerHTML = 'Copy';
         copyButton.onclick = (e) => {
             e.stopPropagation();
@@ -161,7 +161,7 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
     const likeBtn = document.createElement('button');
     likeBtn.dataset.action = 'like';
     likeBtn.dataset.id = comment.id;
-    likeBtn.className = `transition-colors font-medium text-xs hover:text-bp-gold ${comment.userHasLiked ? 'text-bp-gold' : 'text-bp-text-muted'}`;
+    likeBtn.className = `transition-colors font-medium text-xs hover:text-bp-blue ${comment.userHasLiked ? 'text-bp-blue' : 'text-bp-text-muted'}`;
     likeBtn.textContent = 'like';
     
     const likesCount = document.createElement('span');
@@ -215,3 +215,4 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
 
     return commentElement;
 };
+

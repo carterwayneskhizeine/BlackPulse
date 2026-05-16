@@ -55,7 +55,7 @@ export const renderPagination = (pageClickHandler = fetchAndRenderMessages) => {
             const pageButton = createPaginationButton(pageNum.toString(), `page-${pageNum}`, `Go to page ${pageNum}`);
             if (pageNum === currentPage) {
                 // Active State: Gold background, Black text
-                pageButton.className = 'bg-bp-gold text-bp-black font-bold py-2 px-4 rounded-md shadow-glow transition-all';
+                pageButton.className = 'bg-bp-blue text-white font-bold py-2 px-4 rounded-md shadow-glow transition-all';
             }
             pageButton.addEventListener('click', () => pageClickHandler(pageNum));
             paginationContainer.appendChild(pageButton);
@@ -80,7 +80,7 @@ export const renderPagination = (pageClickHandler = fetchAndRenderMessages) => {
 const createPaginationButton = (text, id, title) => {
     const button = document.createElement('button');
     button.id = id;
-    button.className = 'btn-bp-outline text-sm py-2 px-3 hover:text-bp-gold hover:border-bp-gold';
+    button.className = 'btn-bp-outline text-sm py-2 px-3 hover:text-bp-blue hover:border-bp-blue';
     button.innerHTML = text;
     button.title = title;
     return button;
@@ -159,3 +159,4 @@ export const parseURLParams = () => {
         setIsPrivateFilterMode(true);
     }
 };
+

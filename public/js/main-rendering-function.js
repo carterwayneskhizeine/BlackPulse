@@ -52,7 +52,7 @@ export const converter = new showdown.Converter({
 export const renderMessage = (message) => {
     // Wrapper: Card style
     const messageElement = document.createElement('div');
-    messageElement.className = 'card-bp animate-fade-in flex flex-col group hover:border-bp-gold/50 transition-all';
+    messageElement.className = 'card-bp animate-fade-in flex flex-col group hover:border-bp-blue/50 transition-all';
     messageElement.dataset.messageId = message.id;
 
     // 创建内容容器
@@ -162,11 +162,11 @@ export const renderMessage = (message) => {
         } else {
             // 显示文件下载链接 (File Card)
             const fileCard = document.createElement('div');
-            fileCard.className = 'p-4 bg-bp-black rounded-lg border border-bp-gray flex items-center group/file hover:border-bp-gold/30 transition-colors';
+            fileCard.className = 'p-4 bg-bp-black rounded-lg border border-bp-gray flex items-center group/file hover:border-bp-blue/30 transition-colors';
 
             // 文件图标
             const fileIcon = document.createElement('div');
-            fileIcon.className = 'mr-4 p-3 bg-bp-dark rounded-full text-bp-gold/80 group-hover/file:text-bp-gold transition-colors';
+            fileIcon.className = 'mr-4 p-3 bg-bp-dark rounded-full text-bp-blue/80 group-hover/file:text-bp-blue transition-colors';
             fileIcon.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -200,7 +200,7 @@ export const renderMessage = (message) => {
             const downloadLink = document.createElement('a');
             downloadLink.href = downloadUrl;
             downloadLink.download = message.image_filename;
-            downloadLink.className = 'ml-4 btn-bp-icon hover:bg-bp-gray p-2 rounded-full text-bp-text-muted hover:text-bp-gold';
+            downloadLink.className = 'ml-4 btn-bp-icon hover:bg-bp-gray p-2 rounded-full text-bp-text-muted hover:text-bp-blue';
             downloadLink.title = 'Download';
             downloadLink.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>';
 
@@ -221,7 +221,7 @@ export const renderMessage = (message) => {
 
         // Badge
         const badge = document.createElement('span');
-        badge.className = 'badge-bp border-bp-gold text-bp-gold';
+        badge.className = 'badge-bp border-bp-blue text-bp-blue';
         badge.textContent = 'PRIVATE';
 
         // KEY Display
@@ -240,7 +240,7 @@ export const renderMessage = (message) => {
                 navigator.clipboard.writeText(message.private_key).then(() => {
                     const originalHTML = keyDisplay.innerHTML;
                     keyDisplay.textContent = 'Copied!';
-                    keyDisplay.className = 'font-mono text-xs text-bp-gold bg-bp-black px-2 py-0.5 rounded border border-bp-gold ml-1';
+                    keyDisplay.className = 'font-mono text-xs text-bp-blue bg-bp-black px-2 py-0.5 rounded border border-bp-blue ml-1';
 
                     // 2秒后恢复原状
                     setTimeout(() => {
@@ -265,7 +265,7 @@ export const renderMessage = (message) => {
     // Convert markdown to HTML and apply typography styles (如果有文本内容)
     if (message.content && message.content.trim() !== '') {
         const contentDiv = document.createElement('div');
-        contentDiv.className = 'prose prose-invert max-w-none text-gray-300 prose-headings:text-gray-100 prose-a:text-bp-gold prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-bp-gold prose-code:text-bp-gold prose-code:bg-bp-black prose-code:px-1 prose-code:rounded prose-pre:bg-bp-black prose-pre:border prose-pre:border-bp-gray break-words';
+        contentDiv.className = 'prose prose-invert max-w-none text-gray-300 prose-headings:text-gray-100 prose-a:text-bp-blue prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-bp-blue prose-code:text-bp-blue prose-code:bg-bp-black prose-code:px-1 prose-code:rounded prose-pre:bg-bp-black prose-pre:border prose-pre:border-bp-gray break-words';
 
         // 转换markdown内容为HTML
         const htmlContent = converter.makeHtml(message.content);
@@ -298,7 +298,7 @@ export const renderMessage = (message) => {
 
             // 创建"显示更多"按钮
             showMoreButton = document.createElement('button');
-            showMoreButton.className = 'text-bp-gold hover:text-bp-gold/80 text-sm font-medium transition-colors mt-2';
+            showMoreButton.className = 'text-bp-blue hover:text-bp-blue/80 text-sm font-medium transition-colors mt-2';
             showMoreButton.textContent = '显示更多';
             showMoreButton.dataset.expanded = 'false';
 
@@ -330,7 +330,7 @@ wrapper.className = 'relative group/code';
             pre.classList.add('overflow-x-auto');
 
             const copyButton = document.createElement('button');
-            copyButton.className = 'copy-code-btn absolute top-2 right-2 bg-bp-gray text-xs px-2 py-1 rounded text-gray-300 opacity-0 group-hover/code:opacity-100 transition-all z-10 hover:bg-bp-gold hover:text-black font-medium';
+            copyButton.className = 'copy-code-btn absolute top-2 right-2 bg-bp-gray text-xs px-2 py-1 rounded text-gray-300 opacity-0 group-hover/code:opacity-100 transition-all z-10 hover:bg-bp-blue hover:text-white font-medium';
             copyButton.innerHTML = 'Copy';
             copyButton.onclick = (e) => {
                 e.stopPropagation();
@@ -382,7 +382,7 @@ wrapper.className = 'relative group/code';
         privateBtn.textContent = 'P';
         privateBtn.dataset.action = 'make-private';
         privateBtn.dataset.id = message.id;
-        privateBtn.className = `transition-colors font-medium text-sm hover:text-bp-gold text-bp-text-muted px-1.5 py-0.5 rounded`;
+        privateBtn.className = `transition-colors font-medium text-sm hover:text-bp-blue text-bp-text-muted px-1.5 py-0.5 rounded`;
         privateBtn.title = 'Make message private';
         actions.appendChild(privateBtn);
     }
@@ -395,7 +395,7 @@ wrapper.className = 'relative group/code';
     likeBtn.dataset.action = 'like-message';
     likeBtn.dataset.id = message.id;
     // Use text-sm for message actions, consistent with comment actions
-    likeBtn.className = `transition-colors font-medium text-sm hover:text-bp-gold ${message.userHasLiked ? 'text-bp-gold' : 'text-bp-text-muted'}`;
+    likeBtn.className = `transition-colors font-medium text-sm hover:text-bp-blue ${message.userHasLiked ? 'text-bp-blue' : 'text-bp-text-muted'}`;
     likeBtn.textContent = 'like';
     
     const likesCount = document.createElement('span');
@@ -449,3 +449,4 @@ wrapper.className = 'relative group/code';
 
     return messageElement;
 };
+

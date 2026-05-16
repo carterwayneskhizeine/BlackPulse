@@ -26,7 +26,7 @@ export const handleReply = (commentId, messageId, parentElement) => {
     replyForm.innerHTML = `
         <textarea class="reply-textarea w-full p-2 bg-bp-black border border-bp-gray rounded text-sm mb-2 min-w-[180px]" rows="2" placeholder="Write a reply..."></textarea>
         <div class="flex justify-end gap-2" id="reply-form-actions">
-            <button type="submit" class="post-reply border px-2 py-1 rounded text-xs text-bp-text-muted hover:text-bp-gold hover:border-bp-gold">Reply</button>
+            <button type="submit" class="post-reply border px-2 py-1 rounded text-xs text-bp-text-muted hover:text-bp-blue hover:border-bp-blue">Reply</button>
         </div>
         <div class="comment-error-message hidden text-red-400 text-center"></div>
     `;
@@ -43,7 +43,7 @@ export const handleReply = (commentId, messageId, parentElement) => {
     // Create Cancel button
     const cancelBtn = document.createElement('button');
     cancelBtn.type = 'button';
-    cancelBtn.className = 'cancel-reply border border-bp-gray px-2 py-1 rounded text-xs text-bp-text-muted hover:text-bp-gold hover:border-bp-gold';
+    cancelBtn.className = 'cancel-reply border border-bp-gray px-2 py-1 rounded text-xs text-bp-text-muted hover:text-bp-blue hover:border-bp-blue';
     cancelBtn.textContent = 'Cancel';
     cancelBtn.addEventListener('click', () => {
         replyForm.remove();

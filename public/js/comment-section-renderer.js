@@ -139,7 +139,7 @@ export const renderCommentSection = (container, messageId, comments, pagination)
         // Create Cancel button
         const cancelBtn = document.createElement('button');
         cancelBtn.type = 'button';
-        cancelBtn.className = 'btn-bp-outline text-sm py-1.5 px-5 comment-cancel-btn hover:text-bp-gold hover:border-bp-gold';
+        cancelBtn.className = 'btn-bp-outline text-sm py-1.5 px-5 comment-cancel-btn hover:text-bp-blue hover:border-bp-blue';
         cancelBtn.textContent = 'Cancel';
         // Insert Cancel before Post Comment
         actionsContainer.insertBefore(cancelBtn, postBtn);

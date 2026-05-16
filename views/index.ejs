@@ -13,7 +13,7 @@
 </head>
 
 <body
-    class="bg-bp-black text-bp-text min-h-screen flex flex-col font-sans selection:bg-bp-gold selection:text-bp-black">
+    class="bg-bp-black text-bp-text min-h-screen flex flex-col font-sans selection:bg-bp-blue selection:text-bp-black">
 
     <!-- Sticky Header -->
     <header
@@ -22,7 +22,7 @@
             <!-- Brand -->
             <div class="flex items-center gap-4">
                 <button id="sidebar-toggle-btn"
-                    class="hidden lg:block text-gray-400 hover:text-bp-gold focus:outline-none p-1">
+                    class="hidden lg:block text-gray-400 hover:text-bp-blue focus:outline-none p-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -30,24 +30,24 @@
                     </svg>
                 </button>
                 <h1 class="text-xl font-bold tracking-tight text-white select-none cursor-pointer"
-                    onclick="window.location.reload()"><span class="text-bp-gold">Black</span>Pulse</h1>
+                    onclick="window.location.reload()"><span class="text-bp-blue">Black</span>Pulse</h1>
 
                 <!-- Desktop Search Container -->
                 <div id="desktop-search-container"
                     class="hidden md:block relative group transition-all duration-300 ease-in-out">
                     <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 group-focus-within:text-bp-gold transition-colors"
+                        class="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 group-focus-within:text-bp-blue transition-colors"
                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <input id="desktop-search-input" type="text" placeholder="Search..."
-                        class="bg-bp-dark border border-bp-gray rounded-full py-1.5 pl-9 pr-4 text-sm w-full md:w-48 focus:w-full md:focus:w-64 transition-all focus:border-bp-gold outline-none placeholder-gray-600 text-gray-300 shadow-lg md:shadow-none">
+                        class="bg-bp-dark border border-bp-gray rounded-full py-1.5 pl-9 pr-4 text-sm w-full md:w-48 focus:w-full md:focus:w-64 transition-all focus:border-bp-blue outline-none placeholder-gray-600 text-gray-300 shadow-lg md:shadow-none">
                 </div>
 
                 <!-- Mobile Search Toggle -->
                 <button id="mobile-search-toggle"
-                    class="md:hidden text-gray-400 hover:text-bp-gold focus:outline-none p-1">
+                    class="md:hidden text-gray-400 hover:text-bp-blue focus:outline-none p-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -70,7 +70,7 @@
                     <!-- User menu trigger -->
                     <button id="user-menu-trigger"
                         class="flex items-center gap-2 text-sm text-bp-text-muted hover:text-bp-text transition-colors py-1.5 px-3 rounded-md hover:bg-bp-gray focus:outline-none">
-                        <span id="username-display" class="hidden sm:inline-block text-bp-gold font-medium">
+                        <span id="username-display" class="hidden sm:inline-block text-bp-blue font-medium">
                             <%= user ? user.username : '' %>
                         </span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -84,7 +84,7 @@
                         <!-- User info header -->
                         <div class="px-4 py-3 border-b border-bp-gray">
                             <p class="text-sm text-bp-text-muted">Signed in as</p>
-                            <p id="dropdown-username" class="text-sm font-bold text-bp-gold truncate">
+                            <p id="dropdown-username" class="text-sm font-bold text-bp-blue truncate">
                                 <%= user ? user.username : '' %>
                             </p>
                         </div>
@@ -127,7 +127,7 @@
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input id="mobile-search-input" type="text" placeholder="Search..."
-                class="bg-bp-dark border border-bp-gray rounded-full py-1.5 pl-9 pr-4 text-sm w-full outline-none placeholder-gray-600 text-gray-300 focus:border-bp-gold">
+                class="bg-bp-dark border border-bp-gray rounded-full py-1.5 pl-9 pr-4 text-sm w-full outline-none placeholder-gray-600 text-gray-300 focus:border-bp-blue">
         </div>
     </div>
 
@@ -141,7 +141,7 @@
                 <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Feeds</h3>
                 <nav class="flex flex-col space-y-1">
                     <button id="feed-latest-btn"
-                        class="flex items-center gap-3 px-3 py-2 rounded-md bg-bp-gold/10 text-bp-gold font-medium transition-colors text-left w-full group">
+                        class="flex items-center gap-3 px-3 py-2 rounded-md bg-bp-blue/10 text-bp-blue font-medium transition-colors text-left w-full group">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-4 w-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
@@ -197,7 +197,7 @@
 
                 <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">System</h3>
                 <div class="text-sm text-bp-text-muted bg-bp-black/50 p-3 rounded border border-bp-gray/50">
-                    <p class="mb-2">Welcome to <span class="text-bp-gold">BlackPulse</span>.</p>
+                    <p class="mb-2">Welcome to <span class="text-bp-blue">BlackPulse</span>.</p>
                     <p class="text-xs text-gray-600">v2.0</p>
                 </div>
             </div>
@@ -208,7 +208,7 @@
             <div id="main-content-wrapper" class="space-y-6 lg:w-3/4">
 
                 <!-- Message Composer -->
-                <div class="card-bp border-t-2 border-t-bp-gold shadow-glow">
+                <div class="card-bp border-t-2 border-t-bp-blue shadow-glow">
                     <form id="message-form" class="flex flex-col gap-4">
                         <!-- Text Area -->
                         <textarea id="message-input" name="content" class="input-bp min-h-[120px] resize-y" rows="3"
@@ -254,7 +254,7 @@
                                 <button type="button" id="key-button"
                                     class="btn-bp-outline text-xs h-9 px-3 flex items-center gap-2 group">
                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="h-4 w-4 text-bp-text-muted group-hover:text-bp-gold transition-colors"
+                                        class="h-4 w-4 text-bp-text-muted group-hover:text-bp-blue transition-colors"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
@@ -287,7 +287,7 @@
                                     class="btn-bp-outline h-9 flex items-center gap-2 px-3 text-sm group"
                                     title="Edit with StackEdit">
                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="h-4 w-4 text-bp-text-muted group-hover:text-bp-gold transition-colors"
+                                        class="h-4 w-4 text-bp-text-muted group-hover:text-bp-blue transition-colors"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -346,7 +346,7 @@
             <p class="text-bp-text-muted text-sm">&copy; 2025 Goldie Rill. All rights reserved.</p>
             <div class="flex justify-center mt-4">
                 <a href="https://github.com/carterwayneskhizeine/BlackPulse" target="_blank" rel="noopener noreferrer"
-                    class="text-gray-500 hover:text-bp-gold transition-colors">
+                    class="text-gray-500 hover:text-bp-blue transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6" viewBox="0 0 16 16">
                         <path
                             d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8" />
@@ -401,7 +401,7 @@
             <div id="login-error" class="text-red-400 text-sm hidden"></div>
             <div class="flex justify-between items-center mt-6">
                 <button type="button" id="register-from-login"
-                    class="text-xs text-bp-text-muted hover:text-bp-gold underline">Create Account</button>
+                    class="text-xs text-bp-text-muted hover:text-bp-blue underline">Create Account</button>
                 <div class="flex gap-2">
                     <button type="button" id="cancel-login" class="btn-bp-outline text-xs py-1.5">Cancel</button>
                     <button type="submit" class="btn-bp-primary text-xs py-1.5">Login</button>

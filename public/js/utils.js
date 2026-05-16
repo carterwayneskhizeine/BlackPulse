@@ -18,7 +18,7 @@ export const createButton = (text, id, action) => {
     button.innerHTML = icons[action] || '';
     if (action === 'md') {
         button.innerHTML += '<span class="ml-1 text-[10px] font-bold">MD</span>';
-        button.className = 'btn-bp-outline h-8 flex items-center px-2 py-1 text-xs transition-colors hover:text-bp-gold';
+        button.className = 'btn-bp-outline h-8 flex items-center px-2 py-1 text-xs transition-colors hover:text-bp-blue';
     } else {
         button.className = 'btn-bp-icon';
     }
@@ -72,7 +72,7 @@ export const clearSelectedFile = () => {
 export const createStackEditButton = (textarea, formContainer) => {
     const stackeditBtn = document.createElement('button');
     stackeditBtn.type = 'button';
-    stackeditBtn.className = 'btn-bp-outline h-8 flex items-center px-2 py-1 text-xs transition-colors hover:text-bp-gold';
+    stackeditBtn.className = 'btn-bp-outline h-8 flex items-center px-2 py-1 text-xs transition-colors hover:text-bp-blue';
     stackeditBtn.title = 'StackEdit';
     stackeditBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg><span class="ml-1 text-[10px] font-bold">MD</span>`;
 
@@ -96,3 +96,4 @@ export const createStackEditButton = (textarea, formContainer) => {
 
     return stackeditBtn;
 };
+

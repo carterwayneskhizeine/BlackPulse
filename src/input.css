@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-bp-black text-bp-text antialiased selection:bg-bp-gold selection:text-bp-black;
+    @apply bg-bp-black text-bp-text antialiased selection:bg-bp-blue selection:text-white;
   }
   
   /* Custom Scrollbar */
@@ -18,18 +18,18 @@
     @apply bg-bp-gray rounded-full;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-bp-gold-dim;
+    @apply bg-bp-blue-dim;
   }
 }
 
 @layer components {
   /* Buttons */
   .btn-bp-primary {
-    @apply bg-bp-gold text-bp-black font-bold py-2 px-6 rounded-md hover:bg-yellow-400 hover:shadow-glow transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-bp-blue text-white font-bold py-2 px-6 rounded-md hover:bg-bp-blue-light hover:shadow-glow transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
   }
   
   .btn-bp-outline {
-    @apply border border-bp-gray text-bp-text-muted font-medium py-2 px-4 rounded-md hover:border-bp-gold hover:text-bp-gold transition-all duration-200 active:scale-95 bg-transparent;
+    @apply border border-bp-gray text-bp-text-muted font-medium py-2 px-4 rounded-md hover:border-bp-blue hover:text-bp-blue transition-all duration-200 active:scale-95 bg-transparent;
   }
   
   .btn-bp-danger {
@@ -37,12 +37,12 @@
   }
 
   .btn-bp-icon {
-    @apply p-2 text-bp-text-muted hover:text-bp-gold transition-colors rounded-full hover:bg-bp-gray;
+    @apply p-2 text-bp-text-muted hover:text-bp-blue transition-colors rounded-full hover:bg-bp-gray;
   }
 
   /* Inputs */
   .input-bp {
-    @apply w-full bg-bp-dark border border-bp-gray rounded-md p-3 text-bp-text placeholder-gray-600 focus:outline-none focus:border-bp-gold focus:ring-1 focus:ring-bp-gold transition-all duration-200;
+    @apply w-full bg-bp-dark border border-bp-gray rounded-md p-3 text-bp-text placeholder-gray-600 focus:outline-none focus:border-bp-blue focus:ring-1 focus:ring-bp-blue transition-all duration-200;
   }
 
   /* Cards */
@@ -57,7 +57,7 @@
 
   /* Typography helpers */
   .link-bp {
-    @apply text-bp-gold hover:text-yellow-300 hover:underline transition-colors;
+    @apply text-bp-blue hover:text-bp-blue-light hover:underline transition-colors;
   }
 }
 
@@ -73,8 +73,8 @@
 
 /* Drag and Drop Upload Styles */
 .drag-over-active {
-  @apply border-2 border-dashed border-bp-gold relative;
-  background-color: rgba(251, 191, 36, 0.1) !important;
+  @apply border-2 border-dashed border-bp-blue relative;
+  background-color: rgba(16, 142, 233, 0.08) !important;
   transition: all 0.2s ease-in-out;
 }
 
@@ -85,7 +85,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #fbbf24;
+  color: #108EE9;
   font-size: 1.5rem;
   font-weight: bold;
   pointer-events: none;

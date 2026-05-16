@@ -23,11 +23,11 @@ style.innerHTML = `
         min-width: 200px;
     }
 
-    /* Reply textarea focus gold border */
+    /* Reply textarea focus blue border */
     .reply-textarea:focus {
         outline: none;
-        border-color: #FFD700;
-        box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.1);
+        border-color: #108EE9;
+        box-shadow: 0 0 0 2px rgba(16, 142, 233, 0.15);
     }
 `;
 document.head.appendChild(style);
