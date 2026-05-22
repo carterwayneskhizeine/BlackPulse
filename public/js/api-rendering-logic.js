@@ -147,7 +147,7 @@ export const fetchAndRenderSearchResults = async (query, page = 1) => {
         // Render results
         messageList.innerHTML = '';
         if (data.messages.length === 0) {
-            messageList.innerHTML = `<p class="text-center text-bp-text-muted">No results found for "${data.searchQuery}"</p>`;
+            messageList.innerHTML = `<p class="text-center text-gray-500 text-sm">No results found for "${data.searchQuery}"</p>`;
         } else {
             data.messages.forEach(message => {
                 messageList.appendChild(renderMessage(message));

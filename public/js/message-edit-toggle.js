@@ -29,7 +29,7 @@ export const toggleEditView = (id) => {
 
     // Create an input area with the raw markdown
     const editInput = document.createElement('textarea');
-    editInput.className = 'input-bp min-h-[150px] text-gray-200';
+    editInput.className = 'input-bp min-h-[150px] text-black';
     editInput.value = originalMessage.content;
     editInput.rows = 8;
 

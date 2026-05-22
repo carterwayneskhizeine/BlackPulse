@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 
 <head>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -16,11 +16,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 1rem;
         }
 
         .invite-card {
-            max-width: 420px;
+            max-width: 400px;
             width: 100%;
             animation: fadeInUp 0.6s ease-out;
         }
@@ -36,18 +36,6 @@
             }
         }
 
-        .lock-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0.05) 100%);
-            border-radius: 50%;
-            border: 2px solid rgba(234, 179, 8, 0.2);
-        }
-
         .shake {
             animation: shake 0.5s ease-in-out;
         }
@@ -61,13 +49,15 @@
 </head>
 
 <body
-    class="bg-bp-black text-bp-text min-h-screen flex flex-col font-sans selection:bg-bp-blue selection:text-bp-black">
+    class="bg-bp-black text-bp-text min-h-screen flex flex-col font-sans">
+
+    <div class="retro-stripe"></div>
 
     <div class="invite-container">
-        <div class="invite-card card-bp border-t-2 border-t-bp-blue shadow-glow-strong">
+        <div class="invite-card card-bp">
             <!-- Lock Icon -->
-            <div class="lock-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-bp-blue" fill="none" viewBox="0 0 24 24"
+            <div class="flex items-center justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-700" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -75,61 +65,59 @@
             </div>
 
             <!-- Header -->
-            <div class="text-center mb-6">
-                <h1 class="text-2xl font-bold text-white mb-2">
-                    <span class="text-bp-blue">Black</span>Pulse
+            <div class="text-center mb-4">
+                <h1 class="retro-title text-xl mb-1">
+                    <span class="text-bp-blue">Black</span><span class="text-black">Pulse</span>
                 </h1>
-                <p class="text-bp-text-muted text-sm">Private Access Required</p>
+                <p class="text-gray-600 text-xs">--- Private Access Required ---</p>
             </div>
 
+            <hr class="retro-hr mb-4">
+
             <!-- Description -->
-            <p class="text-center text-bp-text-muted text-sm mb-6">
+            <p class="text-center text-gray-700 text-xs mb-4">
                 This is a private community. Please enter your invitation code to continue.
             </p>
 
             <!-- Form -->
-            <form id="invite-form" class="space-y-4">
+            <form id="invite-form" class="space-y-3">
                 <div>
-                    <label for="invite-code" class="block mb-2 text-sm font-bold text-gray-400">
-                        Invitation Code
+                    <label for="invite-code" class="block mb-1 text-xs font-bold text-gray-700">
+                        Invitation Code:
                     </label>
                     <input type="text" id="invite-code" name="code"
-                        class="input-bp text-center text-lg tracking-wider font-mono"
+                        class="input-bp text-center text-base tracking-wider font-mono"
                         placeholder="Enter code..." autocomplete="off" required>
                 </div>
 
                 <!-- Error Message -->
                 <div id="error-message"
-                    class="hidden text-red-400 text-sm font-medium p-3 bg-red-900/10 rounded border border-red-900/50 text-center">
+                    class="hidden text-red-800 text-xs font-bold p-2 bg-[#FFC0C0] border-2 text-center"
+                    style="border-style: inset; border-color: #808080;">
                 </div>
 
                 <!-- Submit Button -->
                 <button type="submit" id="submit-btn"
-                    class="btn-bp-primary w-full justify-center py-3 text-base font-medium">
-                    <span>Verify Access</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
+                    class="btn-bp-primary w-full justify-center py-2 text-sm font-bold">
+                    <span>>> Verify Access &lt;&lt;</span>
                 </button>
             </form>
 
             <!-- Footer -->
-            <div class="mt-6 pt-6 border-t border-bp-gray/30 text-center">
-                <p class="text-xs text-bp-text-muted mb-4">
+            <hr class="retro-hr mt-4 mb-3">
+            <div class="text-center">
+                <p class="text-[10px] text-gray-500 mb-2">
                     Protected by invitation access control
                 </p>
                 <a href="https://github.com/carterwayneskhizeine/BlackPulse" target="_blank" rel="noopener noreferrer"
-                    class="inline-flex text-gray-500 hover:text-bp-blue transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6" viewBox="0 0 16 16">
-                        <path
-                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8" />
-                    </svg>
+                    class="text-bp-blue underline text-[10px] hover:text-bp-blue-dim">
+                    [GitHub Repository]
                 </a>
             </div>
         </div>
     </div>
+
+    <div class="retro-stripe" style="position: fixed; bottom: 0; width: 100%;"></div>
 
     <script>
         const form = document.getElementById('invite-form');
@@ -165,7 +153,7 @@
 
             // Disable button and show loading state
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="flex items-center gap-2">Verifying...</span>';
+            submitBtn.innerHTML = '<span>Verifying...</span>';
 
             try {
                 const response = await fetch('/api/invite/verify', {
@@ -184,23 +172,13 @@
                 } else {
                     showError(data.error || 'Invalid invitation code');
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = `
-                        <span>Verify Access</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                    `;
+                    submitBtn.innerHTML = '<span>>> Verify Access &lt;&lt;</span>';
                 }
             } catch (error) {
                 console.error('Verification error:', error);
                 showError('Network error. Please try again.');
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = `
-                    <span>Verify Access</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                `;
+                submitBtn.innerHTML = '<span>>> Verify Access &lt;&lt;</span>';
             }
         });
 

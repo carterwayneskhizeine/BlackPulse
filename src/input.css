@@ -4,90 +4,203 @@
 
 @layer base {
   body {
-    @apply bg-bp-black text-bp-text antialiased selection:bg-bp-blue selection:text-white;
+    @apply bg-bp-black text-bp-text antialiased;
+    font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
+    font-size: 13px;
   }
-  
-  /* Custom Scrollbar */
+
+  /* Retro Scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 16px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-bp-black;
+    background: #C0C0C0;
+    border: 1px solid #808080;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-bp-gray rounded-full;
+    background: #C0C0C0;
+    border: 2px outset #DFDFDF;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-bp-blue-dim;
+    background: #D4D0C8;
+  }
+  ::-webkit-scrollbar-button {
+    background: #C0C0C0;
+    border: 2px outset #DFDFDF;
+    display: block;
+    height: 16px;
   }
 }
 
 @layer components {
-  /* Buttons */
+  /* Retro 3D Outset Button */
   .btn-bp-primary {
-    @apply bg-bp-blue text-white font-bold py-2 px-6 rounded-md hover:bg-bp-blue-light hover:shadow-glow transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply font-bold py-1 px-4 text-sm bg-[#C0C0C0] text-black active:pt-[3px] active:pb-[1px] disabled:opacity-50 disabled:cursor-not-allowed;
+    border: 2px outset #DFDFDF;
+    box-shadow: 1px 1px 0 #000000;
+    cursor: pointer;
   }
-  
+  .btn-bp-primary:hover {
+    background: #D4D0C8;
+  }
+  .btn-bp-primary:active {
+    border-style: inset;
+  }
+
+  /* Retro Outline Button */
   .btn-bp-outline {
-    @apply border border-bp-gray text-bp-text-muted font-medium py-2 px-4 rounded-md hover:border-bp-blue hover:text-bp-blue transition-all duration-200 active:scale-95 bg-transparent;
+    @apply font-medium py-1 px-3 text-sm text-black bg-[#C0C0C0] cursor-pointer;
+    border: 2px outset #DFDFDF;
+    box-shadow: 1px 1px 0 #000000;
   }
-  
+  .btn-bp-outline:hover {
+    background: #D4D0C8;
+  }
+  .btn-bp-outline:active {
+    border-style: inset;
+  }
+
+  /* Retro Danger Button */
   .btn-bp-danger {
-    @apply border border-bp-gray text-red-500 font-medium py-2 px-4 rounded-md hover:border-red-500 hover:bg-red-500/10 transition-all duration-200;
+    @apply font-medium py-1 px-3 text-sm text-red-800 bg-[#C0C0C0] cursor-pointer;
+    border: 2px outset #DFDFDF;
+    box-shadow: 1px 1px 0 #000000;
+  }
+  .btn-bp-danger:hover {
+    background: #FFC0C0;
   }
 
+  /* Retro Icon Button */
   .btn-bp-icon {
-    @apply p-2 text-bp-text-muted hover:text-bp-blue transition-colors rounded-full hover:bg-bp-gray;
+    @apply p-1 text-black hover:bg-[#D4D0C8] cursor-pointer;
+    border: 1px solid transparent;
+  }
+  .btn-bp-icon:hover {
+    border-color: #808080;
   }
 
-  /* Inputs */
+  /* Retro Input */
   .input-bp {
-    @apply w-full bg-bp-dark border border-bp-gray rounded-md p-3 text-bp-text placeholder-gray-600 focus:outline-none focus:border-bp-blue focus:ring-1 focus:ring-bp-blue transition-all duration-200;
+    @apply w-full bg-white border-2 p-2 text-black text-sm placeholder-gray-400;
+    border-style: inset;
+    border-color: #808080 #FFFFFF #FFFFFF #808080;
+  }
+  .input-bp:focus {
+    @apply outline-none;
+    border-color: #000000;
   }
 
-  /* Cards */
+  /* Retro Card */
   .card-bp {
-    @apply bg-bp-dark border border-bp-gray rounded-lg p-5 shadow-sm hover:border-gray-700 transition-colors duration-200;
+    @apply bg-bp-dark border-2 p-3;
+    border-style: outset;
+    border-color: #DFDFDF #808080 #808080 #DFDFDF;
+    background: #C0C0C0;
   }
-  
-  /* Badges */
+
+  /* Retro Badge */
   .badge-bp {
-    @apply text-xs font-bold px-2 py-0.5 rounded border border-bp-gray text-bp-text-muted;
+    @apply text-xs font-bold px-2 py-0.5 border-2 text-black bg-[#C0C0C0];
+    border-style: outset;
+    border-color: #DFDFDF #808080 #808080 #DFDFDF;
   }
 
-  /* Typography helpers */
+  /* Retro Link */
   .link-bp {
-    @apply text-bp-blue hover:text-bp-blue-light hover:underline transition-colors;
+    @apply text-bp-blue hover:underline;
+  }
+
+  /* Retro HR */
+  .retro-hr {
+    border: none;
+    border-top: 2px solid #808080;
+    border-bottom: 2px solid #FFFFFF;
+    height: 0;
+    margin: 4px 0;
+  }
+
+  /* Retro Fieldset / Group Box */
+  .retro-groupbox {
+    @apply p-2;
+    border: 2px groove #C0C0C0;
+  }
+  .retro-groupbox-title {
+    @apply text-sm font-bold text-black px-1;
+    background: #C0C0C0;
+  }
+
+  /* Marquee-style header text */
+  .retro-title {
+    font-family: 'Times New Roman', Georgia, serif;
+    @apply text-black font-bold;
+  }
+
+  /* Hit counter style */
+  .retro-counter {
+    font-family: 'Courier New', Courier, monospace;
+    @apply text-sm bg-black text-green-400 px-2 py-0.5;
+    border: 2px inset #808080;
   }
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Retro Animations — blink */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.animate-blink {
+  animation: blink 1s step-end infinite;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out forwards;
 }
 
-/* Drag and Drop Upload Styles */
+/* Drag and Drop — retro style */
 .drag-over-active {
-  @apply border-2 border-dashed border-bp-blue relative;
-  background-color: rgba(16, 142, 233, 0.08) !important;
-  transition: all 0.2s ease-in-out;
+  @apply border-2 border-dashed border-gray-500 relative;
+  background-color: #E0E0E0 !important;
 }
 
-/* Drag hint overlay (optional) */
 .drag-over-active::after {
-  content: 'Drop file to upload';
+  content: '>>> Drop file here <<<';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #108EE9;
-  font-size: 1.5rem;
+  color: #000000;
+  font-size: 1rem;
   font-weight: bold;
   pointer-events: none;
   z-index: 10;
+}
+
+/* Retro "under construction" striped bar */
+.retro-stripe {
+  background: repeating-linear-gradient(
+    45deg,
+    #FFD700,
+    #FFD700 10px,
+    #000000 10px,
+    #000000 20px
+  );
+  height: 4px;
+}
+
+/* Prose overrides for light background */
+.prose-retro {
+  --tw-prose-body: #000000;
+  --tw-prose-headings: #000000;
+  --tw-prose-links: #0000FF;
+  --tw-prose-bold: #000000;
+  --tw-prose-code: #000000;
+  --tw-prose-pre-bg: #C0C0C0;
+  --tw-prose-pre-code: #000000;
+  --tw-prose-quotes: #000000;
+  --tw-prose-counters: #000000;
+  --tw-prose-hr: #808080;
 }

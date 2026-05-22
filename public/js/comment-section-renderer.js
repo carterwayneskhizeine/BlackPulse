@@ -22,21 +22,16 @@ import {
 
 /**
  * Flattens the nested comment structure into a sorted, flat list for rendering.
- * Replies are placed immediately after their parent, sorted chronologically.
- * @param {Array} comments - The original nested array of comments from the API.
- * @returns {{flatComments: Array, commentMap: Map}} - A flat, sorted array of comments and a map for quick ID lookups.
  */
 const flattenAndSortComments = (comments) => {
     const commentMap = new Map();
     const repliesMap = new Map();
 
-    // Recursive function to process all comments and populate the maps
     function processComments(commentList, parentId = null) {
         commentList.forEach(comment => {
-            comment.parentId = parentId; // Assign parentId for later reference
+            comment.parentId = parentId;
             commentMap.set(comment.id, comment);
 
-            // Group replies by their parent ID
             if (parentId) {
                 if (!repliesMap.has(parentId)) {
                     repliesMap.set(parentId, []);
@@ -44,7 +39,6 @@ const flattenAndSortComments = (comments) => {
                 repliesMap.get(parentId).push(comment);
             }
 
-            // Recurse through replies
             if (comment.replies && comment.replies.length > 0) {
                 processComments(comment.replies, comment.id);
             }
@@ -53,13 +47,11 @@ const flattenAndSortComments = (comments) => {
 
     processComments(comments);
 
-    // Get top-level comments and sort them by time
     const topLevelComments = comments.sort((a, b) => new Date(a.time) - new Date(b.time));
 
     const flatComments = [];
     const addedComments = new Set();
 
-    // Recursive function to build the final flat list in the desired order
     function addCommentWithReplies(comment) {
         if (addedComments.has(comment.id)) return;
 
@@ -68,10 +60,9 @@ const flattenAndSortComments = (comments) => {
 
         const childReplies = repliesMap.get(comment.id);
         if (childReplies) {
-            // Sort replies chronologically before adding them
             childReplies.sort((a, b) => new Date(a.time) - new Date(b.time));
             childReplies.forEach(reply => {
-                addCommentWithReplies(reply); // This recursion creates the "insert after parent" effect
+                addCommentWithReplies(reply);
             });
         }
     }
@@ -89,7 +80,7 @@ const flattenAndSortComments = (comments) => {
 
 // Render the complete comment section structure
 export const renderCommentSection = (container, messageId, comments, pagination) => {
-    container.innerHTML = ''; // Clear previous content
+    container.innerHTML = '';
 
     const {
         flatComments,
@@ -102,128 +93,106 @@ export const renderCommentSection = (container, messageId, comments, pagination)
 
     if (flatComments.length > 0) {
         flatComments.forEach(comment => {
-            // Pass the comment, its parentId, and the commentMap to the element creator
             commentsListContainer.appendChild(createCommentElement(comment, messageId, comment.parentId, commentMap));
         });
     }
     container.appendChild(commentsListContainer);
 
-    // Define variables that may be used outside the conditional block
     let commentForm = null;
 
-    // 2. Comment Form and Toggle Button - always provide area for posting a new comment
+    // 2. Comment Form and Toggle Button
     if (true) {
         const formContainer = document.createElement('div');
-        formContainer.className = 'mt-6';
+        formContainer.className = 'mt-4';
 
         commentForm = document.createElement('form');
-        commentForm.className = `flex flex-col gap-3 hidden`; // Initially hidden
+        commentForm.className = `flex flex-col gap-2 hidden`;
         commentForm.innerHTML = `
             <textarea
-                class="input-bp min-h-[80px]"
+                class="input-bp min-h-[60px] text-xs"
                 rows="2"
                 placeholder="Add a comment..."></textarea>
             <div class="flex justify-end gap-2" id="comment-form-actions">
-                <button type="submit" class="btn-bp-primary text-sm py-1.5 px-5">
+                <button type="submit" class="btn-bp-primary text-xs py-1 px-4">
                     Post Comment
                 </button>
             </div>
-            <div class="comment-error-message hidden text-red-400 text-center font-bold p-3 bg-black rounded-lg border border-red-800" role="alert"></div>
+            <div class="comment-error-message hidden text-red-800 text-center font-bold p-2 bg-[#FFC0C0] text-xs" style="border: 2px inset #808080;" role="alert"></div>
         `;
 
-        // Get the textarea and actions container
         const textarea = commentForm.querySelector('textarea');
         const actionsContainer = commentForm.querySelector('#comment-form-actions');
         const postBtn = actionsContainer.querySelector('button[type="submit"]');
 
-        // Create Cancel button
         const cancelBtn = document.createElement('button');
         cancelBtn.type = 'button';
-        cancelBtn.className = 'btn-bp-outline text-sm py-1.5 px-5 comment-cancel-btn hover:text-bp-blue hover:border-bp-blue';
+        cancelBtn.className = 'btn-bp-outline text-xs py-1 px-4 comment-cancel-btn';
         cancelBtn.textContent = 'Cancel';
-        // Insert Cancel before Post Comment
         actionsContainer.insertBefore(cancelBtn, postBtn);
 
-        // Create and add StackEdit button
         const stackeditBtn = createStackEditButton(textarea, commentForm);
-        // Insert StackEdit before Cancel
         actionsContainer.insertBefore(stackeditBtn, cancelBtn);
 
         const toggleFormButton = document.createElement('button');
-        toggleFormButton.className = 'btn-bp-icon ml-auto'; // Same style as other action buttons
+        toggleFormButton.className = 'btn-bp-icon ml-auto text-xs font-bold text-gray-600';
         toggleFormButton.title = 'Post a new comment';
-        toggleFormButton.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect width="24" height="24" stroke="none" fill="#000000" opacity="0"/><g transform="matrix(0.77 0 0 0.77 12 12)" ><path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(220,220,220); fill-rule: nonzero; opacity: 1;" transform=" translate(-13, -12.51)" d="M 4 1 C 1.804688 1 0 2.800781 0 5 L 0 15 C 0 17.195313 1.804688 19 4 19 L 6.3125 19 L 8.0625 23.375 C 8.207031 23.765625 8.582031 24.027344 9 24.027344 C 9.417969 24.027344 9.792969 23.765625 9.9375 23.375 L 11.6875 19 L 22 19 C 24.195313 19 26 17.195313 26 15 L 26 5 C 26 2.800781 24.195313 1 22 1 Z M 4 3 L 22 3 C 23.117188 3 24 3.882813 24 5 L 24 15 C 24 16.113281 23.113281 17 22 17 L 11 17 C 10.589844 16.996094 10.214844 17.242188 10.0625 17.625 L 9 20.28125 L 7.9375 17.625 C 7.785156 17.242188 7.410156 16.996094 7 17 L 4 17 C 2.886719 17 2 16.113281 2 15 L 2 5 C 2 3.882813 2.882813 3 4 3 Z" stroke-linecap="round" /></g></svg>`;
+        toggleFormButton.textContent = '[+]';
 
-        // Add event listener to toggle form visibility
         toggleFormButton.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
 
-            // Check if form is currently visible
             const isFormVisible = !commentForm.classList.contains('hidden');
 
             if (isFormVisible) {
-                // Hide the form
                 commentForm.classList.add('hidden');
-                commentForm.querySelector('textarea').value = ''; // Clear textarea
+                commentForm.querySelector('textarea').value = '';
             } else {
-                // Show the form and focus on textarea
                 commentForm.classList.remove('hidden');
                 commentForm.querySelector('textarea').focus();
             }
         });
 
-        // Add event listener for the Cancel button
         commentForm.querySelector('.comment-cancel-btn').addEventListener('click', (e) => {
             e.preventDefault();
-            commentForm.classList.add('hidden'); // Hide the form
-            commentForm.querySelector('textarea').value = ''; // Clear textarea
+            commentForm.classList.add('hidden');
+            commentForm.querySelector('textarea').value = '';
         });
 
-        // Add the toggle button to the last comment's action buttons
         const lastCommentElement = commentsListContainer.lastChild;
         if (lastCommentElement) {
-            // Look for the actions element - it has the className 'flex items-center gap-3 text-xs' in createCommentElement
-            const lastActionsElement = lastCommentElement.querySelector('div.flex.items-center.gap-3.text-xs');
+            const lastActionsElement = lastCommentElement.querySelector('div.flex.items-center.gap-2.text-\\[10px\\]');
             if (lastActionsElement) {
-                // Add the toggle form button to the end of the action buttons (rightmost position)
                 lastActionsElement.appendChild(toggleFormButton);
             } else {
-                // Fallback: if we can't find the specific actions div, just append the button somewhere
                 const actionsContainer = document.createElement('div');
-                actionsContainer.className = 'flex items-center gap-3 text-xs';
+                actionsContainer.className = 'flex items-center gap-2 text-[10px]';
                 actionsContainer.appendChild(toggleFormButton);
                 lastCommentElement.appendChild(actionsContainer);
             }
 
-            // Add the form after the last comment element
             lastCommentElement.parentNode.insertBefore(commentForm, lastCommentElement.nextSibling);
         } else {
-            // No comments exist: provide a bottom actions bar and the form inside the comments list container
             const actionsContainer = document.createElement('div');
-            actionsContainer.className = 'flex items-center gap-3 text-xs';
+            actionsContainer.className = 'flex items-center gap-2 text-[10px]';
             actionsContainer.appendChild(toggleFormButton);
             commentsListContainer.appendChild(actionsContainer);
 
-            // Add the form after the actions container
             commentsListContainer.appendChild(commentForm);
         }
     }
 
-
     // 3. Comments Pagination
     const commentsPaginationContainer = document.createElement('div');
-    commentsPaginationContainer.className = 'comments-pagination-container mt-4';
+    commentsPaginationContainer.className = 'comments-pagination-container mt-3 text-xs text-gray-500 text-center';
     if (pagination && pagination.totalPages > 1) {
-        // Simplified pagination for now
         const paginationElement = document.createElement('div');
-        paginationElement.className = 'flex justify-center items-center gap-2';
         paginationElement.textContent = `Page ${pagination.page} of ${pagination.totalPages}`;
         commentsPaginationContainer.appendChild(paginationElement);
     }
     container.appendChild(commentsPaginationContainer);
 
-    // 4. Add event listener for the new form (only if comments exist)
+    // 4. Form submit handler
     if (commentForm) {
         commentForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -234,7 +203,7 @@ export const renderCommentSection = (container, messageId, comments, pagination)
         });
     }
 
-    // 5. Delegated event listeners for comment actions
+    // 5. Delegated event listeners
     commentsListContainer.addEventListener('click', (e) => {
         e.stopPropagation();
         const button = e.target.closest('button');

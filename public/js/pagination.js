@@ -48,14 +48,15 @@ export const renderPagination = (pageClickHandler = fetchAndRenderMessages) => {
     pagesToShow.forEach((pageNum, index) => {
         if (pageNum === '...') {
             const ellipsis = document.createElement('span');
-            ellipsis.className = 'px-3 py-2 text-bp-text-muted';
+            ellipsis.className = 'px-3 py-2 text-gray-500';
             ellipsis.textContent = '...';
             paginationContainer.appendChild(ellipsis);
         } else {
             const pageButton = createPaginationButton(pageNum.toString(), `page-${pageNum}`, `Go to page ${pageNum}`);
             if (pageNum === currentPage) {
                 // Active State: Gold background, Black text
-                pageButton.className = 'bg-bp-blue text-white font-bold py-2 px-4 rounded-md shadow-glow transition-all';
+                pageButton.className = 'bg-[#0000FF] text-white font-bold py-1 px-3 text-xs';
+                pageButton.style.border = '2px outset #DFDFDF';
             }
             pageButton.addEventListener('click', () => pageClickHandler(pageNum));
             paginationContainer.appendChild(pageButton);

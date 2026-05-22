@@ -1,33 +1,26 @@
-// Comment Styles Module
-// Purpose: Provides CSS styles for comments and animations in the message board
-// Dependencies: None
+// Comment Styles Module - Retro 90s Edition
 
-// Add a simple fade-in animation using CSS and styles for deep nesting
 const style = document.createElement('style');
 style.innerHTML = `
     @keyframes fade-in {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
     .animate-fade-in {
-        animation: fade-in 0.5s ease-out forwards;
+        animation: fade-in 0.3s ease-out forwards;
     }
 
-    /* Prevent excessive nesting from becoming too narrow */
     .comment-nesting-limit {
-        max-width: calc(100% - 40px); /* Prevent content from becoming too narrow */
+        max-width: calc(100% - 30px);
     }
 
-    /* Ensure reply forms don't get too narrow */
     .reply-form {
         min-width: 200px;
     }
 
-    /* Reply textarea focus blue border */
     .reply-textarea:focus {
         outline: none;
-        border-color: #108EE9;
-        box-shadow: 0 0 0 2px rgba(16, 142, 233, 0.15);
+        border-color: #000000;
     }
 `;
 document.head.appendChild(style);

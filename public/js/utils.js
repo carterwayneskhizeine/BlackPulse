@@ -63,7 +63,7 @@ export const clearSelectedFile = () => {
     setSelectedFile(null);
     filePreviewContainer.classList.add('hidden');
     fileStatus.textContent = 'No file selected';
-    fileStatus.classList.remove('text-green-400');
+    fileStatus.classList.remove('text-green-600');
     fileStatus.classList.add('text-gray-500');
     fileUpload.value = '';
 };

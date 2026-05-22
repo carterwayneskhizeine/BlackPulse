@@ -348,22 +348,18 @@ export const initEventListeners = () => {
         };
 
         // Desktop Classes
-        const activeClassesDesktop = ['bg-bp-blue/10', 'text-bp-blue', 'font-medium'];
-        const inactiveClassesDesktop = ['text-bp-text-muted', 'hover:bg-bp-gray', 'hover:text-bp-text'];
-
-        // Mobile Classes
-        // Active: btn-bp-primary (bg-bp-blue text-bp-black ...)
-        // Inactive: btn-bp-outline bg-bp-dark (border ... text-muted ...)
+        const activeClassesDesktop = ['bg-[#D4D0C8]', 'text-black', 'font-bold', 'border', 'border-[#808080]'];
+        const inactiveClassesDesktop = ['text-gray-600', 'hover:bg-[#D4D0C8]'];
 
         Object.keys(desktopBtns).forEach(type => {
             const btn = desktopBtns[type];
             if (!btn) return;
             if (type === activeType) {
                 btn.classList.add(...activeClassesDesktop);
-                btn.classList.remove('text-bp-text-muted', 'hover:bg-bp-gray', 'hover:text-bp-text');
+                btn.classList.remove('text-gray-600', 'hover:bg-[#D4D0C8]');
             } else {
                 btn.classList.remove(...activeClassesDesktop);
-                btn.classList.add('text-bp-text-muted', 'hover:bg-bp-gray', 'hover:text-bp-text');
+                btn.classList.add('text-gray-600', 'hover:bg-[#D4D0C8]');
             }
         });
 
@@ -371,13 +367,11 @@ export const initEventListeners = () => {
             const btn = mobileBtns[type];
             if (!btn) return;
             if (type === activeType) {
-                // To Primary
-                btn.classList.remove('btn-bp-outline', 'bg-bp-dark');
+                btn.classList.remove('btn-bp-outline');
                 btn.classList.add('btn-bp-primary');
             } else {
-                // To Outline
                 btn.classList.remove('btn-bp-primary');
-                btn.classList.add('btn-bp-outline', 'bg-bp-dark');
+                btn.classList.add('btn-bp-outline');
             }
         });
     }

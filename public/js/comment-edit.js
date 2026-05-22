@@ -34,7 +34,7 @@ export const handleEditComment = (commentId, messageId, container) => {
 
     // Create textarea
     const textarea = document.createElement('textarea');
-    textarea.className = 'w-full p-2 bg-black border border-gray-800 rounded';
+    textarea.className = 'input-bp text-xs';
     textarea.rows = 6; // Set height to 6 rows
     textarea.value = currentText;
     editForm.appendChild(textarea);
