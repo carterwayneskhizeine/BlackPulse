@@ -1,5 +1,5 @@
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('sqlite3');
 const initializeDatabase = require('../database/init');
 const cleanupOrphanedFiles = require('../database/cleanup');
 
@@ -15,6 +15,9 @@ function connectDatabase(uploadsDir) {
       console.error('Error opening database', err.message);
     } else {
       console.log('Connected to the SQLite database.');
+      db.run('PRAGMA journal_mode = WAL');
+      db.run('PRAGMA busy_timeout = 5000');
+      db.run('PRAGMA cache_size = -2000');
       // 初始化数据库表结构并执行清理
       initializeDatabase(db, () => cleanupOrphanedFiles(db, uploadsDir));
     }

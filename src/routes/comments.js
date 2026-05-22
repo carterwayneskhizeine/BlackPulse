@@ -129,8 +129,8 @@ module.exports = function (db, ragService) {
           };
         });
 
-        function fetchNestedReplies(parentIds) {
-          if (!parentIds || parentIds.length === 0) {
+        function fetchNestedReplies(parentIds, depth = 0) {
+          if (!parentIds || parentIds.length === 0 || depth >= 5) {
             return Promise.resolve([]);
           }
 
@@ -191,7 +191,7 @@ module.exports = function (db, ragService) {
               });
 
               const replyIds = replies.map((r) => parseInt(r.id));
-              fetchNestedReplies(replyIds)
+              fetchNestedReplies(replyIds, depth + 1)
                 .then((nestedReplies) => {
                   replyObjects.forEach((replyObj) => {
                     const nested = nestedReplies.filter((nr) => nr.pid === replyObj.id);
@@ -337,14 +337,12 @@ module.exports = function (db, ragService) {
             res.status(201).json(comment);
 
             // Update message stats (async)
-            db.serialize(() => {
-              db.run(`UPDATE messages SET comment_count = comment_count + 1 WHERE id = ?`, [messageId], (err) => {
-                if (err) {
-                  console.error(`[Comment Post] Error incrementing comment_count for message ${messageId}:`, err);
-                } else {
-                  updateMessageHotScore(messageId);
-                }
-              });
+            db.run(`UPDATE messages SET comment_count = comment_count + 1 WHERE id = ?`, [messageId], (err) => {
+              if (err) {
+                console.error(`[Comment Post] Error incrementing comment_count for message ${messageId}:`, err);
+              } else {
+                updateMessageHotScore(messageId);
+              }
             });
 
             // RAG index (async, non-blocking)
@@ -513,14 +511,12 @@ module.exports = function (db, ragService) {
         res.status(204).send();
 
         // Update message stats (async)
-        db.serialize(() => {
-          db.run(`UPDATE messages SET comment_count = comment_count - 1 WHERE id = ? AND comment_count > 0`, [messageId], (err) => {
-            if (err) {
-              console.error(`[Comment Delete] Error decrementing comment_count for message ${messageId}:`, err);
-            } else {
-              updateMessageHotScore(messageId);
-            }
-          });
+        db.run(`UPDATE messages SET comment_count = comment_count - 1 WHERE id = ? AND comment_count > 0`, [messageId], (err) => {
+          if (err) {
+            console.error(`[Comment Delete] Error decrementing comment_count for message ${messageId}:`, err);
+          } else {
+            updateMessageHotScore(messageId);
+          }
         });
 
         // RAG remove (async)

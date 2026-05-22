@@ -27,8 +27,8 @@ const db = connectDatabase(uploadsDir);
 const ragService = createRAGService();
 
 app.use((req, res, next) => {
-  req.setTimeout(300000);
-  res.setTimeout(300000);
+  req.setTimeout(30000);
+  res.setTimeout(30000);
   next();
 });
 
@@ -72,4 +72,9 @@ const server = app.listen(port, () => {
   }
 });
 
-server.setTimeout(300000);
+setInterval(() => {
+  const used = process.memoryUsage();
+  console.log(`[Memory] RSS: ${(used.rss / 1024 / 1024).toFixed(1)}MB | Heap: ${(used.heapUsed / 1024 / 1024).toFixed(1)}MB / ${(used.heapTotal / 1024 / 1024).toFixed(1)}MB | External: ${(used.external / 1024 / 1024).toFixed(1)}MB`);
+}, 30000);
+
+server.setTimeout(30000);
