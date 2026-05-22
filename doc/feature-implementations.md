@@ -1,6 +1,6 @@
 # Feature Implementations
 
-This document provides detailed technical information about how each feature was implemented in the BlackPulse application.
+This document provides detailed technical information about how each feature was implemented in the HyperBoard application.
 
 ## Private Messages Feature
 
@@ -288,7 +288,7 @@ The application integrates a customized version of the **StackEdit Markdown Edit
 3. **Frontend Implementation**:
    - **Main Composer**: Integrated into `public/js/initial-setup.js` to provide full-screen Markdown editing for new posts.
    - **Message Editing**: Added to the edit view in `public/js/message-edit-toggle.js`, allowing users to use the MD editor even when tweaking existing messages.
-   - **Styling**: The `createButton` utility in `public/js/utils.js` was extended to support a specialized "MD" button style that fits perfectly into the BlackPulse UI.
+   - **Styling**: The `createButton` utility in `public/js/utils.js` was extended to support a specialized "MD" button style that fits perfectly into the HyperBoard UI.
 
 ## Private Invitation Access Feature
 
@@ -319,7 +319,7 @@ Transformed the public message board into a private, invitation-only community. 
    - Returns 401 for invalid codes
 
 4. **`views/invite.ejs`** (New):
-   - Beautiful, responsive invitation verification page matching BlackPulse dark theme
+   - Beautiful, responsive invitation verification page matching HyperBoard dark theme
    - Features:
      - Lock icon with gold accent
      - Centered card layout with animations

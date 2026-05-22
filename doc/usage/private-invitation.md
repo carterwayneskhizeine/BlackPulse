@@ -1,10 +1,10 @@
 # Private Invitation Access Guide
 
-This guide explains how the private invitation access system works in BlackPulse, and how to configure it for your community.
+This guide explains how the private invitation access system works in HyperBoard, and how to configure it for your community.
 
 ## Overview
 
-BlackPulse can be configured as a private, invitation-only community. When enabled, all visitors must verify their invitation code before accessing any content. The system preserves URL parameters (such as private message keys) and redirects users to their intended destination after verification.
+HyperBoard can be configured as a private, invitation-only community. When enabled, all visitors must verify their invitation code before accessing any content. The system preserves URL parameters (such as private message keys) and redirects users to their intended destination after verification.
 
 ## For Visitors: Accessing a Private Board
 

@@ -1,6 +1,6 @@
 # Data Export Guide
 
-This guide explains how to export all message content from the BlackPulse SQLite database (`data/messages.db`) into a single readable Markdown file.
+This guide explains how to export all message content from the HyperBoard SQLite database (`data/messages.db`) into a single readable Markdown file.
 
 ## Prerequisites
 

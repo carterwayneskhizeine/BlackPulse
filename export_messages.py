@@ -35,7 +35,7 @@ def export_data():
         # 4. Write to Markdown File
         print(f"Exporting {len(rows)} messages...")
         with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-            f.write(f"# BlackPulse Messages Export\n\n")
+            f.write(f"# HyperBoard Messages Export\n\n")
             f.write(f"**Total Messages:** {len(rows)}\n\n")
             f.write("---\n\n")
 

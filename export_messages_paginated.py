@@ -72,7 +72,7 @@ def export_data():
                 current_file = open(current_filename, 'w', encoding='utf-8')
 
                 # Write file header
-                current_file.write(f"# BlackPulse Messages Export (Part {file_index})\n\n")
+                current_file.write(f"# HyperBoard Messages Export (Part {file_index})\n\n")
                 current_file.write(f"**File Index:** {file_index}\n\n")
                 current_file.write("---\n\n")
 

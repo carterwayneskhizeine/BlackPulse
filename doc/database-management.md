@@ -1,6 +1,6 @@
 # Database Management
 
-This guide covers database operations and maintenance for the BlackPulse application.
+This guide covers database operations and maintenance for the HyperBoard application.
 
 ## Database Files
 

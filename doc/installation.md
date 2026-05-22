@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide will help you get a copy of the BlackPulse project up and running on your local machine.
+This guide will help you get a copy of the HyperBoard project up and running on your local machine.
 
 ## Prerequisites
 
@@ -22,8 +22,8 @@ docker compose up --build -d
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/carterwayneskhizeine/BlackPulse.git
-cd BlackPulse
+git clone https://github.com/carterwayneskhizeine/HyperBoard.git
+cd HyperBoard
 ```
 
 ### 2. Configure AI Functionality (Optional)

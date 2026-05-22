@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide covers the development workflow for the BlackPulse project.
+This guide covers the development workflow for the HyperBoard project.
 
 ## Development Workflow
 

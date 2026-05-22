@@ -1,6 +1,6 @@
 # Password Change Guide
 
-This guide explains how logged-in users can change their password in BlackPulse.
+This guide explains how logged-in users can change their password in HyperBoard.
 
 ## Changing Your Password
 
