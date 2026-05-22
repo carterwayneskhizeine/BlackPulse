@@ -1,6 +1,6 @@
-# BlackPulse
+# HyperBoard
 
-A feature-rich anonymous message board web application built with Node.js, Express, and EJS. It uses SQLite3 for data storage and is fully containerized with Docker. The frontend is built with **modern, modular JavaScript (ESM)**, and the application features a pure dark mode interface, support for Markdown content, file uploads (including video playback), a comment system with infinite nesting, **AI-powered responses to specific mentions**, user authentication, Google-style pagination, YouTube video embedding, and allows users to post, edit, and delete messages anonymously.
+A feature-rich anonymous message board web application built with Node.js, Express, and EJS. It uses SQLite3 for data storage and is fully containerized with Docker. The frontend is built with **modern, modular JavaScript (ESM)**, featuring a **retro 90s Windows 95-style UI** with 3D beveled borders, outset/inset button effects, classic gray backgrounds, and nostalgic web aesthetics. The application supports Markdown content, file uploads (including video playback), a comment system with infinite nesting, **AI-powered responses to specific mentions**, user authentication, Google-style pagination, YouTube video embedding, and allows users to post, edit, and delete messages anonymously.
 
 ![Preview of the Application](PreviewImage.jpg)
 ![Preview of Invitation](PreviewInvitation.jpg)
@@ -8,7 +8,7 @@ A feature-rich anonymous message board web application built with Node.js, Expre
 ## Features
 
 *   **Anonymous Posting**: Share your thoughts without revealing your identity.
-*   **Pure Dark Mode**: A sleek, modern dark theme is enforced throughout the application. No theme switching needed.
+*   **Retro 90s UI**: A nostalgic Windows 95-inspired interface with 3D outset/inset borders, gray (#C0C0C0) backgrounds, Tahoma/Verdana fonts, classic blue hyperlinks, blinking text animations, and yellow-black "under construction" warning stripes.
 *   **SQLite3 Database**: Lightweight and efficient data storage.
 *   **Data Persistence**: All messages are stored persistently using Docker volumes, ensuring your data is safe across container restarts.
 *   **Markdown Support**: Write messages using Markdown syntax (headings, bold, italics, lists, code blocks, etc.), which will be rendered beautifully.
@@ -36,10 +36,10 @@ A feature-rich anonymous message board web application built with Node.js, Expre
 *   **Database**: SQLite3 with performance indexes for optimized queries
 *   **Authentication**: Express Session with SQLite session store, bcrypt for password hashing
 *   **Templating**: EJS
-*   **Styling**: Tailwind CSS (configured for `darkMode: 'class'`)
+*   **Styling**: Tailwind CSS with retro 90s Windows 95 theme (custom component classes)
 *   **Client-side Logic**: Native JavaScript (Fetch API)
 *   **File Upload**: Multer for handling file uploads (all types, up to 50MB)
-*   **Markdown Editor**: StackEdit (customized for dark mode)
+*   **Markdown Editor**: StackEdit (fullscreen mode, light theme)
 *   **Containerization**: Docker, Docker Compose
 
 ## Documentation
@@ -66,8 +66,8 @@ For detailed information about installation, usage, and development, please refe
 
 ```bash
 # Clone the repository
-git clone https://github.com/carterwayneskhizeine/BlackPulse.git
-cd BlackPulse
+git clone https://github.com/carterwayneskhizeine/HyperBoard.git
+cd HyperBoard
 
 # (Optional) Configure invitation access for private mode
 # Edit .env to set:

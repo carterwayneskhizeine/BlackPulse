@@ -191,6 +191,14 @@
   height: 4px;
 }
 
+/* StackEdit fullscreen override */
+.stackedit-iframe-container {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+}
+
 /* Prose overrides for light background */
 .prose-retro {
   --tw-prose-body: #000000;
