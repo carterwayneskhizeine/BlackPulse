@@ -92,7 +92,7 @@ export const initEventListeners = () => {
                 content: {
                     text: messageInput.value,
                     properties: {
-                        colorTheme: 'dark'
+                        colorTheme: 'light'
                     }
                 }
             });

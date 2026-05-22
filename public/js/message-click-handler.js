@@ -99,7 +99,7 @@ export const handleMessageClick = (e) => {
                 content: {
                     text: textarea.value,
                     properties: {
-                        colorTheme: 'dark'
+                        colorTheme: 'light'
                     }
                 }
             });

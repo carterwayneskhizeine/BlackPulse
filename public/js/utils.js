@@ -84,7 +84,7 @@ export const createStackEditButton = (textarea, formContainer) => {
                 content: {
                     text: textarea.value,
                     properties: {
-                        colorTheme: 'dark'
+                        colorTheme: 'light'
                     }
                 }
             });

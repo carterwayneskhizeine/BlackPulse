@@ -17,8 +17,8 @@ export const toggleEditView = (id) => {
     }
 
     const messageElement = document.querySelector(`[data-message-id='${id}']`);
-    const contentContainer = messageElement.querySelector('.mb-4');
-    const footer = messageElement.querySelector('.flex.justify-between');
+    const contentContainer = messageElement.querySelector('.mb-3, .mb-4');
+    const footer = messageElement.querySelector('div[class*="justify-between"]');
 
     // Find the text content div (if it exists)
     const contentDiv = contentContainer.querySelector('.prose');
