@@ -70,33 +70,28 @@ export const stopAIReplyPoll = (messageId) => {
     _polls.delete(messageId);
 };
 
-// ── Waiting indicator (shown inside .comments-list, matching comment row style) ──
+// ── Waiting indicator: fixed to body, immune to comment section re-renders ──
 
 const _waitingId = (messageId) => `ai-waiting-${messageId}`;
 
 const _showWaitingIndicator = (messageId) => {
-    const container = document.getElementById(`comments-for-${messageId}`);
-    if (!container) return;
     if (document.getElementById(_waitingId(messageId))) return;
-
-    // Insert inside the comments-list so it appears next to real comments
-    const listEl = container.querySelector('.comments-list') || container;
 
     const el = document.createElement('div');
     el.id = _waitingId(messageId);
-    // Match the same row styling as createCommentElement
-    el.className = 'ai-waiting-row mb-1 p-2 border-b border-[#808080]';
+    el.className = 'ai-reply-notify ai-notify-visible';
+    el.style.cssText = 'cursor:default; background:#808080;';
     el.innerHTML = `
-        <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:11px;font-weight:bold;color:#000080;font-family:Tahoma,Verdana,Arial,sans-serif;">GoldieRill</span>
-            <span style="font-size:10px;color:#808080;">is thinking<span class="ai-waiting-dots"></span></span>
-        </div>
+        <span>GoldieRill is thinking<span class="ai-waiting-dots"></span></span>
     `;
-    listEl.appendChild(el);
+    document.body.appendChild(el);
 };
 
 const _removeWaitingIndicator = (messageId) => {
-    document.getElementById(_waitingId(messageId))?.remove();
+    const el = document.getElementById(_waitingId(messageId));
+    if (!el) return;
+    el.classList.remove('ai-notify-visible');
+    setTimeout(() => el.remove(), 300);
 };
 
 // ── Notification banner (Twitter/X style) ───────────────────────────────────
