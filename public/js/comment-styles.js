@@ -123,30 +123,16 @@ style.innerHTML = `
         animation: ai-highlight-flash 2s ease forwards;
     }
 
-    /* ── "Waiting for AI…" inline spinner in comment form ── */
-    .ai-waiting-indicator {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 10px;
-        color: #000080;
-        font-weight: bold;
-        font-family: Tahoma, Verdana, Arial, sans-serif;
-    }
-    @keyframes dot-blink {
-        0%, 20%  { content: '.'; }
-        40%      { content: '..'; }
-        60%, 100%{ content: '...'; }
-    }
+    /* ── "GoldieRill is thinking…" dots animation ── */
     .ai-waiting-dots::after {
-        content: '';
+        content: '.';
         animation: ai-waiting-dots-anim 1.2s step-end infinite;
     }
     @keyframes ai-waiting-dots-anim {
         0%   { content: '.'; }
         33%  { content: '..'; }
         66%  { content: '...'; }
-        100% { content: ''; }
+        100% { content: '.'; }
     }
 `;
 document.head.appendChild(style);
