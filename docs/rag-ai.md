@@ -1,6 +1,15 @@
 # RAG Semantic Search & AI Context Enhancement
 
-HyperBoard uses a RAG (Retrieval-Augmented Generation) pipeline to give the AI assistant (`@goldierill`) access to historical board content when generating replies.
+HyperBoard uses a RAG (Retrieval-Augmented Generation) pipeline to give the AI assistant access to historical board content when generating replies.
+
+## Trigger Keywords
+
+| Mention | Behavior |
+|---------|----------|
+| `@goldierill` / `@GoldieRill` | AI replies using **only the current post and comments** as context. No RAG search is performed. |
+| `@rag` / `@RAG` | AI replies with **RAG enabled**: searches Qdrant for relevant historical posts and injects them into the prompt. |
+
+Both triggers post a reply from `GoldieRill`. The difference is whether historical board content is retrieved.
 
 ## Architecture
 
@@ -49,13 +58,19 @@ When a user creates a message or comment:
 
 **Not indexed**: Private messages, AI-generated comments
 
-## Search Flow (when @goldierill is mentioned)
+## Search Flow (when @rag is mentioned)
 
-1. Query text cleaned (remove `@goldierill`, trim)
+1. Query text cleaned (remove `@rag`, `@goldierill`, trim)
 2. `findRelevantSourceIds()` searches Qdrant for top 5 similar chunks
 3. `fetchFullContent()` retrieves full post content from SQLite for matched IDs
 4. Content injected into LLM system prompt as "Relevant historical posts"
 5. LLM generates response using both the current message and historical context
+
+## Context-Only Flow (when @goldierill is mentioned)
+
+1. RAG search is **skipped entirely**
+2. LLM receives only the current message and the triggering comment
+3. Response is based solely on what is visible in the current thread
 
 ## Environment Variables
 

@@ -351,8 +351,11 @@ module.exports = function (db, ragService) {
             }
 
             // AI trigger (async)
-            if (row.text && row.text.toLowerCase().includes('@goldierill')) {
-              console.log(`[AI Trigger] Mention detected in comment ID: ${newCommentId}.`);
+            const lowerText = (row.text || '').toLowerCase();
+            const hasGoldieMention = lowerText.includes('@goldierill');
+            const hasRagMention = lowerText.includes('@rag');
+            if (hasGoldieMention || hasRagMention) {
+              console.log(`[AI Trigger] Mention detected in comment ID: ${newCommentId} (RAG: ${hasRagMention}).`);
 
               db.get('SELECT content FROM messages WHERE id = ?', [messageId], async (err, messageRow) => {
                 if (err) {
@@ -365,7 +368,7 @@ module.exports = function (db, ragService) {
                 }
 
                 try {
-                  const aiResponseText = await getAIResponse(messageRow.content, row.text, ragService, db);
+                  const aiResponseText = await getAIResponse(messageRow.content, row.text, ragService, db, hasRagMention);
                   if (aiResponseText) {
                     console.log(`[AI] Received response. Saving as reply to comment ${newCommentId}.`);
                     db.run(

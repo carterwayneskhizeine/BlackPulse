@@ -44,16 +44,25 @@
 
 ## AI-Powered Responses
 
-### Get AI Response
+HyperBoard's AI assistant (`GoldieRill`) supports two trigger modes:
 
-1. Post a comment mentioning `@goldierill` (e.g., "@goldierill what do you think about this?")
-2. The AI will analyze the original message and your comment
-3. An AI-generated response from 'GoldieRill' will automatically appear as a reply to your comment
-4. The response is context-aware and based on the content of the discussion
+### Context-Only Mode — `@goldierill`
+
+1. Post a comment mentioning `@goldierill` (e.g., "@goldierill what do you think?")
+2. The AI will reply based **only on the current post and its comments**
+3. No historical board content is retrieved — the response stays focused on this thread
+
+### RAG Mode — `@rag`
+
+1. Post a comment mentioning `@rag` (e.g., "@rag have I asked about this before?")
+2. The AI searches historical board content in Qdrant for relevant posts
+3. Retrieved context is injected into the prompt alongside the current thread
+4. Useful when you want the AI to reference past discussions or cross-thread knowledge
+
+In both cases the reply appears automatically from `GoldieRill`.
 
 ### AI Configuration Requirements
 
-- The AI feature requires proper configuration of environment variables in the `.env` file
-- Uses LiteLLM API for generating responses
-- Supports various LLM providers through LiteLLM proxy
-- If not configured, the mention will be treated as a regular comment without AI response
+- Requires `AI_CHAT_API_URL`, `AI_CHAT_API_KEY`, `AI_CHAT_MODEL` in `.env`
+- RAG mode additionally requires Qdrant and embedding API config (see [RAG docs](../rag-ai.md))
+- If not configured, mentions are treated as regular comments without AI response

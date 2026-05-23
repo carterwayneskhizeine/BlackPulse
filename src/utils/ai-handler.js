@@ -6,6 +6,7 @@ const MAX_CONCURRENT_AI_CALLS = 2;
 function cleanQuery(text) {
   return (text || '')
     .replace(/@goldierill/gi, '')
+    .replace(/@rag/gi, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -40,7 +41,7 @@ async function fetchFullContent(db, sources) {
   return parts.join('\n\n---\n\n');
 }
 
-async function getAIResponse(messageContent, userComment, ragService, db) {
+async function getAIResponse(messageContent, userComment, ragService, db, useRAG = false) {
   const { AI_CHAT_API_URL, AI_CHAT_API_KEY, AI_CHAT_MODEL } = process.env;
 
   if (!AI_CHAT_API_URL || !AI_CHAT_API_KEY || !AI_CHAT_MODEL) {
@@ -62,7 +63,7 @@ async function getAIResponse(messageContent, userComment, ragService, db) {
     const truncatedComment = (userComment || '').substring(0, 1000);
 
     let ragContext = '';
-    if (ragService) {
+    if (useRAG && ragService) {
       try {
         const query = cleanQuery(truncatedComment + ' ' + truncatedMessage);
         if (query && db) {
@@ -84,13 +85,19 @@ async function getAIResponse(messageContent, userComment, ragService, db) {
 
 IMPORTANT RULES:
 - Respond in Simplified Chinese.
+- Be helpful, insightful, and stay on topic.
+- Answer based on the post and comment provided below.`;
+
+    if (ragContext) {
+      systemPrompt += `
+
+ADDITIONAL RULES FOR HISTORICAL CONTEXT:
 - "Relevant historical posts" below are PUBLIC posts from this board that users chose to share. They are NOT private data. You MUST use them to answer the user's question.
 - When a user asks about something that appears in the historical posts (e.g. their 八字, previous discussions, reports), answer directly using that information. The user is asking about their OWN posts.
 - NEVER say you cannot access or do not have the information when it is clearly provided in the historical posts below. Read them carefully and use them.
-- Be helpful, insightful, and stay on topic.`;
 
-    if (ragContext) {
-      systemPrompt += `\n\nRelevant historical posts from this board:\n${ragContext}`;
+Relevant historical posts from this board:
+${ragContext}`;
     }
 
     const commentSection = truncatedComment

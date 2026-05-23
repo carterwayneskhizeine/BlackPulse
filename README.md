@@ -22,7 +22,7 @@ A feature-rich anonymous message board web application built with Node.js, Expre
 *   **Database Performance Optimization**: Built-in indexes for faster queries, better scalability for research and learning.
 *   **Responsive Design**: The application is designed to be accessible and usable across various devices, with mobile-friendly buttons.
 *   **Dockerized Deployment**: Easy setup and deployment using Docker and Docker Compose.
-*   **AI-Powered Comment Responses**: Users can mention `@goldierill` in comments to receive AI-generated replies based on the message context. The AI uses RAG (Retrieval-Augmented Generation) to reference historical posts from the board, providing contextually relevant responses.
+*   **AI-Powered Comment Responses**: Mention `@goldierill` to get an AI reply focused on the current thread's context, or mention `@rag` to trigger RAG (Retrieval-Augmented Generation) — the AI will search historical board posts in Qdrant and incorporate relevant past discussions into its response.
 *   **Like System (Comments & Messages)**: Express your appreciation by liking comments and main messages. The 'like' button dynamically changes color when active.
 *   **Comment System with Infinite Reply Support**: Add comments to any page with unlimited nesting depth, featuring liking, editing, and deletion capabilities.
 *   **Trending Feed**: A "Trending" feed that uses a Reddit-style algorithm to sort messages based on the **total likes on comments** and time-decay, allowing users to discover the most popular and engaging content dynamically.

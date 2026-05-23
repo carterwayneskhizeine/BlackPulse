@@ -320,11 +320,14 @@ module.exports = function (db, uploadsDir, ragService) {
           }
 
           // AI trigger (async)
-          if (row.content && row.content.toLowerCase().includes('@goldierill')) {
-            console.log(`[AI Trigger] Mention detected in message ID: ${row.id}.`);
+          const lowerContent = (row.content || '').toLowerCase();
+          const hasGoldieMention = lowerContent.includes('@goldierill');
+          const hasRagMention = lowerContent.includes('@rag');
+          if (hasGoldieMention || hasRagMention) {
+            console.log(`[AI Trigger] Mention detected in message ID: ${row.id} (RAG: ${hasRagMention}).`);
             (async () => {
               try {
-                const aiResponseText = await getAIResponse(row.content, '', ragService, db);
+                const aiResponseText = await getAIResponse(row.content, '', ragService, db, hasRagMention);
                 if (aiResponseText) {
                   console.log(`[AI] Received response. Saving to DB for message ${row.id}.`);
                   db.run(

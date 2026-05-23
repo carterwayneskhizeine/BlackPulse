@@ -168,11 +168,12 @@ This document provides detailed technical information about how each feature was
    - Search config: `DEFAULT_SEARCH_MODE`, `RUN_VEC_MIGRATION`.
 
 4. **`src/utils/ai-handler.js`**:
-   - `getAIResponse(messageContent, userComment, ragService, db)` function.
-   - Cleans query text (strips `@goldierill`) for RAG search.
-   - Uses `findRelevantSourceIds()` to locate relevant posts in Qdrant.
+   - `getAIResponse(messageContent, userComment, ragService, db, useRAG)` function.
+   - `useRAG` (default `false`): when `true`, runs RAG search and injects historical context; when `false`, replies using only the current thread.
+   - Cleans query text (strips `@goldierill` and `@rag`) before RAG search.
+   - Uses `findRelevantSourceIds()` to locate relevant posts in Qdrant (RAG mode only).
    - Fetches full post content from SQLite via `fetchFullContent()`.
-   - Constructs system prompt with historical context and strict rules for using RAG results.
+   - Constructs system prompt; historical-context rules only appended when RAG context exists.
    - Calls OpenRouter LLM API with `maxContentLength`/`maxBodyLength` limits.
 
 5. **`src/utils/rag-service.js`**:
@@ -196,11 +197,13 @@ This document provides detailed technical information about how each feature was
    - Manual trigger via `POST /api/admin/reindex`.
 
 9. **`src/routes/comments.js`**:
-   - After saving a comment containing `@goldierill`, fetches parent message and calls `getAIResponse(messageContent, commentText, ragService, db)`.
+   - After saving a comment containing `@goldierill` or `@rag`, fetches parent message and calls `getAIResponse(messageContent, commentText, ragService, db, useRAG)`.
+   - `useRAG` is `true` only when `@rag` is present.
    - AI response saved as a comment from 'GoldieRill'.
 
 10. **`src/routes/messages.js`**:
-    - After saving a message containing `@goldierill`, calls `getAIResponse(messageContent, '', ragService, db)`.
+    - After saving a message containing `@goldierill` or `@rag`, calls `getAIResponse(messageContent, '', ragService, db, useRAG)`.
+    - `useRAG` is `true` only when `@rag` is present.
     - RAG indexes new non-private messages via `ragService.indexContent()`.
 
 11. **`src/routes/search.js`**:

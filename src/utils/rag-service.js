@@ -75,7 +75,7 @@ function createRAGService() {
   }
 
   function stripMention(text) {
-    return (text || '').replace(/@goldierill/gi, '').replace(/\s+/g, ' ').trim();
+    return (text || '').replace(/@goldierill/gi, '').replace(/@rag/gi, '').replace(/\s+/g, ' ').trim();
   }
 
   async function indexContent(sourceType, sourceId, text) {

@@ -54,7 +54,7 @@ Single EJS template: `views/index.ejs` — the entire app renders from this one 
 ## Key Patterns
 
 - **Authentication**: Session-based (express-session + connect-sqlite3). First registered user becomes admin automatically. Passwords hashed with bcrypt (10 rounds).
-- **AI assistant**: Triggered by `@goldierill` mentions in comments. Flow: mention detection → RAG search in Qdrant → context assembly → LLM call (DeepSeek via OpenRouter) → AI comment posted. Max 2 concurrent AI calls.
+- **AI assistant**: Triggered by `@goldierill` or `@rag` mentions in comments or messages. `@goldierill` replies using only the current post/comment context (no RAG). `@rag` additionally searches Qdrant for relevant historical posts and injects them into the prompt. Flow: mention detection → (RAG search if `@rag`) → context assembly → LLM call (DeepSeek via OpenRouter) → AI comment posted as `GoldieRill`. Max 2 concurrent AI calls.
 - **Search**: Three modes — keyword (SQL LIKE), semantic (Qdrant vector similarity), hybrid (default). Configured via `DEFAULT_SEARCH_MODE` env var.
 - **Trending**: Hot score = `log10(total_comment_likes) + (unix_timestamp / 45000)`, recalculated on comment like changes.
 - **Private messages**: KEY-based access control. Users can generate a private key to share access.
