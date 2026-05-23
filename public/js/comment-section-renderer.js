@@ -202,8 +202,11 @@ export const renderCommentSection = (container, messageId, comments, pagination)
             const input = commentForm.querySelector('textarea');
             const errorDiv = commentForm.querySelector('.comment-error-message');
 
+            // Capture messageEl NOW — commentForm is removed from DOM after handlePostComment
+            const messageEl = commentForm.closest('[data-message-id]');
+
             const hadAIMention = await handlePostComment(messageId, null, input, errorDiv);
-            if (hadAIMention) showAIRefreshButton(messageId);
+            if (hadAIMention && messageEl) showAIRefreshButton(messageId, messageEl);
         });
     }
 
