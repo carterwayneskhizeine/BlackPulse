@@ -68,20 +68,25 @@ function createRAGService() {
     }
   }
 
+  function sampleText(text, maxLen = 2000) {
+    if (text.length <= maxLen) return text;
+    const half = Math.floor(maxLen / 2);
+    return text.substring(0, half) + '\n...\n' + text.substring(text.length - half);
+  }
+
   async function indexContent(sourceType, sourceId, text) {
     try {
       if (!(await ensureCollection())) return;
 
       await removeContent(sourceType, sourceId);
 
-      const truncated = text.length > 2000 ? text.substring(0, 2000) : text;
-      const chunks = chunkText(truncated);
+      const sampled = sampleText(text);
+      const chunks = chunkText(sampled);
       if (chunks.length === 0) return;
 
-      const points = [];
       for (let i = 0; i < chunks.length; i++) {
         const vector = await embed(chunks[i]);
-        points.push({
+        const points = [{
           id: crypto.randomUUID(),
           vector,
           payload: {
@@ -90,16 +95,16 @@ function createRAGService() {
             chunk_index: i,
             chunk_text: chunks[i],
           },
-        });
+        }];
+
+        await axios.put(
+          `${baseUrl}/collections/${collectionName}/points`,
+          { points },
+          { timeout: 30000, maxContentLength: 2 * 1024 * 1024 }
+        );
       }
 
-      await axios.put(
-        `${baseUrl}/collections/${collectionName}/points`,
-        { points },
-        { timeout: 30000 }
-      );
-
-      console.log(`[RAG] Indexed ${points.length} chunks for ${sourceType} #${sourceId}`);
+      console.log(`[RAG] Indexed ${chunks.length} chunks for ${sourceType} #${sourceId}`);
     } catch (err) {
       console.error(`[RAG] Error indexing ${sourceType} #${sourceId}: ${err.message}`);
     }
@@ -168,22 +173,46 @@ function createRAGService() {
     return ids;
   }
 
-  async function buildContext(query, topK = 3) {
-    const results = await search(query, topK);
-    if (results.length === 0) return '';
+  async function findRelevantSourceIds(query, topK = 5) {
+    const results = await search(query, topK * 2);
+    const seen = new Set();
+    const sources = [];
+    for (const r of results) {
+      const key = `${r.sourceType}#${r.sourceId}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        sources.push({ type: r.sourceType, id: r.sourceId, score: r.score });
+      }
+      if (sources.length >= topK) break;
+    }
+    return sources;
+  }
 
-    const parts = results.map(
-      (r, i) => `[${i + 1}] (${r.sourceType} #${r.sourceId})\n${r.chunkText}`
-    );
+  async function buildContext(query, topK = 5) {
+    const results = await search(query, topK);
+    if (results.length === 0) {
+      console.log(`[RAG] No results for query: "${query.substring(0, 50)}"`);
+      return '';
+    }
+
+    const seen = new Set();
+    const parts = [];
+    for (const r of results) {
+      const key = `${r.sourceType}#${r.sourceId}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      parts.push(`(${r.sourceType} #${r.sourceId}, score=${r.score.toFixed(3)})\n${r.chunkText}`);
+    }
 
     let context = parts.join('\n---\n');
-    if (context.length > 1500) {
-      context = context.substring(0, 1500) + '\n...(truncated)';
+    if (context.length > 4000) {
+      context = context.substring(0, 4000) + '\n...(truncated)';
     }
+    console.log(`[RAG] Context: ${results.length} results, ${context.length} chars`);
     return context;
   }
 
-  return { indexContent, removeContent, search, searchMessageIds, buildContext };
+  return { indexContent, removeContent, search, searchMessageIds, buildContext, findRelevantSourceIds };
 }
 
 module.exports = createRAGService;

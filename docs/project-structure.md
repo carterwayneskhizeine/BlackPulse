@@ -119,8 +119,34 @@ Specifies intentionally untracked files to ignore.
 
 ### Utilities
 
-- `src/utils/ai-handler.js`: AI response integration
+- `src/utils/ai-handler.js`: AI response generation with RAG context
+- `src/utils/rag-service.js`: RAG service (Qdrant indexing, search, context building)
+- `src/utils/embedding.js`: Embedding API client (SiliconFlow)
+- `src/utils/chunker.js`: Text chunking for RAG indexing
 - `src/utils/hot-score.js`: Trending algorithm calculation
+
+### Database
+
+- `src/config/database.js`: SQLite connection
+- `src/database/init.js`: Database initialization and schema creation
+- `src/database/vec-migration.js`: Vector database migration (reindex)
+
+### Middleware
+
+- `src/middleware/session.js`: Express session with SQLite store
+- `src/middleware/auth.js`: Authentication middleware
+- `src/middleware/invite.js`: Invitation access middleware
+- `src/middleware/upload.js`: Multer file upload configuration
+- `src/middleware/imageAccess.js`: Image/file access control
+
+### Route Handlers
+
+- `src/routes/messages.js`: Message API endpoints (includes AI trigger)
+- `src/routes/comments.js`: Comment API endpoints (includes AI trigger)
+- `src/routes/auth.js`: Authentication API endpoints
+- `src/routes/upload.js`: File upload endpoints
+- `src/routes/search.js`: Search API (keyword, semantic, hybrid)
+- `src/routes/invite.js`: Invitation verification endpoints
 
 ## API Endpoints
 
@@ -149,7 +175,15 @@ Specifies intentionally untracked files to ignore.
 - `POST /api/auth/logout` - Logout user
 - `GET /api/auth/me` - Get current user info
 
+### Search
+
+- `GET /api/search` - Search messages (supports `mode=keyword|semantic|hybrid`)
+
 ### Upload
 
 - `POST /api/upload` - Upload image (legacy endpoint)
 - `POST /api/upload-file` - Upload any file type
+
+### Admin
+
+- `POST /api/admin/reindex` - Trigger RAG vector reindex

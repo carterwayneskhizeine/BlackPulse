@@ -221,6 +221,18 @@ export const renderCommentSection = (container, messageId, comments, pagination)
         } else if (action === 'reply') {
             const commentElement = button.closest('[data-comment-id]');
             handleReply(commentId, messageId, commentElement);
+        } else if (action === 'copy') {
+            const commentElement = button.closest('[data-comment-id]');
+            const rawText = commentElement?.querySelector('.raw-comment-text');
+            if (rawText && navigator.clipboard) {
+                navigator.clipboard.writeText(rawText.textContent.trim())
+                    .then(() => {
+                        const original = button.innerHTML;
+                        button.innerHTML = '<span style="font-size:50%">Copied!</span>';
+                        setTimeout(() => { button.innerHTML = original; }, 1500);
+                    })
+                    .catch(err => console.error('Failed to copy comment:', err));
+            }
         }
     });
 };

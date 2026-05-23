@@ -1,16 +1,5 @@
 const createRAGService = require('../utils/rag-service');
 
-async function runMigration(db) {
-  const ragService = createRAGService();
-
-  console.log('[Migration] Starting RAG migration...');
-
-  await migrateMessages(db, ragService);
-  await migrateComments(db, ragService);
-
-  console.log('[Migration] RAG migration completed.');
-}
-
 function dbAll(db, sql, params) {
   return new Promise((resolve, reject) => {
     db.all(sql, params, (err, rows) => {
@@ -20,46 +9,60 @@ function dbAll(db, sql, params) {
   });
 }
 
+function logMem(label) {
+  const m = process.memoryUsage();
+  console.log(`[Mem-${label}] RSS: ${(m.rss / 1024 / 1024).toFixed(1)}MB | Heap: ${(m.heapUsed / 1024 / 1024).toFixed(1)}MB / ${(m.heapTotal / 1024 / 1024).toFixed(1)}MB`);
+}
+
+async function runMigration(db) {
+  logMem('pre-migration');
+  const ragService = createRAGService();
+
+  console.log('[Migration] Starting RAG reindex (all messages)...');
+
+  await migrateMessages(db, ragService);
+  await migrateComments(db, ragService);
+
+  logMem('post-migration');
+  console.log('[Migration] Completed.');
+}
+
 async function migrateMessages(db, ragService) {
   const messages = await dbAll(db, 'SELECT id, content FROM messages WHERE is_private = 0', []);
-
-  console.log(`[Migration] Migrating ${messages.length} messages...`);
+  console.log(`[Migration] ${messages.length} messages to index`);
+  logMem('messages-queried');
 
   for (let i = 0; i < messages.length; i++) {
     const msg = messages[i];
+    logMem(`msg-${msg.id}-before`);
     try {
       await ragService.indexContent('message', msg.id, msg.content);
     } catch (err) {
-      console.error(`[Migration] Error migrating message #${msg.id}: ${err.message}`);
+      console.error(`[Migration] Error message #${msg.id}: ${err.message}`);
     }
-    if ((i + 1) % 10 === 0) {
-      console.log(`[Migration] Messages: ${i + 1}/${messages.length}`);
-      await new Promise((r) => setTimeout(r, 500));
+    logMem(`msg-${msg.id}-after`);
+    if (i < messages.length - 1) {
+      await new Promise((r) => setTimeout(r, 2000));
     }
   }
-
-  console.log(`[Migration] Messages done (${messages.length}).`);
 }
 
 async function migrateComments(db, ragService) {
   const comments = await dbAll(db, 'SELECT id, text FROM comments WHERE is_deleted = 0', []);
-
-  console.log(`[Migration] Migrating ${comments.length} comments...`);
+  console.log(`[Migration] ${comments.length} comments to index`);
+  logMem('comments-queried');
 
   for (let i = 0; i < comments.length; i++) {
     const c = comments[i];
     try {
       await ragService.indexContent('comment', c.id, c.text);
     } catch (err) {
-      console.error(`[Migration] Error migrating comment #${c.id}: ${err.message}`);
+      console.error(`[Migration] Error comment #${c.id}: ${err.message}`);
     }
-    if ((i + 1) % 10 === 0) {
-      console.log(`[Migration] Comments: ${i + 1}/${comments.length}`);
-      await new Promise((r) => setTimeout(r, 500));
+    if (i < comments.length - 1) {
+      await new Promise((r) => setTimeout(r, 2000));
     }
   }
-
-  console.log(`[Migration] Comments done (${comments.length}).`);
 }
 
 module.exports = runMigration;

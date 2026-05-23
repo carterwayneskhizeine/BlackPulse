@@ -72,6 +72,24 @@ const server = app.listen(port, () => {
   }
 });
 
+let reindexRunning = false;
+app.post('/api/admin/reindex', (req, res) => {
+  if (reindexRunning) {
+    return res.status(409).json({ error: 'Reindex already running' });
+  }
+  reindexRunning = true;
+  res.json({ status: 'started' });
+
+  const runMigration = require('./database/vec-migration');
+  runMigration(db).then(() => {
+    reindexRunning = false;
+    console.log('[Admin] Reindex completed');
+  }).catch(err => {
+    reindexRunning = false;
+    console.error('[Admin] Reindex failed:', err.message);
+  });
+});
+
 setInterval(() => {
   const used = process.memoryUsage();
   console.log(`[Memory] RSS: ${(used.rss / 1024 / 1024).toFixed(1)}MB | Heap: ${(used.heapUsed / 1024 / 1024).toFixed(1)}MB / ${(used.heapTotal / 1024 / 1024).toFixed(1)}MB | External: ${(used.external / 1024 / 1024).toFixed(1)}MB`);

@@ -154,27 +154,60 @@ This document provides detailed technical information about how each feature was
 ### Files Modified
 
 1. **`package.json`**:
-   - Added new dependencies: `axios` for HTTP requests to LiteLLM, and `dotenv` for loading environment variables.
+   - Added new dependencies: `axios` for HTTP requests to LLM API, and `dotenv` for loading environment variables.
 
 2. **`docker-compose.yml`**:
    - Added `env_file` directive to load variables from `.env` into the `message-board` service.
+   - Added `qdrant` service for vector database.
+   - Added `NODE_OPTIONS=--max-old-space-size=768` for memory management.
 
 3. **`.env`**:
-   - New file to store `LITE_LLM_API_KEY`, `LITE_LLM_URL`, and `LITE_LLM_MODEL` for the AI service.
+   - AI chat config: `AI_CHAT_API_URL`, `AI_CHAT_API_KEY`, `AI_CHAT_MODEL` (OpenRouter / DeepSeek).
+   - Embedding config: `EMBEDDING_API_URL`, `EMBEDDING_API_KEY`, `EMBEDDING_MODEL`, `EMBEDDING_DIMENSION` (SiliconFlow).
+   - Vector DB config: `QDRANT_URL`, `QDRANT_COLLECTION`.
+   - Search config: `DEFAULT_SEARCH_MODE`, `RUN_VEC_MIGRATION`.
 
-4. **`src/index.js`**:
-   - Added `require('dotenv').config();` at the top to load environment variables.
+4. **`src/utils/ai-handler.js`**:
+   - `getAIResponse(messageContent, userComment, ragService, db)` function.
+   - Cleans query text (strips `@goldierill`) for RAG search.
+   - Uses `findRelevantSourceIds()` to locate relevant posts in Qdrant.
+   - Fetches full post content from SQLite via `fetchFullContent()`.
+   - Constructs system prompt with historical context and strict rules for using RAG results.
+   - Calls OpenRouter LLM API with `maxContentLength`/`maxBodyLength` limits.
 
-5. **`src/utils/ai-handler.js`**:
-   - New module containing `getAIResponse` function to interact with the LiteLLM API. It constructs prompts based on message and comment content and sends requests.
+5. **`src/utils/rag-service.js`**:
+   - `createRAGService()` factory returns: `indexContent`, `removeContent`, `search`, `searchMessageIds`, `buildContext`, `findRelevantSourceIds`.
+   - `sampleText()` samples first 1000 + last 1000 chars for long posts.
+   - One-by-one chunk indexing to minimize memory usage.
+   - Auto-discovers Qdrant URL (tries multiple hostnames).
 
-6. **`src/routes/comments.js`**:
-   - Modified `POST /api/comments` route to:
-     - Import `getAIResponse` from `../../utils/ai-handler.js`.
-     - After successfully saving a user's comment, asynchronously check if the comment text contains `@goldierill`.
-     - If triggered, fetch the original message content from the database.
-     - Call `getAIResponse` with the message and comment content.
-     - If an AI response is received, insert it as a new comment from 'GoldieRill', replying to the triggering comment.
+6. **`src/utils/embedding.js`**:
+   - Calls SiliconFlow API (`qwen/qwen3-embedding-4b`) for 2560-dim vectors.
+   - Includes `maxContentLength`/`maxBodyLength` limits and response size logging.
+
+7. **`src/utils/chunker.js`**:
+   - Splits text into ~500-char chunks with 50-char overlap.
+   - Respects sentence boundaries (Chinese and English punctuation).
+   - Includes safeguards against infinite loops (see [OOM Debug Guide](oom-debug.md)).
+
+8. **`src/database/vec-migration.js`**:
+   - Incremental reindex of all non-private messages and non-deleted comments.
+   - Triggered automatically on startup when `RUN_VEC_MIGRATION=true`.
+   - Manual trigger via `POST /api/admin/reindex`.
+
+9. **`src/routes/comments.js`**:
+   - After saving a comment containing `@goldierill`, fetches parent message and calls `getAIResponse(messageContent, commentText, ragService, db)`.
+   - AI response saved as a comment from 'GoldieRill'.
+
+10. **`src/routes/messages.js`**:
+    - After saving a message containing `@goldierill`, calls `getAIResponse(messageContent, '', ragService, db)`.
+    - RAG indexes new non-private messages via `ragService.indexContent()`.
+
+11. **`src/routes/search.js`**:
+    - `GET /api/search?q=...&mode=keyword|semantic|hybrid` endpoint.
+    - `keyword`: SQL LIKE search.
+    - `semantic`: Qdrant vector similarity search.
+    - `hybrid`: Combines both (default).
 
 7. **`views/index.ejs`**:
    - Added comments section below messages section
@@ -192,6 +225,8 @@ This document provides detailed technical information about how each feature was
    - Added delegated event listeners for comment actions (vote, edit, delete, reply)
    - Implemented recursive reply rendering to support unlimited nesting depth
    - Added functionality for posting replies at any level of nesting
+
+For detailed RAG/AI architecture, configuration, and the search flow, see [RAG & AI Guide](rag-ai.md).
 
 ## JavaScript Code Modernization (ES Modules)
 

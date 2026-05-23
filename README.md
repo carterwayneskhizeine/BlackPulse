@@ -22,7 +22,7 @@ A feature-rich anonymous message board web application built with Node.js, Expre
 *   **Database Performance Optimization**: Built-in indexes for faster queries, better scalability for research and learning.
 *   **Responsive Design**: The application is designed to be accessible and usable across various devices, with mobile-friendly buttons.
 *   **Dockerized Deployment**: Easy setup and deployment using Docker and Docker Compose.
-*   **AI-Powered Comment Responses**: Users can mention `@goldierill` in comments to receive AI-generated replies based on the message context.
+*   **AI-Powered Comment Responses**: Users can mention `@goldierill` in comments to receive AI-generated replies based on the message context. The AI uses RAG (Retrieval-Augmented Generation) to reference historical posts from the board, providing contextually relevant responses.
 *   **Like System (Comments & Messages)**: Express your appreciation by liking comments and main messages. The 'like' button dynamically changes color when active.
 *   **Comment System with Infinite Reply Support**: Add comments to any page with unlimited nesting depth, featuring liking, editing, and deletion capabilities.
 *   **Trending Feed**: A "Trending" feed that uses a Reddit-style algorithm to sort messages based on the **total likes on comments** and time-decay, allowing users to discover the most popular and engaging content dynamically.
@@ -41,6 +41,9 @@ A feature-rich anonymous message board web application built with Node.js, Expre
 *   **File Upload**: Multer for handling file uploads (all types, up to 50MB)
 *   **Markdown Editor**: StackEdit (fullscreen mode, light theme)
 *   **Containerization**: Docker, Docker Compose
+*   **Vector Database**: Qdrant for RAG semantic search
+*   **Embedding**: SiliconFlow API (Qwen3-Embedding-4B, 2560 dimensions)
+*   **AI Chat**: OpenRouter API (DeepSeek V4 Flash)
 
 ## Documentation
 
@@ -61,6 +64,8 @@ For detailed information about installation, usage, and development, please refe
 - **[Feature Implementations](doc/feature-implementations.md)** - Technical details of features
 - **[Development Guide](doc/development.md)** - Development workflow and rebuilding
 - **[Database Management](doc/database-management.md)** - Database operations and maintenance
+- **[RAG & AI Guide](docs/rag-ai.md)** - RAG semantic search and AI context enhancement
+- **[OOM Debug Guide](docs/oom-debug.md)** - Memory issue troubleshooting
 
 ## Quick Start
 

@@ -24,10 +24,11 @@ function chunkText(text, chunkSize = 500, overlap = 50) {
       chunks.push(chunk);
     }
 
+    if (end >= text.length) break;
+
+    const prevStart = start;
     start = end - overlap;
-    if (start <= (chunks.length > 1 ? end - chunkSize + overlap : 0)) {
-      start = end;
-    }
+    if (start <= prevStart) break;
   }
 
   return chunks;

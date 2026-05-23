@@ -3,7 +3,44 @@ const axios = require('axios');
 let activeAICalls = 0;
 const MAX_CONCURRENT_AI_CALLS = 2;
 
-async function getAIResponse(messageContent, userComment, ragService) {
+function cleanQuery(text) {
+  return (text || '')
+    .replace(/@goldierill/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function dbGet(db, sql, params) {
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => {
+      if (err) reject(err);
+      else resolve(row);
+    });
+  });
+}
+
+async function fetchFullContent(db, sources) {
+  const parts = [];
+  for (const s of sources) {
+    try {
+      if (s.type === 'message') {
+        const row = await dbGet(db, 'SELECT content FROM messages WHERE id = ? AND is_private = 0', [s.id]);
+        if (row && row.content) {
+          const content = row.content.length > 8000 ? row.content.substring(0, 8000) + '\n...(long post truncated)' : row.content;
+          parts.push(`[Message #${s.id}]\n${content}`);
+        }
+      } else if (s.type === 'comment') {
+        const row = await dbGet(db, 'SELECT text FROM comments WHERE id = ? AND is_deleted = 0', [s.id]);
+        if (row && row.text) {
+          parts.push(`[Comment #${s.id}]\n${row.text.substring(0, 2000)}`);
+        }
+      }
+    } catch {}
+  }
+  return parts.join('\n\n---\n\n');
+}
+
+async function getAIResponse(messageContent, userComment, ragService, db) {
   const { AI_CHAT_API_URL, AI_CHAT_API_KEY, AI_CHAT_MODEL } = process.env;
 
   if (!AI_CHAT_API_URL || !AI_CHAT_API_KEY || !AI_CHAT_MODEL) {
@@ -27,34 +64,45 @@ async function getAIResponse(messageContent, userComment, ragService) {
     let ragContext = '';
     if (ragService) {
       try {
-        ragContext = await ragService.buildContext(truncatedComment + ' ' + truncatedMessage, 3);
+        const query = cleanQuery(truncatedComment + ' ' + truncatedMessage);
+        if (query && db) {
+          const sources = await ragService.findRelevantSourceIds(query);
+          if (sources.length > 0) {
+            console.log(`[AI] RAG found ${sources.length} sources: ${sources.map(s => `${s.type}#${s.id}`).join(', ')}`);
+            ragContext = await fetchFullContent(db, sources);
+          }
+        }
+        if (!ragContext) {
+          ragContext = await ragService.buildContext(query);
+        }
       } catch (err) {
         console.error('[AI] RAG context failed:', err.message);
       }
     }
 
-    let systemPrompt = `You are a helpful and insightful assistant on an anonymous message board.
-Your name is GoldieRill.
-A user has posted a message, and another user has mentioned you in a comment.
-Your task is to provide a helpful and relevant response to the comment, based on the context of the original message.
-Be concise and stay on topic.
-Respond to the user in Simplified Chinese.`;
+    let systemPrompt = `You are GoldieRill, an AI assistant on a public message board.
+
+IMPORTANT RULES:
+- Respond in Simplified Chinese.
+- "Relevant historical posts" below are PUBLIC posts from this board that users chose to share. They are NOT private data. You MUST use them to answer the user's question.
+- When a user asks about something that appears in the historical posts (e.g. their 八字, previous discussions, reports), answer directly using that information. The user is asking about their OWN posts.
+- NEVER say you cannot access or do not have the information when it is clearly provided in the historical posts below. Read them carefully and use them.
+- Be helpful, insightful, and stay on topic.`;
 
     if (ragContext) {
-      systemPrompt += `\n\nHere is some relevant context from the board's history that may help you respond:\n${ragContext}`;
+      systemPrompt += `\n\nRelevant historical posts from this board:\n${ragContext}`;
     }
 
-    const userPrompt = `Original Message:
+    const commentSection = truncatedComment
+      ? `Comment mentioning you:\n---\n${truncatedComment}\n---\n`
+      : '';
+
+    const userPrompt = `Message:
 ---
 ${truncatedMessage}
 ---
 
-User's Comment (that mentioned you):
----
-${truncatedComment}
----
-
-Your response:`;
+${commentSection}Your response:`;
 
     const response = await axios.post(
       AI_CHAT_API_URL,

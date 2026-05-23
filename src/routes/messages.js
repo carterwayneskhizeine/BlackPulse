@@ -324,7 +324,7 @@ module.exports = function (db, uploadsDir, ragService) {
             console.log(`[AI Trigger] Mention detected in message ID: ${row.id}.`);
             (async () => {
               try {
-                const aiResponseText = await getAIResponse(row.content, '', ragService);
+                const aiResponseText = await getAIResponse(row.content, '', ragService, db);
                 if (aiResponseText) {
                   console.log(`[AI] Received response. Saving to DB for message ${row.id}.`);
                   db.run(

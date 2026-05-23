@@ -365,7 +365,7 @@ module.exports = function (db, ragService) {
                 }
 
                 try {
-                  const aiResponseText = await getAIResponse(messageRow.content, row.text, ragService);
+                  const aiResponseText = await getAIResponse(messageRow.content, row.text, ragService, db);
                   if (aiResponseText) {
                     console.log(`[AI] Received response. Saving as reply to comment ${newCommentId}.`);
                     db.run(
