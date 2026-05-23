@@ -92,6 +92,7 @@ export const createCommentElement = (comment, messageId, parentId, commentMap) =
             textElement.style.webkitLineClamp = 'unset';
             textElement.classList.remove('content-collapsed');
             showMoreButton.style.display = 'none';
+            textElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     } else {
         textElement.innerHTML = htmlContent;
