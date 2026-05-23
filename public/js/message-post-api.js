@@ -24,6 +24,14 @@ import {
 import {
     uploadFile
 } from './file-upload.js';
+import {
+    showAIRefreshButton
+} from './ai-notify.js';
+
+const _mentionsAI = (text) => {
+    const t = (text || '').toLowerCase();
+    return t.includes('@goldierill') || t.includes('@rag');
+};
 
 
 export const postMessageToAPI = async (content, isPrivate, privateKey) => {
@@ -75,8 +83,11 @@ export const postMessageToAPI = async (content, isPrivate, privateKey) => {
                 // 将新消息添加到列表顶部
                 if (renderedMessage) {
                     messageList.prepend(renderedMessage);
+                    if (_mentionsAI(content)) {
+                        showAIRefreshButton(newMessage.id, renderedMessage);
+                    }
                 }
-                
+
                 // 为新消息加载评论以显示正确的 Reply 按钮状态
                 loadCommentsForMessage(newMessage.id);
             }

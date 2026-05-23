@@ -4,6 +4,9 @@ import {
 import {
     createStackEditButton
 } from './utils.js';
+import {
+    showAIRefreshButton
+} from './ai-notify.js';
 
 // Handle reply functionality for comments in a flat structure
 export const handleReply = (commentId, messageId, parentElement) => {
@@ -48,10 +51,15 @@ export const handleReply = (commentId, messageId, parentElement) => {
     const stackeditBtn = createStackEditButton(textarea, replyForm);
     actionsContainer.insertBefore(stackeditBtn, cancelBtn);
 
-    replyForm.addEventListener('submit', (e) => {
+    replyForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const input = replyForm.querySelector('textarea');
         const errorDiv = replyForm.querySelector('.comment-error-message');
-        handlePostComment(messageId, commentId, input, errorDiv);
+
+        // Capture messageEl now — replyForm is removed from DOM after handlePostComment
+        const messageEl = replyForm.closest('[data-message-id]');
+
+        const hadAIMention = await handlePostComment(messageId, commentId, input, errorDiv);
+        if (hadAIMention && messageEl) showAIRefreshButton(messageId, messageEl);
     });
 };
