@@ -74,13 +74,20 @@ function createRAGService() {
     return text.substring(0, half) + '\n...\n' + text.substring(text.length - half);
   }
 
+  function stripMention(text) {
+    return (text || '').replace(/@goldierill/gi, '').replace(/\s+/g, ' ').trim();
+  }
+
   async function indexContent(sourceType, sourceId, text) {
     try {
       if (!(await ensureCollection())) return;
 
       await removeContent(sourceType, sourceId);
 
-      const sampled = sampleText(text);
+      const cleaned = stripMention(text);
+      if (!cleaned) return;
+
+      const sampled = sampleText(cleaned);
       const chunks = chunkText(sampled);
       if (chunks.length === 0) return;
 
