@@ -11,13 +11,26 @@ const _setWidth = (pct) => {
 
 export const startProgressBar = () => {
     if (_bar) return;
-    _bar = document.createElement('div');
-    _bar.id = 'hb-progress-bar';
-    document.body.appendChild(_bar);
+    _bar = document.getElementById('hb-progress-bar');
+    if (!_bar) {
+        _bar = document.createElement('div');
+        _bar.id = 'hb-progress-bar';
+        document.body.appendChild(_bar);
+    }
 
-    // Quick burst to 25%, then creep slowly toward 72%
-    setTimeout(() => _setWidth(25), 60);
-    setTimeout(() => _setWidth(42), 250);
+    // Get current progress or default to 25
+    const styleWidth = _bar.style.width;
+    _progress = styleWidth ? parseFloat(styleWidth) : 0;
+
+    if (_progress === 0) {
+        setTimeout(() => _setWidth(25), 60);
+        setTimeout(() => _setWidth(42), 250);
+    } else {
+        if (_progress < 42) {
+            setTimeout(() => _setWidth(42), 200);
+        }
+    }
+
     _intervalId = setInterval(() => {
         if (_progress < 72) {
             _setWidth(_progress + Math.random() * 2.5 + 0.5);
